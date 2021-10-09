@@ -1,0 +1,51 @@
+I"<style>
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  border-radius: 5px; /* 5px rounded corners */
+}
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Add rounded corners to the top left and the top right corner of the image */
+img {
+  border-radius: 5px 5px 0 0;
+}
+</style>
+
+<div class="card" style="height:250px">
+  <div class="container">
+  <img src="" style="width:50px" />
+    <h4><b>자연어처리(NLP)와 머신러닝을 이용한 리뷰 데이터 분석 및 사용자 경험 분석</b></h4>
+    <p> 진행중</p>
+  </div>
+</div>
+<p><br /></p>
+
+<div class="card" style="height:250px">
+  <div class="container">
+  <img src="" style="width:50px" />
+    <h4><b>AI 기반 주가 예측 및 종목 추천</b></h4>
+    <p> 이후 포스팅 예정</p>
+  </div>
+</div>
+<p><br /></p>
+
+<!-- <div class="card" style ="height:250px">
+  <div class="container">
+  <img src="" style="width:50px">
+    <h4><b>AI 기반 주가 예측 및 종목 추천</b></h4>
+    <p> 진행중</p>
+  </div>
+</div>
+<br> -->
+
+<div class="card" style="height:250px">
+  <div class="container">
+  <img src="/images/grandmaster@192.png" style="width:50px" />
+    <h4><b>Kaggle Notebooks GrandMaster 도전기</b></h4>
+    <p> 목표 금메달 15개 중, 현재 2개 획득</p>
+  </div>
+</div>
+:ET

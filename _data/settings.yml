@@ -1,0 +1,30 @@
+#-------------------------------
+# General Site Settings
+title: 박정빈의 데이터세상
+logo: try_log.PNG # You can add own logo.
+description: 티끌모아, 빅데이터를 꿈꾸는 공간
+
+
+#-------------------------------
+# Author Settings
+author:
+  name: ParkJeongBin
+  image: home_img.jpg
+  say-hello: <strong>박정빈</strong>
+  bio: 안녕하세요, 저는 데이터 전문가를 목표로 공부하는 학생입니다. 데이터 엔지니어링, 데이터 분석/시각화에 관심이 많습니다. 방문해주셔서 감사합니다 ! :)
+
+
+
+#-------------------------------
+# Contact links
+twitter: https://www.linkedin.com/in/%EC%A0%95%EB%B9%88-%EB%B0%95-9a0458209/
+facebook: https://www.kaggle.com/jeongbinpark # Add your Facebook handle
+dribbble: https://github.com/wjdqlsdlsp # Add your Dribbble handle
+
+#-------------------------------
+
+#-------------------------------
+# Google Analytics
+google-analytics: G-8Z2RDDR1HP
+
+

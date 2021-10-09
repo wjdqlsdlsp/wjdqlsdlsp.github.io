@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wjdqlsdlsp.github.io/sitemap.xml
