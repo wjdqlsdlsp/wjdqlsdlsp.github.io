@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Introduction to Bash Scripting"
-date:   2021-10-07
+date:   2021-10-14
 categories: 데이터엔지니어
 tags: 데이터엔지니어
 image: /post_img/gabriel-heinzer-4Mw7nkQDByk-unsplash.jpg
