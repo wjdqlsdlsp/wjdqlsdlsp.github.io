@@ -8,8 +8,6 @@ image: /post_img/python-logo2.jpg
 ---
 # 효율적인 파이썬 코드 쓰는 법
 
-<p align="left" style="font-size:70%; "> 본 내용은 DataCamp - Data engineering 강의를 보고 정리한 내용입니다.</p>
-
 ## 1. Foundations for efficiencies
 <br>
 ### 효율적인 프로그래밍이란? 

@@ -10,9 +10,6 @@ image: /post_img/ubuntu.jpg
 #  Shell에서 하는 전처리
 
 
-<p align="left" style="font-size:70%; "> 본 내용은 DataCamp - Data engineering 강의를 보고 정리한 내용입니다.</p>
-
-
 ### Downloading data using curl
 
 `curl` - Client for URLs

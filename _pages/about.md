@@ -18,6 +18,8 @@ image: about_me.jpg
 
 저는 주로 인공지능과 데이터, 임베디드, 통신 등을 공부하고 있습니다.
 
+<br>
+
 #### Kaggle
 <small>2021 ~</small>
 
@@ -25,9 +27,11 @@ image: about_me.jpg
 
 현재 저에게 과분하지만 많은 사람들이 더 열심히 도전하라는 의미에서 준 관심 덕에,
 
-Notebooks Master 등급에 있습니다. ( 전세계 89등 )
+Notebooks Master 등급에 있습니다.
 
 아직 한참 멀었지만, 캐글 노트북 그랜드마스터를 향해 조금씩 도전하고 있습니다. 
+
+<br>
 
 #### 가짜연구소
 <small>2021 ~ </small>
@@ -35,6 +39,8 @@ Notebooks Master 등급에 있습니다. ( 전세계 89등 )
 좋은 기회가 생겨, 가짜연구소 Data Science Fellowship 에 참여하게 되었습니다.
 
 현재 참여중인 과정은 DSF-Data Engineering(이성진) 으로, 데이터 엔지니어가 수행하는 과정을 배우고 있습니다.
+
+<br>
 
 #### NextLV
 <small>2021/2 ~ 2021/8</small>

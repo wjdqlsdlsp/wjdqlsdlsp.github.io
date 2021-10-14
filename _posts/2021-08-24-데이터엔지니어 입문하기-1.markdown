@@ -9,8 +9,6 @@ image: /post_img/main.jpg
 
 # 데이터 엔지니어란 ? 
 
-<p align="left" style="font-size:70%; "> 본 내용은 DataCamp - Data engineering 강의를 보고 정리한 내용입니다.</p>
-
 최근에 데이터 엔지니어라는 직업에 관심을 가지고 공부하기 시작했습니다. 이전에 데이터 엔지니어라고 하면, 하나도 이해가 안갔던 것을, 하나씩 공부해 보려고 합니다.
 
 ## 데이터 관련 직업

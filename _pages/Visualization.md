@@ -2,7 +2,7 @@
 layout: page
 title: Visualization
 permalink: /visualization/
-image: /isaac-smith-6EnTPvPPL6I-unsplash.jpg
+image: 
 ---
 
 ### 데이터 시각화를 즐기는 공간입니다. 시각화는 아무말 하지 않아도, 많은 내용을 전달할 수 있습니다.
