@@ -1,6 +1,24 @@
-I"F<h3 id="데이터-시각화를-즐기는-공간입니다-시각화는-아무말-하지-않아도-많은-내용을-전달할-수-있습니다">데이터 시각화를 즐기는 공간입니다. 시각화는 아무말 하지 않아도, 많은 내용을 전달할 수 있습니다.</h3>
+I"N<h3 id="데이터-시각화를-즐기는-공간입니다-시각화는-아무말-하지-않아도-많은-내용을-전달할-수-있습니다">데이터 시각화를 즐기는 공간입니다. 시각화는 아무말 하지 않아도, 많은 내용을 전달할 수 있습니다.</h3>
 <h3 id="그것이-제가-시각화를-좋아하는-이유입니다">그것이 제가 시각화를 좋아하는 이유입니다.</h3>
 <h3 id="아래는-제가-의미있게-생각한-저의-작품들-중-일부입니다">아래는 제가 의미있게 생각한 저의 작품들 중 일부입니다.</h3>
+
+<hr />
+<p><img src="/images/visualization_all/kaggle_survey1.png" alt="" />
+<em>2021 Kaggle survey - 주로 사용하는 언어 / Python, R 비율 분석</em></p>
+
+<p>2021 Kaggle surevey 데이터셋을 이용하여, Kaggler들이 주로 사용하는 언어 및 Python과 R의 비율 분석입니다.</p>
+
+<hr />
+<p><img src="/images/visualization_all/kaggle_survey2.png" alt="" />
+<em>2021 Kaggle survey - Python/R 직업비율</em></p>
+
+<p>Python 과 R을 사용하는 사람들의 직업을 나타낸 시각화입니다.</p>
+
+<hr />
+<p><img src="/images/visualization_all/kaggle_survey3.png" alt="" />
+<em>2021 Kaggle survey - Python/R 초심자에게 추천</em></p>
+
+<p>Python 과 R을 사용하는 사람들이 데이터사이언스에 입문하는 사람들에게 추천하는 언어입니다. 흥미로운 점은, 파이썬 유저는 파이썬을 적극 추천하지만, R사용자는 Python과 비교하여 적은 숫자가 추천합니다. 또한, R사용자 중 Python을 추천하는 비율도 1/3이 넘습니다.</p>
 
 <hr />
 <p><img src="/images/visualization_all/netflix1.png" alt="" />
