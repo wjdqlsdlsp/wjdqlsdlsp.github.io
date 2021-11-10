@@ -10,6 +10,19 @@ image:
 
 
 ***
+![]({{site.baseurl}}/images/visualization_all/titanic1.png)
+*타이타닉 - 각 클래스별 생존율 비교*
+
+타이타닉 탑승자의 클래스와 생존율의 관련성을 나타내는 분석입니다. 1st 클래스 탑승자가 가장 높은 생존율을 보였고, 그뒤를 2nd, 3rd순으로 이어갑니다.
+
+***
+![]({{site.baseurl}}/images/visualization_all/titanic2.png)
+*타이타닉 - 탑승요금과 생존율 비교*
+
+탑승요금과 생존율의 상관관계를 나타내는 차트입니다. 지불한 요금이 많을수록 높은 생존율을 보이고 있습니다. 이는 클래스랑도 상관관계가 있다고 판단됩니다.
+
+
+***
 ![]({{site.baseurl}}/images/visualization_all/kaggle_survey1.png)
 *2021 Kaggle survey - 주로 사용하는 언어 / Python, R 비율 분석*
 
