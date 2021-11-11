@@ -1,0 +1,994 @@
+I"�<h1 id="unit-testing-for-data-science-in-python">Unit Testing for Data Science in Python</h1>
+
+<h2 id="unit-testing-basics">Unit testing basics</h2>
+
+<p>테스트 하는 방법으로 먼저 인터프리터가 있지만, 이는 비효율적입니다.</p>
+
+<p align="center"><img src="/images/post_img/unitest1.PNG" /></p>
+<p align="center" style="font-size:100%; ">DataCamp-Unit Testing for Data Science in Python</p>
+
+<p>이러한 생의 주기가 100번넘게 반복되고 있습니다.</p>
+
+<pre><code class="language-txt">area (sq. ft.)	price (dollars)
+2,081	314,942
+1,059	186,606
+	293,410
+1,148	206,186
+1,463238,765
+</code></pre>
+
+<p>다음과 같이 area 이후 탭 price를 가진 구조에서, 만약 오류로 인해 area가 생략되거나 탭이 누락된 경우</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">row_to_list</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="p">...</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Type</th>
+      <th>Return value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“2,081\t314,942\n”</td>
+      <td>Valid</td>
+      <td>[“2,081”,”314,952”]</td>
+    </tr>
+    <tr>
+      <td>“\t293,410\n”</td>
+      <td>Invalid</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>“1,463238,765\n”</td>
+      <td>Invaliid</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>다음과 같은 경우 None을 반환해야합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+
+<span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="bp">None</span>
+
+<span class="n">row_to_list</span><span class="p">(</span><span class="s">"1,463238,765</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="bp">None</span>
+</code></pre></div></div>
+
+<p>다음이 잘 작동하는지 직접 실험을 해야하는 과정을 가집니다. (이러한 방법은 너무 많은 시간을 소요)</p>
+
+<p>이러한 시간을 줄이기 위해서 유닛테스팅은 데이터사이언티스트에게 필수 기술입니다.</p>
+
+<h4 id="python-unit-testing-libraries">Python unit testing libraries</h4>
+
+<ul>
+  <li>pytest</li>
+  <li>unittest</li>
+  <li>nosetest</li>
+  <li>doctest</li>
+</ul>
+
+<h4 id="pytest">pytest</h4>
+
+<ul>
+  <li>사용하기 쉽다</li>
+  <li>가장 인기있는 테스트 라이브러리</li>
+  <li>모든 본질적인 피처를 가진다.?</li>
+</ul>
+
+<h4 id="step-1-create-a-file">Step 1. Create a file</h4>
+
+<p><code class="language-plaintext highlighter-rouge">test_row_to_list.py</code> 라는 파일을 만든다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">test_</code> 로 시작하는 파일 이름을 발견하면 다음과 같이 이해하면됩니다.</p>
+
+<p>-&gt; 이것은 일반적인 파이썬 파일이 아니라, 유닛테스트를 포함하는 특별한 파일입니다.</p>
+
+<p>유닛테스트를 포함하는 파일을 테스트 모듈이라고 합니다.</p>
+
+<h4 id="step2-imports">Step2. Imports</h4>
+
+<p><code class="language-plaintext highlighter-rouge">test_row_to_list.py</code></p>
+
+<h4 id="step3-unit-tests-are-python-functions">Step3. Unit tests are Python functions</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+</code></pre></div></div>
+
+<p>유니테스트는 테스트 모듈처럼 이름이 <code class="language-plaintext highlighter-rouge">test_</code> 로 시작하는 python 함수로 작성됩니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Type</th>
+      <th>Return value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“2,081\t314,942\n”</td>
+      <td>Valid</td>
+      <td>[“2,081”,”314,942”]</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="step4-assertsion">Step4. Assertsion</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="n">boolearn_expression</span>
+
+<span class="k">assert</span> <span class="bp">True</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+
+<span class="k">assert</span> <span class="bp">False</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+    <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">Line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AssertionError</span>
+</code></pre></div></div>
+
+<p>assert 문에는 모든 부울 표현식이 될 수 있는 필수 첫번째 인수가 잇습니다.</p>
+
+<p>assert 문이 True일 경우 통과되어 아무것도 출력되지 않습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>위와 같은 경우, 해당 함수를 실행했을 때 값이, 다음과 같은 값을 반환하는지 확인 ( True 가 반환되어 통과 )</p>
+
+<p>만약 False가 있을경우,  즉 함수에 버그가 있으면 assert 문은 AssertionError를 발생시키고 테스트는 실패</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_for_missing_area</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+    
+<span class="k">def</span> <span class="nf">test_for_missing_tab</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"1,463238,765</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Type</th>
+      <th>Return value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“2,081\t314,942\n”</td>
+      <td>Valid</td>
+      <td>[“2,081”,”314,942”]</td>
+    </tr>
+    <tr>
+      <td>“\t293,410\n”</td>
+      <td>Invalid</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>“1,463238,765\n”</td>
+      <td>Invalid</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>변수값이 None인지 확인하는 방법은 다음과 같습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="n">var</span> <span class="ow">is</span> <span class="bp">None</span> <span class="c1"># O
+</span>
+<span class="k">assert</span> <span class="n">var</span> <span class="o">==</span> <span class="bp">None</span> <span class="c1"># X
+</span></code></pre></div></div>
+
+<p>== 를 사용하는 것이 아니라 is 를 사용함을 주목</p>
+
+<h4 id="step5-running-unit-tests">Step5. Running unit tests</h4>
+
+<p><code class="language-plaintext highlighter-rouge">pytest test_row_to_list.py</code></p>
+
+<h4 id="unit-tests-for-row_to_list">Unit tests for row_to_list()</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_for_missing_area</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+    
+<span class="k">def</span> <span class="nf">test_for_missing_tab</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"1,463238,765</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+</code></pre></div></div>
+
+<p>코드를 보면, <code class="language-plaintext highlighter-rouge">import row_to_int</code> 가 선언되어있음을 알 수 있습니다.</p>
+
+<p>행 영역 데이터가 누락 된 행  및 탭 구분 기호가 누락 된 행을 각각 정리합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">!pytest test_row_to_list.py</code>를 입력하면, 많은 정보가 쏟아져 나옵니다.</p>
+
+<h4 id="section-1-general-information">Section 1: general information</h4>
+
+<p align="center"><img src="/images/post_img/unittest2.PNG" /></p>
+
+<p>운영 체제, Python 버전, pytest패키지 버전, 작업 디렉토리 및 pytest 플로그인 정보가 출력</p>
+
+<h4 id="section-2-test-result">Section 2: Test result</h4>
+
+<p align="center"><img src="/images/post_img/unittest3.PNG" /></p>
+
+<p>출력에 “collected 3 items” 가 표시되며, 이는 pytest가 실행할 테스트 3개를 찾았음을 의미</p>
+
+<p>그 아랫 줄에는, test_row_to_list 인 테스트 모듈 이름이 포함되어있습니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Character</th>
+      <th>Meaning</th>
+      <th>When</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>F</td>
+      <td>Failure</td>
+      <td>An exception is raised when running unit test</td>
+      <td>Fix the function or unit test.</td>
+    </tr>
+    <tr>
+      <td>.</td>
+      <td>Passed</td>
+      <td>No exception raised when running unit test</td>
+      <td>Everything is fine. Be happy!</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_for_missing_area</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410"</span><span class="p">)</span> <span class="ow">is</span> <span class="n">none</span> <span class="c1"># AssertionError from this line
+</span></code></pre></div></div>
+
+<p>다음과 같은 코드를 실행시킬때 가장 자주 발생합니다.</p>
+
+<p>단위 테스트 코드를 실행하는 동안 다른 예외가 발생하면 단위 테스트가 실패 할 수도 있습니다.</p>
+
+<p>(위의 예시에서는 None 을 none 이라고 표기해서 에러가 발생)</p>
+
+<p><code class="language-plaintext highlighter-rouge">.</code> 는 assert 문이나 단위 테스트의 다른 부분에서 예외가 발생하지 않았음을 의미</p>
+
+<p>위의 경우 <code class="language-plaintext highlighter-rouge">.F.</code> 임을 통해 첫번째와 세번째는 통과하였지만, 2번째에서 오류가 발생했음을 알 수 있습니다.</p>
+
+<h4 id="section-3-information-on-failed-tests">Section 3: Information on failed tests</h4>
+
+<p align="center"><img src="/images/post_img/unittest4.PNG" /></p>
+
+<p>다음 섹션에서는 실패한 테스트에 대한 자세한 정보가 포함되어 있습니다.</p>
+
+<p>예외를 발생시키는 줄은 <code class="language-plaintext highlighter-rouge">&gt;</code>를 통해 표기됩니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">E</code>로 표시된 다음 줄에는 예외에 대한 세부 정보가 포함되어 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">where</code>는 assert문을 실행할 때 계산 된 모든 반환 값을 표시합니다.</p>
+
+<h4 id="section-4--test-result-summary">Section 4 : Test result summary</h4>
+
+<p align="center"><img src="/images/post_img/unittest5.PNG" /></p>
+
+<p>마지막 줄은, 결과를 요약하여 보여줍니다.</p>
+
+<h4 id="unit-tests-장점">Unit tests 장점</h4>
+
+<ul>
+  <li>
+    <p>유닛테스트는, 시간 절약을 시켜줍니다.</p>
+  </li>
+  <li>
+    <p>유닛테스트는 이처럼, 함수가 하는 일에 대한 좋은 힌트를 제공하여 함수의 코드를 더 빨리 이해하는데 도움을 줍니다.</p>
+  </li>
+  <li>
+    <p>또한, 이는 실제 상황을 모방하기 위해 일부 연습에서는 테스트 모듈을보고 함수의 작업을 추측하도록 요청할 수 도 있습니다.</p>
+  </li>
+  <li>
+    <p>유닛테스트는 사용자가 단위 테스트를 실행하고 기능이 작동하는지 확인할 수 있으므로, 패키지에 대한 신뢰도를 높입니다.</p>
+  </li>
+  <li>
+    <p>유닛테스트는 생산적인 시스템의 downtime을 줄일수 있습니다. (CI를 통해 유닛테스트를 실행하고 유닛테스트가 실패하면, 변경을 거부하여 다운 타임을 방지)</p>
+  </li>
+</ul>
+
+<h4 id="unit이란-무엇일까">Unit이란 무엇일까?</h4>
+
+<ul>
+  <li>작은 독립적인 코드</li>
+  <li>Python 함수 또는 클래스</li>
+</ul>
+
+<h2 id="mastering-assert-statements">Mastering assert statements</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="n">boolean_expression</span><span class="p">,</span> <span class="n">message</span>
+
+<span class="k">assert</span> <span class="mi">1</span><span class="o">==</span><span class="mi">2</span><span class="p">,</span> <span class="s">"One is not equal to two!"</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+    <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AssertionError</span><span class="p">:</span> <span class="n">One</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">equal</span> <span class="n">to</span> <span class="n">two</span><span class="err">!</span>
+</code></pre></div></div>
+
+<p>다음과 같이 , message 내용을 같이 사용할 수 도있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="k">def</span> <span class="nf">test_for_missing_area_with_message</span><span class="p">():</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span><span class="s">"row_to_list('</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">') "</span>
+              <span class="s">"returned {0} instead"</span> 
+              <span class="s">"of {1}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+              <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">actual</span> <span class="ow">is</span> <span class="n">expected</span><span class="p">,</span> <span class="n">message</span>
+</code></pre></div></div>
+
+<p>다음과 같이 코드를 사용하면 됩니다.</p>
+
+<p align="center"><img src="/images/post_img/unittest6.PNG" /></p>
+
+<p>이렇게 사용할 시, 하단에는 메시지와 함께 수정 된 것을 실행합니다.</p>
+
+<p>(이렇게하면, 자동출력보다, 오류메세지를 이해하는데 훨씬 수월하다. )</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span> <span class="o">==</span><span class="mf">0.3</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="bp">False</span>
+
+<span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mf">0.3000000000004</span>
+</code></pre></div></div>
+
+<p>다음과 같이 파이썬 코드는 원하는대로 작동하지 않을수도 있습니다. (파이썬의 부동 방식 때매)</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span> <span class="o">==</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s">"Usual way to compare does not always work with floats!"</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span> <span class="o">==</span> <span class="n">pytest</span><span class="p">.</span><span class="n">approx</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">pytest.approx()</code> 는 오른쪽 끝에 있는 숫자가 무시되고, 부동 소수점을 안전하게 비교할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="o">+</span><span class="mf">0.1</span><span class="p">])</span> <span class="o">==</span> <span class="n">pytest</span><span class="p">.</span><span class="n">approx</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.3</span><span class="p">]))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="k">def</span> <span class="nf">test_on_string_with_one_comma</span><span class="p">():</span>
+    <span class="n">return_value</span> <span class="o">=</span> <span class="n">convert_to_int</span><span class="p">(</span><span class="s">"2,081"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">return_value</span> <span class="o">==</span> <span class="mi">2081</span>
+</code></pre></div></div>
+
+<p>함수가 정수를 반환하는지 테스트하는 코드를 예를 들어보면,  instance() 함수를 이용합니다. 인수 두번쨰로는, 예상 유형(int)를 입력,</p>
+
+<p>반환 값이, 예상 값과 일치하는지는, 또 다른 assert 문으로 작업을 수행</p>
+
+<h4 id="testing-for-exceptions-instead-of-return-values">Testing for exceptions instead of return values</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="n">example_argument</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">2081</span><span class="p">,</span> <span class="mi">314942</span><span class="p">],</span>
+                           	<span class="p">[</span><span class="mi">1059</span><span class="p">,</span> <span class="mi">186606</span><span class="p">],</span>
+                           	<span class="p">[</span><span class="mi">1148</span><span class="p">,</span> <span class="mi">206186</span><span class="p">],</span>
+                            <span class="p">]</span>
+                           <span class="p">)</span>
+<span class="n">split_into_training_and_testing_sets</span><span class="p">(</span><span class="n">example_argument</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">(</span><span class="n">array</span><span class="p">([[</span><span class="mi">1148</span><span class="p">,</span> <span class="mi">206186</span><span class="p">],</span>
+      	<span class="p">[</span><span class="mi">2081</span><span class="p">,</span> <span class="mi">314942</span><span class="p">],</span>
+       <span class="p">]</span>
+      <span class="p">)</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">1059</span><span class="p">,</span> <span class="mi">186606</span><span class="p">]])</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>다음 함수는 2차원 배열을 75%를 train에 25%를 test에 전달하는 함수입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="n">example_argument</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2081</span><span class="p">,</span> <span class="mi">314942</span><span class="p">,</span> <span class="mi">1059</span><span class="p">,</span> <span class="mi">186606</span><span class="p">,</span> <span class="mi">1148</span><span class="p">,</span> <span class="mi">206186</span><span class="p">])</span>
+<span class="n">split_into_training_and_testing_sets</span><span class="p">(</span><span class="n">example_argument</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>1차원 배열을 전달하게 되면, ValueError가 발생됩니다. 이를 이제 오류 메세지와 함께 표시하기 위해 다음과 같은 코드를 사용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_valueerror_on_one_dimensional_argument</span><span class="p">():</span>
+    <span class="n">example_argument</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2081</span><span class="p">,</span> <span class="mi">314942</span><span class="p">,</span> <span class="mi">1059</span><span class="p">,</span> <span class="mi">186606</span><span class="p">,</span> <span class="mi">1148</span><span class="p">,</span> <span class="mi">206186</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="p">.</span><span class="n">raises</span><span class="p">(</span><span class="nb">ValueError</span><span class="p">):</span>
+        <span class="n">split_into_training_and_testing_sets</span><span class="p">(</span><span class="n">example_argument</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>함수가 예상대로 ValueError를 발생 시키면 침묵이되고, 테스트가 통과됩니다.</p>
+
+<p>ValueError가 발생하지 않으면, 컨텍스트 관리자가 실패 예외를 발생시켜 테스트가 실패합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_valueerror_on_one_dimensional_argument</span><span class="p">():</span>
+    <span class="n">example_argument</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2081</span><span class="p">,</span> <span class="mi">314942</span><span class="p">,</span> <span class="mi">1059</span><span class="p">,</span> <span class="mi">186606</span><span class="p">,</span> <span class="mi">1148</span><span class="p">,</span> <span class="mi">206186</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="p">.</span><span class="n">raises</span><span class="p">(</span><span class="nb">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exception_info</span><span class="p">:</span>
+        <span class="n">split_into_training_and_testing_sets</span><span class="p">(</span><span class="n">example_argument</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">exception_info</span><span class="p">.</span><span class="n">match</span><span class="p">(</span><span class="s">"Argument data array must be two dimentional."</span>
+                               <span class="s">"Got 1 dimensional array instead!"</span>
+                               <span class="p">)</span>
+</code></pre></div></div>
+
+<p>as 절을 사용하여 with문을 확장하면 컨텍스트내에서 valueError가 발생하면, exception_info에는 침묵 된 ValueError에 대한 정보가 포함됩니다.</p>
+
+<h4 id="the-well-tested-function">The well tested function</h4>
+
+<p>이전에 split_into_training_and_testing_sets 를 생각하면</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Number of rows (argument)</th>
+      <th>Number of rows (training array)</th>
+      <th>Number of rows (testing array)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>8</td>
+      <td>int(0.75 * 8) = 6</td>
+      <td>8 - int(0.75 * 8) = 2</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>int(0.75 * 10) = 7</td>
+      <td>10 - int(0.75 * 10) = 3</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>더 많은 케이스를 테스트할 수록, 함수가 제대로 작동하고 있다는 확신을 가질 수 있습니다. 하지만 시간상의 문제로 더 많은 테스트를 할 수 없습니다.</p>
+
+<h4 id="test-argument-types">Test argument types</h4>
+
+<ul>
+  <li>Bad arguments</li>
+  <li>Special arguments</li>
+  <li>Normal arguments</li>
+</ul>
+
+<p>다음과 같이, 타입을 나눠서 테스트하면 함수를 더 잘 테스트할 수 있습니다.</p>
+
+<h4 id="type-1-bad-argumentsone-dimensional-array">Type 1: Bad arguments(one dimensional array)</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Type</th>
+      <th>Num rows(training)</th>
+      <th>Num rows (testing)</th>
+      <th>exceptions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>One dimensional</td>
+      <td>Bad</td>
+      <td>-</td>
+      <td>-</td>
+      <td>ValueError</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Example: <code class="language-plaintext highlighter-rouge">np.array([845.0, 31036.0, 1291.0, 72205.0])</code></p>
+
+<p>다음과 같이 잘못된 인자 타입이 들어왔을 땐, ValueError를 출력할 것입니다.</p>
+
+<h4 id="type-2-special-arguments">Type 2: Special arguments</h4>
+
+<ul>
+  <li>Boundary values.</li>
+  <li>For some argument values, function uses special logic</li>
+</ul>
+
+<h4 id="type-3-normal-arguments">Type 3: Normal arguments</h4>
+
+<p>마지막으로, 나쁘지도 특별하지도 않는 정상값을 테스트</p>
+
+<h4 id="test-driven-development-tdd">Test Driven Development (TDD)</h4>
+
+<p>유닛테스트가 중요하지만, 현실에서는, 작성을 건너 뛰는 것이 너무 일반적입니다.</p>
+
+<ol>
+  <li>Feature development.</li>
+  <li>Unit testing</li>
+</ol>
+
+<p>유닛테스트의 우선순위가 다른것보다 뒤쳐지기 때문에, 미루다가 결국 작성하지 않게됩니다.</p>
+
+<p>이를 방지하기 위해서는, 함수가 코드로 구현되기 전에도 테스트를 작성하는 것입니다.</p>
+
+<h4 id="step-1-write-unit-tests-and-fix-requirements">Step 1. Write unit tests and fix requirements</h4>
+
+<h4 id="step-2-run-tests-and-watch-it-fail">Step 2. Run tests and watch it fail</h4>
+
+<h4 id="step-3-implement-function-and-run-tests-again">Step 3. Implement function and run tests again</h4>
+
+<h2 id="how-to-organize-a-growing-set-of-tests">How to organize a growing set of tests?</h2>
+
+<p align="center"><img src="/images/post_img/unittest7.PNG" /></p>
+
+<p>테스트 파일을 다음과 같이 구성해서 하는 것이 효율적</p>
+
+<h4 id="test-class--theoretical-structure">Test class : theoretical structure</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">data.preprocessing_helpers</span> <span class="kn">import</span> <span class="n">row_to_list</span><span class="p">,</span> <span class="n">convert_to_list</span>
+
+<span class="k">class</span> <span class="nc">TestRowToList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_on_no_tab_no_missing_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">...</span>
+    <span class="k">def</span> <span class="nf">test_on_two_tabs_no_missing_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">...</span>
+        
+<span class="k">class</span> <span class="nc">TestConvertToInt</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_with_no_comma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">...</span>
+    <span class="k">def</span> <span class="nf">test_with_one_comma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">...</span>
+</code></pre></div></div>
+
+<p>함수형으로 하는 방법보다 class형으로 하는 것이 더 효율적임.</p>
+
+<h4 id="mastering-test-execution">Mastering test execution</h4>
+
+<p>이전에 테스트 클래스를 선언했었는데, 테스트 클래스는 특정 함수에 대한 유닛 테스트를 위한 컨테이너일 뿐입니다.</p>
+
+<p>pytest는 테스트 폴더에 포함 된 모든 테스트를 실행하는 쉬운 방법을 제공합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd test
+</span>pytest
+</code></pre></div></div>
+
+<p>단지 이렇게 실행하면됩니다.</p>
+
+<p>이 명령은 작업 디렉토리의 하위 트리로 반복하여 테스트를 자동으로 검색합니다.</p>
+
+<ul>
+  <li>
+    <p>이름이 “test_” 로 시작하는 모든 파일을 테스트 모듈로 식별합니다.</p>
+  </li>
+  <li>테스트 모듈 내에서 이름이 “Test” 로 시작하는 클래스를 테스트 클래스로 식별합니다.</li>
+  <li>각 테스트 클래스 내에서 “test_“로 시작하는 이름을 가진 모든 함수를 단위 테스트로 식별합니다.</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/unittest8.PNG" /></p>
+
+<p>다음과 같이, 실행하면, 유닛테스트 실행결과가 출력됩니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -x</code> 다음 명령어를 사용하면 실패후 pytest를 종료합니다.</p>
+
+<p>만약 특정 pytest만 실행하고싶으면, 해당 경로를 지정해주면됩니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest data/test_preprocessing_helpers.py</code></p>
+
+<h4 id="node-id">Node ID</h4>
+
+<ul>
+  <li>Node ID of a test class: <code class="language-plaintext highlighter-rouge">&lt;path to test module&gt;::&lt;test class name&gt;</code></li>
+  <li>Node ID of a unit test: <code class="language-plaintext highlighter-rouge">&lt;path to test module&gt;::&lt;test class name&gt;::&lt;unit test name&gt;</code></li>
+</ul>
+
+<h4 id="running-tests-using-node-id">Running tests using node ID</h4>
+
+<p><code class="language-plaintext highlighter-rouge">pytest data/test_preprocessing_helpers.py::TestRowToList</code></p>
+
+<p>이러한 방법을 더 빠르고 유연하게 하는 방법은 키워드 표현식입니다.</p>
+
+<h4 id="the--k-option">The -k option</h4>
+
+<ul>
+  <li>Run the test class <code class="language-plaintext highlighter-rouge">TestSplitIntoTrainingAndTestingSets</code></li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -k "TestSplitIntoTrainingAndTestingSets"</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -k "TestSplit"</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -k "TestSplit and not test_on_one_row"</code></p>
+
+<h4 id="expected-failures-and-conditional-skipping">Expected failures and conditional skipping</h4>
+
+<p>실패를 예상하는 유닛테스트를 구현하는 방법으로는 xfail이 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="k">class</span> <span class="nc">TestTrainModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="o">@</span><span class="n">pytest</span><span class="p">.</span><span class="n">mark</span><span class="p">.</span><span class="n">xfail</span>
+    <span class="k">def</span> <span class="nf">test_on_linear_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">...</span> 
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">pytest</code> 를 실행하면, 하나의 테스트가 xfailed임을 알 수 있습니다.</p>
+
+<p align="center"><img src="/images/post_img/unittest9.PNG" /></p>
+
+<p>이는 잘 파이썬 버전, 특정 플랫폼에 따라 잘 작동하지 않을수도 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">class</span> <span class="nc">TestConvertToInt</span><span class="p">(</span><span class="n">objcet</span><span class="p">):</span>
+    <span class="o">@</span><span class="n">pytest</span><span class="p">.</span><span class="n">mark</span><span class="p">.</span><span class="n">skipif</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="n">reason</span><span class="o">=</span><span class="s">"requires Python 2.7"</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_with_no_comma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Only runs on Python 2.7 or lower"""</span>
+        <span class="n">test_argument</span> <span class="o">=</span> <span class="s">"756"</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="mi">756</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">convert_to_int</span><span class="p">(</span><span class="n">test_argument</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="s">"Expected: 2081, Actual: {0}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">actual</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="n">message</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>다음과 같이 독스트링을 통해 표시하는 것을 권장</p>
+  </li>
+  <li>
+    <p>skipif 데코레이터를 이용해서 파이썬 버전이 맞지않은 경우 패스</p>
+  </li>
+</ul>
+
+<p align="center"><img src="/images/post_img/unittest10.PNG" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -r</code> 을 사용하면 reason을 보여지게 합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -r[set_of_characters]</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -rs</code> s를 추가하면 끝 부분에 있는 짧은 테스트 요약 섹션에서 건너 뛴 테스트가 표시</p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest - rx</code> x를 추가하면 테스트 요약 정보의 이유를 표시</p>
+
+<p><code class="language-plaintext highlighter-rouge">pytest -rsx</code> 또한 가능</p>
+
+<h4 id="continuous-integration-and-code-coverage">Continuous integration and code coverage</h4>
+
+<p>깃헙등에 뱃지를 다는 방법</p>
+
+<h4 id="step-1-create-a-configuration-file">Step 1. Create a configuration file</h4>
+
+<ul>
+  <li>Contents of <code class="language-plaintext highlighter-rouge">.travis.yml</code></li>
+</ul>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">language</span><span class="pi">:</span> <span class="s">python</span>
+<span class="na">python</span><span class="pi">:</span>
+<span class="err">	</span><span class="pi">-</span> <span class="s2">"</span><span class="s">3.6"</span>
+<span class="na">install</span><span class="pi">:</span>
+<span class="err">	</span><span class="pi">-</span> <span class="s">pip install -e.</span>
+<span class="na">script</span><span class="pi">:</span>
+<span class="err">	</span><span class="pi">-</span> <span class="s">pytest tests</span>
+</code></pre></div></div>
+
+<h4 id="step-2-push-the-file-to-github">Step 2. Push the file to Github</h4>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git add .travis.yml
+git push origin master
+</code></pre></div></div>
+
+<h4 id="step-3-install-the-travis-ci-app">Step 3. Install the Travis CI app</h4>
+
+<ul>
+  <li>깃헙에서 Travis CI를 검색하고 클릭</li>
+  <li>앱을 설치</li>
+  <li>필요한 저장소 또는 조직에 대한 앱 엑세스를 허용</li>
+  <li>깃헙 계정을 사용하여 로그인해야하는 Travis CI로 리디렉션</li>
+</ul>
+
+<p>이러한 과정을 걸치면 깃헙 README 에 뱃지가 추가됨</p>
+
+<p>——– Codecov 생략 ————</p>
+
+<h2 id="beyond-assertion-setup-and-teardown">Beyond assertion: setup and teardown</h2>
+
+<p>assert문 이상이 필요한 함수를 살펴봅니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="n">raw_data_file_path</span><span class="p">,</span> <span class="n">clean_data_file_path</span><span class="p">):</span>
+    <span class="p">...</span>
+</code></pre></div></div>
+
+<p>다음 함수는 데이터 파일 및 깨끗한 파일에 대한 경로를 인자로 받습니다.</p>
+
+<pre><code class="language-txt">1,801	201,411
+1,767565,112
+2,002	333,209
+1990	782,911
+1,285	389129
+</code></pre>
+
+<p>다음과 같은 데이터를 전달해야 할 때, 두번 째 행에는 탭구분 기호가 없습니다.</p>
+
+<p>이를 row_to_list() 를 통해서 걸러냅니다. 이후 convert_to_int() 가 적용됩니다.</p>
+
+<p>4, 5번째 행을 보면, 각각 쉼표가 없기에, 더럽다고 판단됩니다. convert_to_int() 는 이를 필터링합니다.</p>
+
+<pre><code class="language-txt">1801	201411
+2002	333209
+</code></pre>
+
+<p>두개의 유효한 행에 대해 convert_to_int()는 쉼표로 구분된 문자열을 정수로 변환합니다.</p>
+
+<p>preprocess() 는 제대로 작동하기 위한 전제조건이 있기 때문에 다른 함수랑은 다릅니다.</p>
+
+<ol>
+  <li>environment 에 raw 데이터 파일이 존재해야합니다.</li>
+  <li>함수를 호출 할 때 깨끗한 데이터 파일을 만들어 environment를 수정합니다.</li>
+</ol>
+
+<p>이 과정을 <code class="language-plaintext highlighter-rouge">test_on_raw_data()</code> 로 만들면 다음과 같습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_on_raw_data</span><span class="p">():</span>
+    <span class="c1"># Setup: create the raw data file
+</span>    <span class="n">preprocess</span><span class="p">(</span><span class="n">raw_data_file_path</span><span class="p">,</span> <span class="n">clean_data_file_path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">clean_data_file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">first_line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">first_line</span> <span class="o">=</span> <span class="s">"1801</span><span class="se">\t</span><span class="s">201411</span><span class="se">\n</span><span class="s">"</span>
+    <span class="n">second_line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">second_line</span> <span class="o">==</span> <span class="s">"2002</span><span class="se">\t</span><span class="s">333209</span><span class="se">\n</span><span class="s">"</span>
+    <span class="c1"># Teardown: remove raw and clean data file
+</span></code></pre></div></div>
+
+<h4 id="the-new-workflow">The new workflow</h4>
+
+<p>Old workflow</p>
+
+<ul>
+  <li>assert</li>
+</ul>
+
+<p>New workflow</p>
+
+<ul>
+  <li>setup -&gt; assert -&gt; teardown</li>
+</ul>
+
+<h4 id="fixture">Fixture</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="o">@</span><span class="n">pytest</span><span class="p">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">my_fixture</span><span class="p">():</span>
+    <span class="c1"># Do setup here
+</span>    <span class="k">yield</span> <span class="n">data</span> <span class="c1"># return 대신 yield 사용
+</span>	<span class="c1"># Do teardown here
+</span></code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_something</span><span class="p">(</span><span class="n">my_fixture</span><span class="p">):</span>
+    <span class="p">...</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">my_fixture</span>
+    <span class="p">...</span>
+</code></pre></div></div>
+
+<p align="center"><img src="/images/post_img/unittest11.PNG" /></p>
+
+<p>Fixture과 test를 비교하면 다음과 같습니다.</p>
+
+<h4 id="tmpdir-pytest-fixture"><code class="language-plaintext highlighter-rouge">tmpdir</code> pytest fixture</h4>
+
+<p>이것은, 설정 중에 임시 디렉토리를 생성하고 분해 중에 임시 디렉토리를 삭제합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">pytest</span><span class="p">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">raw_and_clean_data_file</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">):</span>
+    <span class="n">raw_data_file_path</span> <span class="o">=</span> <span class="n">tmpdir</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="s">"raw.txt"</span><span class="p">)</span>
+    <span class="n">clean_data_file_path</span> <span class="o">=</span> <span class="n">tmpdir</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="s">"clean.txt"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">raw_data_file_path</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="s">"1,801</span><span class="se">\t</span><span class="s">201,411</span><span class="se">\n</span><span class="s">"</span>
+               <span class="s">"1,767565,112</span><span class="se">\n</span><span class="s">"</span>
+               <span class="s">"2,002</span><span class="se">\t</span><span class="s">333,209</span><span class="se">\n</span><span class="s">"</span>
+               <span class="s">"1990</span><span class="se">\t</span><span class="s">782,911</span><span class="se">\n</span><span class="s">"</span>
+               <span class="s">"1,285</span><span class="se">\t</span><span class="s">389129</span><span class="se">\n</span><span class="s">"</span>
+               <span class="p">)</span>
+    <span class="k">yield</span> <span class="n">raw_data_file_path</span><span class="p">,</span> <span class="n">clean_data_file_path</span>
+</code></pre></div></div>
+
+<h4 id="mocking">Mocking</h4>
+
+<p>이전에 버그가 있으면, preprocess()에 버그가 없더라도 preprocess() 에 대한 테스트가 통과되지 않았습니다.</p>
+
+<p>mocking을 위해서는 두가지의 라이브러리가 필요합니다.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">pytest-mock</code> : Install using <code class="language-plaintext highlighter-rouge">pip install pytest-mock</code></li>
+  <li><code class="language-plaintext highlighter-rouge">unittest.mock</code> : Python standard library package</li>
+</ul>
+
+<p>Mocking 의 기본 개념은 잠재적으로 대체하는 것입니다. 모조품을 만들어 오류가 난 것을 대체합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">test_on_raw_data</span><span class="p">(</span><span class="n">raw_and_clean_data_file</span><span class="p">,</span> <span class="n">mocker</span><span class="p">):</span>
+    <span class="n">raw_path</span><span class="p">,</span> <span class="n">clean_path</span> <span class="o">=</span> <span class="n">raw_and_clean_data_file</span>
+    <span class="n">row_to_list_mock</span> <span class="o">=</span> <span class="n">mocker</span><span class="p">.</span><span class="n">patch</span><span class="p">(</span><span class="s">"data.preprocessing_helpers.row_to_list"</span><span class="p">,</span>
+                                   <span class="n">row_to_list_mock</span><span class="p">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">row_to_list_bug_free</span><span class="p">)</span>
+    <span class="n">preprocess</span><span class="p">(</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">clean_path</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">row_to_list_mock</span><span class="p">.</span><span class="n">call_args_list</span> <span class="o">==</span> <span class="p">[</span>
+        <span class="n">call</span><span class="p">(</span><span class="s">"1,801</span><span class="se">\t</span><span class="s">201,411</span><span class="se">\n</span><span class="s">"</span><span class="p">),</span>
+        <span class="n">call</span><span class="p">(</span><span class="s">"1,767565,112</span><span class="se">\n</span><span class="s">"</span><span class="p">),</span>
+        <span class="n">call</span><span class="p">(</span><span class="s">"2,002</span><span class="se">\t</span><span class="s">333,209</span><span class="se">\n</span><span class="s">"</span><span class="p">),</span>
+        <span class="n">call</span><span class="p">(</span><span class="s">"1990</span><span class="se">\t</span><span class="s">782,911</span><span class="se">\n</span><span class="s">"</span><span class="p">),</span>
+        <span class="n">call</span><span class="p">(</span><span class="s">"1,285</span><span class="se">\t</span><span class="s">389129</span><span class="se">\n</span><span class="s">"</span><span class="p">),</span>
+    <span class="p">]</span>    
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">row_to_list_bug_free</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="n">return_values</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"1,801</span><span class="se">\t</span><span class="s">201,411</span><span class="se">\n</span><span class="s">"</span><span class="p">:</span> <span class="p">[</span><span class="s">"1,801"</span><span class="p">,</span> <span class="s">"201,411"</span><span class="p">],</span>
+        <span class="s">"1,767565,112</span><span class="se">\n</span><span class="s">"</span> <span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="s">"2,002</span><span class="se">\t</span><span class="s">333,209</span><span class="se">\n</span><span class="s">"</span> <span class="p">:</span> <span class="p">[</span><span class="s">"2,002"</span><span class="p">,</span> <span class="s">"333,209"</span><span class="p">],</span>
+        <span class="s">"1990</span><span class="se">\t</span><span class="s">782,911</span><span class="se">\n</span><span class="s">"</span> <span class="p">:</span> <span class="p">[</span><span class="s">"1990"</span><span class="p">,</span> <span class="s">"782,911"</span><span class="p">],</span>
+        <span class="s">"1,285</span><span class="se">\t</span><span class="s">389129</span><span class="se">\n</span><span class="s">"</span> <span class="p">:</span> <span class="p">[</span><span class="s">"1,285"</span><span class="p">,</span> <span class="s">"389129"</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">return_values</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
+</code></pre></div></div>
+
+<h4 id="testing-models">Testing models</h4>
+
+<p align="center"><img src="/images/post_img/unittest12.PNG" /></p>
+
+<p>다음과 같이 파일을 위치시킵니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">data.preprocessing_helpers</span> <span class="kn">import</span> <span class="n">preprocess</span>
+<span class="kn">from</span> <span class="nn">features.as_numpy</span> <span class="kn">import</span> <span class="n">get_data_as_numpy_array</span>
+<span class="kn">from</span> <span class="nn">models.train</span> <span class="kn">import</span> <span class="p">(</span><span class="n">split_into_training_and_testing_sets</span><span class="p">)</span>
+
+<span class="n">preprocess</span><span class="p">(</span><span class="s">"data/raw/housing_data.txt"</span><span class="p">,</span>
+          <span class="s">"data/clean/clean_housing_data.txt"</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">get_data_as_numpy_array</span><span class="p">(</span><span class="s">"data/clean/clean_housing_data.txt"</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">get_data_as_numpy_array</span><span class="p">(</span><span class="s">"data/clean/clean_housing_data.txt"</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">trainning_set</span><span class="p">,</span> <span class="n">testing_set</span> <span class="o">=</span> <span class="p">(</span><span class="n">split_into_training_and_testing_sets</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>다음 과정들을 걸친 데이터가 잘 학습까지 완료되었습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">linregress</span>
+
+<span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="n">training_set</span><span class="p">):</span>
+	<span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">linregress</span><span class="p">(</span><span class="n">training_set</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">training_set</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span>
+</code></pre></div></div>
+
+<h4 id="trick-1-use-dataset-where-return-value-is-known">Trick 1: Use dataset where return value is known</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">models.train</span> <span class="kn">import</span> <span class="n">train_model</span>
+<span class="k">def</span> <span class="nf">test_on_linear_data</span><span class="p">():</span>
+    <span class="n">test_argument</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">]</span>
+                             <span class="p">]</span>
+                            <span class="p">)</span>
+    <span class="n">expected_slope</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">expected_intercept</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">test_argument</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">slope</span> <span class="o">==</span> <span class="n">pytest</span><span class="p">.</span><span class="n">approx</span><span class="p">(</span><span class="n">expected_slope</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">intercept</span> <span class="o">==</span> <span class="n">pytest</span><span class="p">.</span><span class="n">approx</span><span class="p">(</span><span class="n">expected_intercept</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="trick-2-use-inequalities">Trick 2: Use inequalities</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">models.train</span> <span class="kn">import</span> <span class="n">train_model</span>
+<span class="k">def</span> <span class="nf">test_on_positively_correlated_data</span><span class="p">():</span>
+    <span class="n">test_argument</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">],</span>
+                             <span class="p">]</span>
+                            <span class="p">)</span>
+    <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">test_argument</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">slope</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">data.preprocessing_helpers</span> <span class="kn">import</span> <span class="n">preprocess</span>
+<span class="kn">from</span> <span class="nn">features.as_numpy</span> <span class="kn">import</span> <span class="n">get_data_as_numpy_array</span>
+<span class="kn">from</span> <span class="nn">models.train</span> <span class="kn">import</span> <span class="p">(</span><span class="n">split_into_training_and_testing_sets</span><span class="p">,</span> <span class="n">train_model</span><span class="p">)</span>
+
+<span class="n">preprocess</span><span class="p">(</span><span class="s">"data/raw/housing_data.txt"</span><span class="p">,</span><span class="s">"data/clean/clean_housing_data.txt"</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">get_data_as_numpy_array</span><span class="p">(</span><span class="s">"data/clean/clean_housing_data.txt"</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">training_set</span><span class="p">,</span> <span class="n">testing_set</span> <span class="o">=</span> <span class="p">(</span><span class="n">split_into_training_and_testing_sets</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+<span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">training_set</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="testing-model-performance">Testing model performance</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">model_test</span><span class="p">(</span><span class="n">testing_set</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">):</span>
+    <span class="s">"""Return r^2 of fit"""</span>
+</code></pre></div></div>
+
+<h4 id="plotting-function">Plotting function</h4>
+
+<p align="center"><img src="/images/post_img/unittest13.PNG" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">get_plot_for_best_fit_line</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">y_array</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+    <span class="s">"""
+    slope: slope of best fit line
+    intercept: intercept of best fit line
+    x_array: array containing housing areas
+    y_array: array containing housing prices
+    """</span>
+</code></pre></div></div>
+
+<p>다음 plots.py를 위의 사진처럼 경로를 설정하는 것이 효율적</p>
+
+<h4 id="trainingtesting-plot">training/testing plot</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">visualization</span> <span class="kn">import</span> <span class="n">get_plot_for_best_fit_line</span>
+<span class="n">preprocess</span><span class="p">(...)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">get_data_as_numpy_array</span><span class="p">(...)</span>
+<span class="n">training_set</span><span class="p">,</span> <span class="n">testing_set</span> <span class="o">=</span> <span class="p">(</span><span class="n">split_into_training_and_testing_sets</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">training_set</span><span class="p">)</span>
+<span class="n">get_plot_for_best_fit_line</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span>
+                           <span class="n">training_set</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">training_set</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                           <span class="s">"Training"</span><span class="p">)</span>
+
+<span class="n">get_plot_for_best_fit_line</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span>
+                           <span class="n">testing_set</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">testing_set</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                           <span class="s">"Testing"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="pytest-mpl">pytest-mpl</h4>
+
+<p><code class="language-plaintext highlighter-rouge">pip install pytest-mpl</code> 를 통해서 install</p>
+
+<h4 id="example">example</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">visualization</span> <span class="kn">import</span> <span class="n">get_plot_for_best_fit_line</span>
+<span class="k">def</span> <span class="nf">test_plot_for_linear_data</span><span class="p">():</span>
+    <span class="n">slope</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">intercept</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">x_array</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span><span class="c1"># Linear data set    
+</span>    <span class="n">y_array</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">])</span>    
+    <span class="n">title</span> <span class="o">=</span> <span class="s">"Test plot for linear data"</span>
+    <span class="k">return</span> <span class="n">get_plot_for_best_fit_line</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">y_array</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">!</span>pytest <span class="nt">-k</span> <span class="s2">"test_plot_for_linear_data"</span> <span class="nt">--mpl-generate-path</span> visualization/baseline
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">!</span>pytest <span class="nt">-k</span> <span class="s2">"test_plot_for_linear_data"</span> <span class="nt">--mpl</span>
+</code></pre></div></div>
+
+:ET

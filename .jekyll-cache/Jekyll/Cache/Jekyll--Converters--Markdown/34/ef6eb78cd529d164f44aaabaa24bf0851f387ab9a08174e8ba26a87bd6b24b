@@ -1,0 +1,240 @@
+I"0<h1 id="unit-testing-for-data-science-in-python">Unit Testing for Data Science in Python</h1>
+
+<h2 id="unit-testing-basics">Unit testing basics</h2>
+
+<p>테스트 하는 방법으로 먼저 인터프리터가 있지만, 이는 비효율적입니다.</p>
+
+<p align="center"><img src="/images/post_img/unitest1.PNG" /></p>
+<p align="center" style="font-size:100%; ">DataCamp-Unit Testing for Data Science in Python</p>
+
+<p>이러한 생의 주기가 100번넘게 반복되고 있습니다.</p>
+
+<pre><code class="language-txt">area (sq. ft.)	price (dollars)
+2,081	314,942
+1,059	186,606
+	293,410
+1,148	206,186
+1,463238,765
+</code></pre>
+
+<p>다음과 같이 area 이후 탭 price를 가진 구조에서, 만약 오류로 인해 area가 생략되거나 탭이 누락된 경우</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">row_to_list</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="p">...</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Type</th>
+      <th>Return value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“2,081\t314,942\n”</td>
+      <td>Valid</td>
+      <td>[“2,081”,”314,952”]</td>
+    </tr>
+    <tr>
+      <td>“\t293,410\n”</td>
+      <td>Invalid</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>“1,463238,765\n”</td>
+      <td>Invaliid</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>다음과 같은 경우 None을 반환해야합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+
+<span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="bp">None</span>
+
+<span class="n">row_to_list</span><span class="p">(</span><span class="s">"1,463238,765</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="bp">None</span>
+</code></pre></div></div>
+
+<p>다음이 잘 작동하는지 직접 실험을 해야하는 과정을 가집니다. (이러한 방법은 너무 많은 시간을 소요)</p>
+
+<p>이러한 시간을 줄이기 위해서 유닛테스팅은 데이터사이언티스트에게 필수 기술입니다.</p>
+
+<h4 id="python-unit-testing-libraries">Python unit testing libraries</h4>
+
+<ul>
+  <li>pytest</li>
+  <li>unittest</li>
+  <li>nosetest</li>
+  <li>doctest</li>
+</ul>
+
+<h4 id="pytest">pytest</h4>
+
+<ul>
+  <li>사용하기 쉽다</li>
+  <li>가장 인기있는 테스트 라이브러리</li>
+  <li>모든 본질적인 피처를 가진다.?</li>
+</ul>
+
+<p>#### Step 1. Create a file</p>
+
+<p><code class="language-plaintext highlighter-rouge">test_row_to_list.py</code> 라는 파일을 만든다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">test_</code> 로 시작하는 파일 이름을 발견하면 다음과 같이 이해하면됩니다.</p>
+
+<p>-&gt; 이것은 일반적인 파이썬 파일이 아니라, 유닛테스트를 포함하는 특별한 파일입니다.</p>
+
+<p>유닛테스트를 포함하는 파일을 테스트 모듈이라고 합니다.</p>
+
+<h4 id="step2-imports">Step2. Imports</h4>
+
+<p><code class="language-plaintext highlighter-rouge">test_row_to_list.py</code></p>
+
+<h4 id="step3-unit-tests-are-python-functions">Step3. Unit tests are Python functions</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+</code></pre></div></div>
+
+<p>유니테스트는 테스트 모듈처럼 이름이 <code class="language-plaintext highlighter-rouge">test_</code> 로 시작하는 python 함수로 작성됩니다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Type</th>
+      <th>Return value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“2,081\t314,942\n”</td>
+      <td>Valid</td>
+      <td>[“2,081”,”314,942”]</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="step4-assertsion">Step4. Assertsion</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="n">boolearn_expression</span>
+
+<span class="k">assert</span> <span class="bp">True</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+
+<span class="k">assert</span> <span class="bp">False</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+    <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">Line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AssertionError</span>
+</code></pre></div></div>
+
+<p>assert 문에는 모든 부울 표현식이 될 수 있는 필수 첫번째 인수가 잇습니다.</p>
+
+<p>assert 문이 True일 경우 통과되어 아무것도 출력되지 않습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>위와 같은 경우, 해당 함수를 실행했을 때 값이, 다음과 같은 값을 반환하는지 확인 ( True 가 반환되어 통과 )</p>
+
+<p>만약 False가 있을경우,  즉 함수에 버그가 있으면 assert 문은 AssertionError를 발생시키고 테스트는 실패</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_for_missing_area</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+    
+<span class="k">def</span> <span class="nf">test_for_missing_tab</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"1,463238,765</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Type</th>
+      <th>Return value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“2,081\t314,942\n”</td>
+      <td>Valid</td>
+      <td>[“2,081”,”314,942”]</td>
+    </tr>
+    <tr>
+      <td>“\t293,410\n”</td>
+      <td>Invalid</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>“1,463238,765\n”</td>
+      <td>Invalid</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>변수값이 None인지 확인하는 방법은 다음과 같습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">assert</span> <span class="n">var</span> <span class="ow">is</span> <span class="bp">None</span> <span class="c1"># O
+</span>
+<span class="k">assert</span> <span class="n">var</span> <span class="o">==</span> <span class="bp">None</span> <span class="c1"># X
+</span></code></pre></div></div>
+
+<p>== 를 사용하는 것이 아니라 is 를 사용함을 주목</p>
+
+<h4 id="step5-running-unit-tests">Step5. Running unit tests</h4>
+
+<p><code class="language-plaintext highlighter-rouge">pytest test_row_to_list.py</code></p>
+
+<h4 id="unit-tests-for-row_to_list">Unit tests for row_to_list()</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">row_to_list</span>
+
+<span class="k">def</span> <span class="nf">test_for_clean_row</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"2,081</span><span class="se">\t</span><span class="s">314,942</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s">"2,081"</span><span class="p">,</span> <span class="s">"314,942"</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test_for_missing_area</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">293,410</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+    
+<span class="k">def</span> <span class="nf">test_for_missing_tab</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">row_to_list</span><span class="p">(</span><span class="s">"1,463238,765</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span>
+</code></pre></div></div>
+
+<p>코드를 보면, <code class="language-plaintext highlighter-rouge">import row_to_int</code> 가 선언되어있음을 알 수 있습니다.</p>
+
+<p>행 영역 데이터가 누락 된 행  및 탭 구분 기호가 누락 된 행을 각각 정리합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">!pytest test_row_to_list.py</code>를 입력하면, 많은 정보가 쏟아져 나옵니다.</p>
+
+<h4 id="section-1-general-information">Section 1: general information</h4>
+
+<p align="center"><img src="/images/post_img/unittest2.PNG" /></p>
+<p align="center" style="font-size:100%; ">DataCamp-Unit Testing for Data Science in Python</p>
+
+<p>운영 체제, Python 버전, pytest패키지 버전, 작업 디렉토리 및 pytest 플로그인 정보가 출력</p>
+
+:ET
