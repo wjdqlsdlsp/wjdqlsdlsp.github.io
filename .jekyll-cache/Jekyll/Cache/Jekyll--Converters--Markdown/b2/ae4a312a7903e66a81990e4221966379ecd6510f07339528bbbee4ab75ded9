@@ -1,0 +1,105 @@
+I"v<p>본 내용은, 아마존 웹서비스 - AWS Discovery Book (권영환 지음) 을 통해 공부한 내용입니다.</p>
+
+<h1 id="클라우드-컴퓨팅">클라우드 컴퓨팅</h1>
+
+<p>클라우드 컴퓨팅 기술은 인터넷이라는 통신 서비스를 활용한 컴퓨팅 서비스 종류의 하나입니다.</p>
+
+<p>이에 반대는 Edge Computing 이라고 부르는데, 개인적인 생각으로는 둘다 중요한 요소라고 생각합니다.</p>
+
+<p>4차 산업혁명하면 빠짐 없이 나오는 클라우드에 대해서 조금씩 알아보도록 하겟습니다.</p>
+
+<h4 id="클라우드-컴퓨팅-장점">클라우드 컴퓨팅 장점</h4>
+
+<ul>
+  <li>언제(Any Time), 어디서나(Any Where) 인터넷을 사용해서 접근이 가능하다</li>
+  <li>초기 투자 비용이 발생하지 않으며, 사용한 만큼 지불한다. (Pay-Per-Use Pricing)</li>
+  <li>규모의 경제를 통해 지속적인 가격 인하를 실현한다.</li>
+  <li>미래에 필요한 인프라의 용량을 추정할 필요가 없다</li>
+  <li>속도 및 민첩성이 향상된다.</li>
+  <li>데이터 센터 운영 및 유지관리에 비용 투자가 필요하지 않다.</li>
+  <li>몇 분 만에 전세계에 서비스를 런칭하거나 배포할 수 있다.</li>
+</ul>
+
+<h4 id="클라우드-컴퓨팅을-배워야하는-이유">클라우드 컴퓨팅을 배워야하는 이유</h4>
+
+<ul>
+  <li>이미 많은 기업이 클라우드를 도입하였거나, 도입을 검토하고 있다.</li>
+  <li>H/W를 데이터 센터에 넣고 운영/관리하는 일이 점점 줄어들 것이다.</li>
+</ul>
+
+<p>즉, 이미 기업들이 클라우드를 사용하고 있기에, 이에 맞는 엔지니어가 되기 위해서는 알아야 하는 요소가 되었다는 것입니다.</p>
+
+<h4 id="클라우드-컴퓨팅-서비스-이용-방식">클라우드 컴퓨팅 서비스 이용 방식</h4>
+
+<p>클라우드 컴퓨팅 서비스 이용 방식으로는, IaaS, PaaS, SaaS 세가지로 나눠집니다.</p>
+
+<h4 id="iaas-infrastructure-as-a-service">IaaS (Infrastructure-as-a Service)</h4>
+
+<p>물리적 서버, 네트워크, 스토리지를 가상화하여, 다수의 고객을 대상으로 유연하게 제공하는 인프라 서비스입니다.</p>
+
+<h4 id="paasplatform-as-a-service">PaaS(Platform-as-a-Service)</h4>
+
+<p>Web 기반의 서비스 또는 애플리케이션 등의 개발 및 실행을 위한 표준 플랫폼 환경을 서비스 형태로 제공하는 서비스입니다.</p>
+
+<h4 id="saassoftware-as-a-service">SaaS(Software-as-a-Service)</h4>
+
+<p>구글의 Gmail이나 MS office 365 등과 같이 응용 프로그램(Application)을 인터넷 및 웹 브라우저를 통해 제공하는 서비스</p>
+
+<h1 id="aws-주요-서비스">AWS 주요 서비스</h1>
+
+<p>AWS는 다양한 서비스를 지원하고 있습니다.</p>
+
+<h4 id="컴퓨팅-서비스">컴퓨팅 서비스</h4>
+
+<ul>
+  <li>Amazone EC2</li>
+  <li>Amazone Auto Scaling</li>
+  <li>Amazone Lightsail</li>
+  <li>Amazone WorkSpaces</li>
+</ul>
+
+<h4 id="네트워킹-서비스">네트워킹 서비스</h4>
+
+<ul>
+  <li>Amazone Route 53</li>
+  <li>Amazone VPC</li>
+  <li>AWS Direct Connect</li>
+  <li>Amazone ELB</li>
+</ul>
+
+<h4 id="스토리지-서비스">스토리지 서비스</h4>
+
+<ul>
+  <li>Amazone S3</li>
+  <li>Amazone Glacier</li>
+  <li>Amazone EBS</li>
+  <li>AWS Storage Gateway</li>
+  <li>AWS Snowball</li>
+</ul>
+
+<h4 id="데이터베이스-서비스">데이터베이스 서비스</h4>
+
+<ul>
+  <li>Amazone RDS</li>
+  <li>Amazone DynamicDB</li>
+  <li>Amazone ElastiCache</li>
+</ul>
+
+<h4 id="분석-플랫폼">분석 플랫폼</h4>
+
+<ul>
+  <li>Amazone Kinesis</li>
+  <li>Amazone Redshift</li>
+  <li>Amazone EMR</li>
+</ul>
+
+<h4 id="애플리케이션-서비스">애플리케이션 서비스</h4>
+
+<ul>
+  <li>Amazone CloudSearch</li>
+  <li>Amazone SES</li>
+  <li>Amazone Elastic Transcoder</li>
+</ul>
+
+<p>이후부터는, 차근차근 하나씩 공부해 나갈 예정!</p>
+:ET

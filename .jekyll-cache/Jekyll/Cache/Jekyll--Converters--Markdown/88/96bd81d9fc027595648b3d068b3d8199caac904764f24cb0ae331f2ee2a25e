@@ -1,0 +1,98 @@
+I"W<p>협업하기 위해 필수적으로 알아야하는 Git 간단한 사용법입니다.</p>
+
+<p>Git은 다운받았다고 가정하고 진행합니다. (windows의 경우 git 다운받으셔야해요!-홈페이지가서 다운받으시면됩니다.)</p>
+
+<p>여러가지 방법으로 Git을 사용할 수 있겟지만, 저는 Git bash프로그램을 통해서 사용하겠습니다. (visualcode를 쓰시던, 파이참을 쓰시던 Git 지원되는거면 상관없습니다.)</p>
+
+<h4 id="1-git-유저등록">1. Git 유저등록</h4>
+<p>Git을 처음 사용하시면 유저 등록을 하셔야합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> user.name <span class="o">[</span>유저이름]
+
+git config <span class="nt">--global</span> user.emalil <span class="o">[</span>유저이메일@email.com]
+</code></pre></div></div>
+
+<p>잘 등록되어있나 궁금하시면</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--list</span>
+</code></pre></div></div>
+
+<p>입력하시면, 여러개가 쫙 뜰겁니다. 그중 user.email, user.name 확인하시면 됩니다.</p>
+
+<h4 id="push-하고-싶은-폴더로-이동">Push 하고 싶은 폴더로 이동</h4>
+
+<p>터미널 명령어가 안익숙하신분도 괜찮습니다. 기본만 아시면됩니다. (바탕화면으로 가고싶다고 가정하겠습니다.)</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span>
+</code></pre></div></div>
+
+<p>다음을 입력하면 현재 디렉토리에 있는 폴더, 파일의 리스트를 쫙 출력합니다.</p>
+
+<p align="center"><img src="/images/post_img/git1.PNG" /></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>Desktop/
+</code></pre></div></div>
+
+<p>이동하고 싶은 경로를 cd (change 디렉토리~) 명령어를 통해서 이동하시면됩니다. 저는 바탕화면을 의미하는 Desktop을 입력했습니다.</p>
+
+<p align="center"><img src="/images/post_img/my_aws12.PNG" /></p>
+
+<ul>
+  <li>작은 팁 : 한두글자 입력하시고 탭누르면 만약 해당되는게 하나밖에없으면 자동 입력됩니다. 여러개일 경우 위에 목록뜨는데, 그 중 원하는거 추가로 더 입력한다음 탭누르시면됩니다.</li>
+</ul>
+
+<p>바탕화면으로 이동하셨다면,</p>
+
+<p align="center"><img src="/images/post_img/git2.PNG" /></p>
+
+<p>다시 ls 해서 현재 디렉토리에 뭐있나 확인해주고 이동하고 싶은 폴더로 다시 cd 하시면됩니당.</p>
+
+<p align="center"><img src="/images/post_img/git3.PNG" /></p>
+
+<p>원하시는 디렉토리로 이동했으면 안에 폴더 잘 있나 확인해주세요~ ( 내가 원하던 폴더가 맞는지 ? 요런거 )</p>
+
+<h4 id="git-push">Git push</h4>
+
+<p>이제 git 명령어를 사용할 차례입니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git init
+git add <span class="nb">.</span>
+git commit <span class="nt">-m</span> <span class="s2">"메세지입력하고싶은거 쓰세용"</span>
+git remote add origin <span class="o">[</span>연결하고싶은 깃 주소]
+git branch <span class="nt">-M</span> <span class="o">[</span>브랜치이름]
+git push origin <span class="o">[</span>브랜치이름]
+</code></pre></div></div>
+
+<p>다음과 같이 입력하면 원하는 깃으로 해당 폴더의 자료가 push되어있을 겁니다.</p>
+
+<h4 id="자주-일어나는-오류-당황하지-마세요">자주 일어나는 오류 (당황하지 마세요)</h4>
+
+<ol>
+  <li>remote origin이 이미있어요!</li>
+</ol>
+
+<p align="center"><img src="/images/post_img/git4.PNG" /></p>
+
+<p>이런경우는 이미 깃이 리모트된 상황인데, 그냥 기존에 있던거 지워주시면 됩니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote <span class="nb">rm </span>origin
+</code></pre></div></div>
+
+<p>그리고 다시 <code class="language-plaintext highlighter-rouge">git remote add origin [주소]</code> 하시면 정상적으로 연결됩니다.</p>
+
+<ol>
+  <li>push origin 충돌</li>
+</ol>
+
+<p>충돌나는 경우가 있는데, 이럴 땐, 그냥 branch를 새롭게 다른거 만들고 거기에다가 푸쉬하시면됩니다.</p>
+
+<ol>
+  <li>대용량 파일</li>
+</ol>
+
+<p>git은 대용량 파일에 대해서는 지원하지않습니다. 대용량 파일은 빼고 push하시던가, 파일을 바이너리형태로 변환하는게 있더라구요, 자세한건 구글링 ㄲㄲ</p>
+
+<h4 id="merge-해주세요">Merge 해주세요~</h4>
+
+<p>branch를 통해서 push 하셨다면, 깃 관리하시는 관리자분에게 merge request하시면됩니다.</p>
+:ET
