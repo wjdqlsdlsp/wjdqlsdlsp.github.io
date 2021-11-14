@@ -1,17 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">	  	  
+<!-- www.check-domains.com sitemap generator -->
 
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-   <url>
-
-      <loc>https://wjdqlsdlsp.github.io/</loc>
-
-      <lastmod>2021-10-11</lastmod>
-
-      <changefreq>weekly</changefreq>
-
-      <priority>1</priority>
-
-   </url>
-
+<url>
+   <loc>https://wjdqlsdlsp.github.io/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>1.0000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/feed.xml</loc>
+   <lastmod>2021-11-14T05:41:14+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/projects/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/visualization/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/about/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/git/2021/11/13/%EA%B0%84%EB%8B%A8%ED%95%9CGit%EC%82%AC%EC%9A%A9%EB%B2%95-%ED%98%91%EC%97%85%ED%95%A9%EC%8B%9C%EB%8B%A4/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/aws/2021/11/13/AWS-%EC%9B%B9%EC%82%AC%EC%9D%B4%ED%8A%B8%EC%9A%B4%EC%98%81%ED%95%98%EA%B8%B0(Django)/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/aws/2021/11/12/AWS-%EC%95%84%EB%A7%88%EC%A1%B4-%EC%9B%B9%EC%84%9C%EB%B9%84%EC%8A%A4/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/11/11/Unit-Testing-for-Data-Science-in-Python/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/10/28/objective-oriented-programming/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/page/2/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/page/3/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.8000</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/404.html</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/10/14/Introduction-to-Bash-Scripting/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/10/07/Data-Processing-in-Shell/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/09/30/Shell/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/09/16/Writing-Functions-in-Python/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/09/14/Writing-Efficient-Python-Code/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/09/07/pandas/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
+<url>
+   <loc>https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2021/08/24/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4-%EC%9E%85%EB%AC%B8%ED%95%98%EA%B8%B0-1/</loc>
+   <lastmod>2021-11-13T04:32:30+00:00</lastmod>
+   <changefreq>monthly</changefreq>
+   <priority>0.6400</priority>
+</url>
 </urlset>
