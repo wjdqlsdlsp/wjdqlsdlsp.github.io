@@ -932,7 +932,7 @@ default_args={
 
 우리가 현재 알고 있는 것으로 이 작업을 수행한다면, Airflow BashOperator를 사용하여 여러 작업을 생성 할 것 입니다. 
 
-```python
+```
 t1 = BashOperator(
         task_id='first_task',
         bash_command='echo "Reading file1.txt"',
@@ -949,7 +949,7 @@ t2 = BashOperator(
 
 #### Templated BashOperator example
 
-```python
+```
 templated_command="""
 	echo "Reading {{ param.filename }}"
 	"""
@@ -963,7 +963,7 @@ t1 = BashOperator(task_id='template_task',
 
 <br>
 
-```python
+```
 templated_command="""
 	echo "Reading {{params.filename}}"
 """
@@ -985,7 +985,7 @@ t2 = BashOperator(task_id='template_task',
 
 이전에 작성한 템플릿 코드를 조금더 상향 시켜보겠습니다.
 
-```python
+```
 templated_command="""
 {% for filename in params.filenames %}
 	echo "Reading {{ filename }}"
@@ -1007,7 +1007,7 @@ t1 = BashOperator(task_id='template_task',
 - DAG 실행, 개별 작업 및 시스템 구성에 대한 다양한 정보를 제공합니다.
 - 템플릿 예제에는 이중 중괄호 쌍의 ds 인 실행 날짜가 포함됩니다.
 
-```python
+```
 Execution Date: {{ ds }} # YYYY-MM-DD
 Execution Date, no dashes: {{ ds_nodash }} # YYYYMMDD
 Previous Execution date: {{ prev_ds }} # YYYY-MM-DD
