@@ -1,0 +1,38 @@
+I""<h1 id="aws--elb-elastic-load-balancing">AWS- ELB (Elastic Load Balancing)</h1>
+
+<p>실습을 하기 위해 동일한 동작을 하지만, 화면에 출력이 살짝 다른 두 개의 인스턴스를 준비했습니다.</p>
+
+<p align="center"><img src="/images/post_img/elb3.PNG" /></p>
+
+<p>각각의 가용영역은 2a, 2c로 설정했습니다.</p>
+
+<p align="center"><img src="/images/post_img/elb1.PNG" /></p>
+
+<p align="center"><img src="/images/post_img/elb2.PNG" /></p>
+
+<p>두 개의 인스턴스는 각각, A, C를 출력하게 구성하였습니다.</p>
+
+<p align="center"><img src="/images/post_img/elb4.PNG" /></p>
+
+<p>ELB를 위해서, 로드밸런싱 - 로드밸런서 에서 로드 밸런서 생성을 클릭합니다.</p>
+
+<p align="center"><img src="/images/post_img/elb5.PNG" /></p>
+
+<p>3개의 로드밸런서 타입이 있는데, 저는 어플리케이션 로드 밸런서를 사용 하도록 하겠습니다.</p>
+
+<p align="center"><img src="/images/post_img/elb6.PNG" /></p>
+
+<p>먼저 로드밸런서 이름을 작성하고, internet-facing, IPv4로 설정합니다.</p>
+
+<p align="center"><img src="/images/post_img/elb7.PNG" /></p>
+
+<p>이전에 설정한 가용범위에 맞춰, Mappings를 체크합니다.</p>
+
+<p align="center"><img src="/images/post_img/elb8.PNG" /></p>
+
+<p>보안그룹을 설정하고 ( 저는 모든 트래픽 허용을 해둔 보안그룹을 사용했습니다. )</p>
+
+<p align="center"><img src="/images/post_img/elb9.PNG" /></p>
+
+<p>Listenners and routing을 설정하기 위해, target group을 생성합니다.</p>
+:ET
