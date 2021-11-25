@@ -1,0 +1,358 @@
+I"*n<h1 id="introduction-to-pyspark">Introduction to PySpark</h1>
+
+<p><br /></p>
+
+<h2 id="1-getting-to-know-pyspark">1. Getting to know PySpark</h2>
+
+<h4 id="what-is-spark">What is Spark?</h4>
+
+<p>Spark는, 클러스터 컴퓨팅을 위한 플랫폼입니다.</p>
+
+<p>Spark를 사용하면, 여러 노드가 있는 클러스터에 데이터와 계산을 분산할 수 있습니다. ( 각 노드를 컴퓨터로 생각 )</p>
+
+<p>데이터를 분할하면 각 노드가 소량의 데이터에서만 작동하기 때문에 매우 큰 데이터 세트로 더 쉽게 작업 할 수 있습니다.</p>
+
+<p>각 노드는, 전체 계산의 일부를 수행하며, 데이터 처리와 계산이 클러스터의 노드에서 병렬로 수행 됩니다.</p>
+
+<p>병렬 계산은, 특정 유형의 프로그래밍 작업을 훨씬 더 빠르게 만들 수 있습니다. ( 단, 컴퓨팅 성능이 향상되면 복잡성도 커집니다. )</p>
+
+<p>Spark가 해당 문제에 대한 최상의 솔루션 여부를 결정 하는 데는 경험이 필요합니다.</p>
+
+<ul>
+  <li>데이터가 너무 커서, 단일화 시스템에서 작업 할 수 없다.</li>
+  <li>계산을 쉽게 병렬화 할 수 있다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="using-spark-in-python">Using Spark in Python</h4>
+
+<p>Spark 사용의 첫번째는, 클러스터에 연결하는 것입니다.</p>
+
+<p>클러스터는 다른 모든 노드에 연결된 원격 시스템에서 호스팅 됩니다. 데이터와 계산 분할을 관리하는 컴퓨터를 <strong>마스터(master)</strong> 라고 하며, 마스터는 <strong>작업자(worker)</strong> 라고 하는 클러스터의 나머지 컴퓨터와 연결됩니다.</p>
+
+<p>마스터는 작업자에게 데이터와 계산을 실행하도록 보내고, 작업자는 결과를 다시 마스터에게 보냅니다.</p>
+
+<p>해당 연결을 만드는 방법은 <code class="language-plaintext highlighter-rouge">SparkContext</code> 클래스의 인스턴스를 만드는 것입니다.</p>
+
+<p>클래스 생성자는 연결하려는 클러스터의 속성을 지정할 수 있는 몇가지 인수를 사용합니다.</p>
+
+<p>모든 속성을 포함하는 개체는 <code class="language-plaintext highlighter-rouge">SparkConf()</code>생성자를 사용하여 만들 수 있습니다.</p>
+
+<h4 id="examining-the-sparkcontext">Examining The SparkContext</h4>
+
+<p>Spark는 serious software입니다. 이것은 사용하는 것보다, 시작하는데 시간을 더 많이 소요합니다.</p>
+
+<p>간단한 프로그램은, 스파크보다, 다른 것을 사용하는 것이 더 효율적일 것 입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Verify SparkContext
+</span><span class="k">print</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+
+<span class="c1"># Print Spark version
+</span><span class="k">print</span><span class="p">(</span><span class="n">sc</span><span class="p">.</span><span class="n">version</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="examining-the-sparkcontext-1">Examining The SparkContext</h4>
+
+<p>Spark는 시작하는데 많은 시간이 걸립니다. 또한 간단한 계산을 실행하는 데 오래 걸릴수 있습니다.</p>
+
+<p>Spark는 빅데이터와 같이 복잡한 작업을 위해 설계되어 있기 때문입니다. ( 작은 작업을 할 때는, Spark가 효율적이지 않다. )</p>
+
+<p><br /></p>
+
+<h4 id="using-dataframes">Using DataFrames</h4>
+
+<p>Spark의 핵심 데이터 구조는 RDD(Resilient Distributed Dataset) 입니다. 이것은 클러스트의 여러 노드에 데이터를 분할하여 Spark가 마법을 사용할 수 있게 하는 저수준의 개체이지만, RDD는 직접 작업하기 어렵기때문에, RDD 위에 구축된 Spark DataFrame 추상화를 사용합니다.</p>
+
+<p>Spark DataFrame은 SQL 테이블과 매우 유사하게 설계되어있습니다. DataFrame 은 이해하기 쉬울 뿐만 아니라 RDD보다 복잡한 작업에 더 최적화 되어있습니다.</p>
+
+<p><br /></p>
+
+<p>RDD를 사용할 때, 쿼리를 최적화하는 올바른 방법을 파악하는 것은, 데이터 과학자에게 있지만, DataFrame 구에는 최적화 부분이 내장되어 있습니다.</p>
+
+<p>Spark의 DataFrame작업을 시작하면, <code class="language-plaintext highlighter-rouge">SparkSession</code> 을 만들고, <code class="language-plaintext highlighter-rouge">SparkContext</code>, <code class="language-plaintext highlighter-rouge">SparkContext</code> 클러스터에 <code class="language-plaintext highlighter-rouge">SparkSession</code> 과 연결합니다.</p>
+
+<p><br /></p>
+
+<h4 id="creating-a-sparksession">Creating a SparkSession</h4>
+
+<p><code class="language-plaintext highlighter-rouge">Sparksession</code> 은 <code class="language-plaintext highlighter-rouge">spark</code>라고 불리는 것을 통해, 생성합니다.</p>
+
+<p>하지만, <code class="language-plaintext highlighter-rouge">SparkSession</code> 와, <code class="language-plaintext highlighter-rouge">SparkContext</code>를 여러개 생성하면 오류가 날 수 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">SparkSession.builder.getOrCreate()</code> 를 통해 생성하는 것이 좋은 방법입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Import SparkSession from pyspark.sql
+</span><span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="kn">import</span> <span class="n">SparkSession</span>
+
+<span class="c1"># Create my_spark
+</span><span class="n">my_spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="p">.</span><span class="n">builder</span><span class="p">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+
+<span class="c1"># Print my_spark
+</span><span class="k">print</span><span class="p">(</span><span class="n">my_spark</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="viewing-tables">Viewing tables</h4>
+
+<p><code class="language-plaintext highlighter-rouge">SparkSession</code> 은, <code class="language-plaintext highlighter-rouge">catalog</code> 라고 불리는 특성을 가집니다. 그 중 유용한, <code class="language-plaintext highlighter-rouge">.listTables()</code>를 사용하면, 해당 테이블의 이름을 반환합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Print the tables in the catalog
+</span><span class="k">print</span><span class="p">(</span><span class="n">spark</span><span class="p">.</span><span class="n">catalog</span><span class="p">.</span><span class="n">listTables</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="are-you-query-ious">Are you query-ious?</h4>
+
+<p>Spark의 이점 중 하나인, DataFrame Interface는 SQL 쿼리를 Spark cluster에서 사용할 수 있다는 것입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Don't change this query
+</span><span class="n">query</span> <span class="o">=</span> <span class="s">"FROM flights SELECT * LIMIT 10"</span>
+
+<span class="c1"># Get the first 10 rows of flights
+</span><span class="n">flights10</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="c1"># Show the results
+</span><span class="n">flights10</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="pandafy-a-spark-dataframe">Pandafy a Spark DataFrame</h4>
+
+<p>Spark DataFrame을 pandas로 만드는 방법도 있습니다. <code class="language-plaintext highlighter-rouge">.toPandas()</code> 이용</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Don't change this query
+</span><span class="n">query</span> <span class="o">=</span> <span class="s">"SELECT origin, dest, COUNT(*) as N FROM flights GROUP BY origin, dest"</span>
+
+<span class="c1"># Run the query
+</span><span class="n">flight_counts</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="c1"># Convert the results to a pandas DataFrame
+</span><span class="n">pd_counts</span> <span class="o">=</span> <span class="n">flight_counts</span><span class="p">.</span><span class="n">toPandas</span><span class="p">()</span>
+
+<span class="c1"># Print the head of pd_counts
+</span><span class="k">print</span><span class="p">(</span><span class="n">pd_counts</span><span class="p">.</span><span class="n">head</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="put-some-spark-in-your-data">Put some Spark in your data</h4>
+
+<p>이전과 달리, pandas DataFrame을 spark DataFrame으로 만드는 법 또한 당연히 존재합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create pd_temp
+</span><span class="n">pd_temp</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Create spark_temp from pd_temp
+</span><span class="n">spark_temp</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">pd_temp</span><span class="p">)</span>
+
+<span class="c1"># Examine the tables in the catalog
+</span><span class="k">print</span><span class="p">(</span><span class="n">spark</span><span class="p">.</span><span class="n">catalog</span><span class="p">.</span><span class="n">listTables</span><span class="p">())</span>
+
+<span class="c1"># Add spark_temp to the catalog
+</span><span class="n">spark_temp</span><span class="p">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">"temp"</span><span class="p">)</span>
+
+<span class="c1"># Examine the tables in the catalog again
+</span><span class="k">print</span><span class="p">(</span><span class="n">spark_temp</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="dropping-the-middle-man">Dropping the middle man</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Don't change this file path
+</span><span class="n">file_path</span> <span class="o">=</span> <span class="s">"/usr/local/share/datasets/airports.csv"</span>
+
+<span class="c1"># Read in the airports data
+</span><span class="n">airports</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Show the data
+</span><span class="n">airports</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h2 id="2-manipulating-data">2. Manipulating data</h2>
+
+<p><br /></p>
+
+<h4 id="creating-columns">Creating columns</h4>
+
+<p><code class="language-plaintext highlighter-rouge">.withColumn()</code>  2개의 arguments 필요로하며, 새로운 column이름과, 데이터를 필요로합니다. 새로운 column은 객체이여야 합니다.</p>
+
+<p>예시:  <code class="language-plaintext highlighter-rouge">df = df.withColumn("newCol", df.oldCol + 1)</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create the DataFrame flights
+</span><span class="n">flights</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">table</span><span class="p">(</span><span class="s">"flights"</span><span class="p">)</span>
+
+<span class="c1"># Show the head
+</span><span class="n">flights</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Add duration_hrs
+</span><span class="n">flights</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"duration_hrs"</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">air_time</span><span class="o">/</span><span class="mi">60</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="sql-in-a-nutshell">SQL in a nutshell</h4>
+
+<p>SQL 쿼리는 데이터베이스에 포함된 하나 이상의 테이블에서 파생된 테이블을 반환합니다.</p>
+
+<p>모든 SQL 쿼리는 데이터 베이스에 데이터로 수행하려는 작업을 알려주는 명령으로 구성됩니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>다음과 같이 연산을 할 수 도 있습니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">origin</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">air_time</span> <span class="o">/</span> <span class="mi">60</span> <span class="k">FROM</span> <span class="n">flights</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">students</span>
+<span class="k">WHERE</span> <span class="n">grade</span> <span class="o">=</span> <span class="s1">'A'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="sql-in-a-nutshell-2">SQL in a nutshell (2)</h4>
+
+<p>데이터베이스에서 집계하는 작업을 수행하는 것은, 데이터 양을 줄이는데 효과적입니다. 이는 SQL에서 <code class="language-plaintext highlighter-rouge">GROUP BY</code> 를 통해서 수행됩니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">flights</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">origin</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">origin</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">flights</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">origin</span><span class="p">,</span> <span class="n">dest</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="filtering-data">Filtering Data</h4>
+
+<p>SQL에서 where를 사용했던 것처럼, DataFrame에서 <code class="language-plaintext highlighter-rouge">.filter</code> 를 사용하는 방법도 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="s">"air_time &gt; 120"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+<span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">air_time</span> <span class="o">&gt;</span> <span class="mi">120</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>SQL에서는 다음의 코드로 동작했을 것입니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">flights</span> <span class="k">WHERE</span> <span class="n">air_time</span> <span class="o">&gt;</span> <span class="mi">120</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Filter flights by passing a string
+</span><span class="n">long_flights1</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="s">"distance &gt; 1000"</span><span class="p">)</span>
+
+<span class="c1"># Filter flights by passing a column of boolean values
+</span><span class="n">long_flights2</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">distance</span>  <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Print the data to check they're equal
+</span><span class="n">long_flights1</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">long_flights2</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="selecting">Selecting</h4>
+
+<p>Spark에서는 <code class="language-plaintext highlighter-rouge">SELECT</code> 를 <code class="language-plaintext highlighter-rouge">.select()</code> 를 통해 사용합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">withColumn()</code> 과의 차이점은, <code class="language-plaintext highlighter-rouge">select()</code> 은 지정한 열만 반환하지만, <code class="language-plaintext highlighter-rouge">withColumn()</code> 은 모든 DataFrame 열을 반환합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Select the first set of columns
+</span><span class="n">selected1</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">"tailnum"</span><span class="p">,</span> <span class="s">"origin"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">)</span>
+
+<span class="c1"># Select the second set of columns
+</span><span class="n">temp</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">carrier</span><span class="p">)</span>
+
+<span class="c1"># Define first filter
+</span><span class="n">filterA</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"SEA"</span>
+
+<span class="c1"># Define second filter
+</span><span class="n">filterB</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">dest</span> <span class="o">==</span> <span class="s">"PDX"</span>
+
+<span class="c1"># Filter the data, first by filterA then by filterB
+</span><span class="n">selected2</span> <span class="o">=</span> <span class="n">temp</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">filterA</span><span class="p">).</span><span class="nb">filter</span><span class="p">(</span><span class="n">filterB</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="selecting-ii">Selecting II</h4>
+
+<p><code class="language-plaintext highlighter-rouge">.select()</code> 안에서 연산도 가능합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">flights.select(flights.air_time/60)</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">.alias()</code> 를 통해 SQL에서 <code class="language-plaintext highlighter-rouge">as</code>처럼 사용되던 것을 구현할 수 도 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">flights.select((flights.air_time/60).alias("duration_hrs"))</code></p>
+
+<p>혹인 <code class="language-plaintext highlighter-rouge">.selectExpr()</code> 를 사용할 수도 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">flights.selectExpr("air_time/60 as duration_hrs")</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define avg_speed
+</span><span class="n">avg_speed</span> <span class="o">=</span> <span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">distance</span><span class="o">/</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">air_time</span><span class="o">/</span><span class="mi">60</span><span class="p">)).</span><span class="n">alias</span><span class="p">(</span><span class="s">"avg_speed"</span><span class="p">)</span>
+
+<span class="c1"># Select the correct columns
+</span><span class="n">speed1</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">"origin"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">,</span> <span class="s">"tailnum"</span><span class="p">,</span> <span class="n">avg_speed</span><span class="p">)</span>
+
+<span class="c1"># Create the same table using a SQL expression
+</span><span class="n">speed2</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">selectExpr</span><span class="p">(</span><span class="s">"origin"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">,</span> <span class="s">"tailnum"</span><span class="p">,</span> <span class="s">"distance/(air_time/60) as avg_speed"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="aggregating">Aggregating</h3>
+
+<p><code class="language-plaintext highlighter-rouge">.groupBy()</code> 를 통해, <code class="language-plaintext highlighter-rouge">.min()</code>,  <code class="language-plaintext highlighter-rouge">.max()</code>,  <code class="language-plaintext highlighter-rouge">.count()</code>등을 사용할 수 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">df.groupBy().min("col").show()</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Find the shortest flight from PDX in terms of distance
+</span><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"PDX"</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="nb">min</span><span class="p">(</span><span class="s">"distance"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Find the longest flight from SEA in terms of air time
+</span><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"SEA"</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="nb">max</span><span class="p">(</span><span class="s">"air_time"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="aggregating-ii">Aggregating II</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Average duration of Delta flights
+</span><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">carrier</span> <span class="o">==</span> <span class="s">"DL"</span><span class="p">).</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"SEA"</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="n">avg</span><span class="p">(</span><span class="s">"air_time"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Total hours in the air
+</span><span class="n">flights</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"duration_hrs"</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">air_time</span><span class="o">/</span><span class="mi">60</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="nb">sum</span><span class="p">(</span><span class="s">"duration_hrs"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="grouping-and-aggregating-i">Grouping and Aggregating I</h4>
+
+<p><code class="language-plaintext highlighter-rouge">groupBy()</code> 뒤, sum, count 등을 추가하지않으면, 다음 처럼 사용 가능합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Group by tailnum
+</span><span class="n">by_plane</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">groupBy</span><span class="p">(</span><span class="s">"tailnum"</span><span class="p">)</span>
+
+<span class="c1"># Number of flights each plane made
+</span><span class="n">by_plane</span><span class="p">.</span><span class="n">count</span><span class="p">().</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Group by origin
+</span><span class="n">by_origin</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">groupBy</span><span class="p">(</span><span class="s">"origin"</span><span class="p">)</span>
+
+<span class="c1"># Average duration of flights from PDX and SEA
+</span><span class="n">by_origin</span><span class="p">.</span><span class="n">avg</span><span class="p">(</span><span class="s">"air_time"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="grouping-and-aggregating-ii">Grouping and Aggregating II</h4>
+:ET

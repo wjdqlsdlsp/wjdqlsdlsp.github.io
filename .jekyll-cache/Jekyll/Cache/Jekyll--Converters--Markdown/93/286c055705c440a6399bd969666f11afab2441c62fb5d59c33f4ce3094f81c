@@ -1,0 +1,632 @@
+I"��<h1 id="introduction-to-pyspark">Introduction to PySpark</h1>
+
+<p><br /></p>
+
+<h2 id="1-getting-to-know-pyspark">1. Getting to know PySpark</h2>
+
+<h4 id="what-is-spark">What is Spark?</h4>
+
+<p>Spark는, 클러스터 컴퓨팅을 위한 플랫폼입니다.</p>
+
+<p>Spark를 사용하면, 여러 노드가 있는 클러스터에 데이터와 계산을 분산할 수 있습니다. ( 각 노드를 컴퓨터로 생각 )</p>
+
+<p>데이터를 분할하면 각 노드가 소량의 데이터에서만 작동하기 때문에 매우 큰 데이터 세트로 더 쉽게 작업 할 수 있습니다.</p>
+
+<p>각 노드는, 전체 계산의 일부를 수행하며, 데이터 처리와 계산이 클러스터의 노드에서 병렬로 수행 됩니다.</p>
+
+<p>병렬 계산은, 특정 유형의 프로그래밍 작업을 훨씬 더 빠르게 만들 수 있습니다. ( 단, 컴퓨팅 성능이 향상되면 복잡성도 커집니다. )</p>
+
+<p>Spark가 해당 문제에 대한 최상의 솔루션 여부를 결정 하는 데는 경험이 필요합니다.</p>
+
+<ul>
+  <li>데이터가 너무 커서, 단일화 시스템에서 작업 할 수 없다.</li>
+  <li>계산을 쉽게 병렬화 할 수 있다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="using-spark-in-python">Using Spark in Python</h4>
+
+<p>Spark 사용의 첫번째는, 클러스터에 연결하는 것입니다.</p>
+
+<p>클러스터는 다른 모든 노드에 연결된 원격 시스템에서 호스팅 됩니다. 데이터와 계산 분할을 관리하는 컴퓨터를 <strong>마스터(master)</strong> 라고 하며, 마스터는 <strong>작업자(worker)</strong> 라고 하는 클러스터의 나머지 컴퓨터와 연결됩니다.</p>
+
+<p>마스터는 작업자에게 데이터와 계산을 실행하도록 보내고, 작업자는 결과를 다시 마스터에게 보냅니다.</p>
+
+<p>해당 연결을 만드는 방법은 <code class="language-plaintext highlighter-rouge">SparkContext</code> 클래스의 인스턴스를 만드는 것입니다.</p>
+
+<p>클래스 생성자는 연결하려는 클러스터의 속성을 지정할 수 있는 몇가지 인수를 사용합니다.</p>
+
+<p>모든 속성을 포함하는 개체는 <code class="language-plaintext highlighter-rouge">SparkConf()</code>생성자를 사용하여 만들 수 있습니다.</p>
+
+<h4 id="examining-the-sparkcontext">Examining The SparkContext</h4>
+
+<p>Spark는 serious software입니다. 이것은 사용하는 것보다, 시작하는데 시간을 더 많이 소요합니다.</p>
+
+<p>간단한 프로그램은, 스파크보다, 다른 것을 사용하는 것이 더 효율적일 것 입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Verify SparkContext
+</span><span class="k">print</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+
+<span class="c1"># Print Spark version
+</span><span class="k">print</span><span class="p">(</span><span class="n">sc</span><span class="p">.</span><span class="n">version</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="examining-the-sparkcontext-1">Examining The SparkContext</h4>
+
+<p>Spark는 시작하는데 많은 시간이 걸립니다. 또한 간단한 계산을 실행하는 데 오래 걸릴수 있습니다.</p>
+
+<p>Spark는 빅데이터와 같이 복잡한 작업을 위해 설계되어 있기 때문입니다. ( 작은 작업을 할 때는, Spark가 효율적이지 않다. )</p>
+
+<p><br /></p>
+
+<h4 id="using-dataframes">Using DataFrames</h4>
+
+<p>Spark의 핵심 데이터 구조는 RDD(Resilient Distributed Dataset) 입니다. 이것은 클러스트의 여러 노드에 데이터를 분할하여 Spark가 마법을 사용할 수 있게 하는 저수준의 개체이지만, RDD는 직접 작업하기 어렵기때문에, RDD 위에 구축된 Spark DataFrame 추상화를 사용합니다.</p>
+
+<p>Spark DataFrame은 SQL 테이블과 매우 유사하게 설계되어있습니다. DataFrame 은 이해하기 쉬울 뿐만 아니라 RDD보다 복잡한 작업에 더 최적화 되어있습니다.</p>
+
+<p><br /></p>
+
+<p>RDD를 사용할 때, 쿼리를 최적화하는 올바른 방법을 파악하는 것은, 데이터 과학자에게 있지만, DataFrame 구에는 최적화 부분이 내장되어 있습니다.</p>
+
+<p>Spark의 DataFrame작업을 시작하면, <code class="language-plaintext highlighter-rouge">SparkSession</code> 을 만들고, <code class="language-plaintext highlighter-rouge">SparkContext</code>, <code class="language-plaintext highlighter-rouge">SparkContext</code> 클러스터에 <code class="language-plaintext highlighter-rouge">SparkSession</code> 과 연결합니다.</p>
+
+<p><br /></p>
+
+<h4 id="creating-a-sparksession">Creating a SparkSession</h4>
+
+<p><code class="language-plaintext highlighter-rouge">Sparksession</code> 은 <code class="language-plaintext highlighter-rouge">spark</code>라고 불리는 것을 통해, 생성합니다.</p>
+
+<p>하지만, <code class="language-plaintext highlighter-rouge">SparkSession</code> 와, <code class="language-plaintext highlighter-rouge">SparkContext</code>를 여러개 생성하면 오류가 날 수 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">SparkSession.builder.getOrCreate()</code> 를 통해 생성하는 것이 좋은 방법입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Import SparkSession from pyspark.sql
+</span><span class="kn">from</span> <span class="nn">pyspark.sql</span> <span class="kn">import</span> <span class="n">SparkSession</span>
+
+<span class="c1"># Create my_spark
+</span><span class="n">my_spark</span> <span class="o">=</span> <span class="n">SparkSession</span><span class="p">.</span><span class="n">builder</span><span class="p">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+
+<span class="c1"># Print my_spark
+</span><span class="k">print</span><span class="p">(</span><span class="n">my_spark</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="viewing-tables">Viewing tables</h4>
+
+<p><code class="language-plaintext highlighter-rouge">SparkSession</code> 은, <code class="language-plaintext highlighter-rouge">catalog</code> 라고 불리는 특성을 가집니다. 그 중 유용한, <code class="language-plaintext highlighter-rouge">.listTables()</code>를 사용하면, 해당 테이블의 이름을 반환합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Print the tables in the catalog
+</span><span class="k">print</span><span class="p">(</span><span class="n">spark</span><span class="p">.</span><span class="n">catalog</span><span class="p">.</span><span class="n">listTables</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="are-you-query-ious">Are you query-ious?</h4>
+
+<p>Spark의 이점 중 하나인, DataFrame Interface는 SQL 쿼리를 Spark cluster에서 사용할 수 있다는 것입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Don't change this query
+</span><span class="n">query</span> <span class="o">=</span> <span class="s">"FROM flights SELECT * LIMIT 10"</span>
+
+<span class="c1"># Get the first 10 rows of flights
+</span><span class="n">flights10</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="c1"># Show the results
+</span><span class="n">flights10</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="pandafy-a-spark-dataframe">Pandafy a Spark DataFrame</h4>
+
+<p>Spark DataFrame을 pandas로 만드는 방법도 있습니다. <code class="language-plaintext highlighter-rouge">.toPandas()</code> 이용</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Don't change this query
+</span><span class="n">query</span> <span class="o">=</span> <span class="s">"SELECT origin, dest, COUNT(*) as N FROM flights GROUP BY origin, dest"</span>
+
+<span class="c1"># Run the query
+</span><span class="n">flight_counts</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="c1"># Convert the results to a pandas DataFrame
+</span><span class="n">pd_counts</span> <span class="o">=</span> <span class="n">flight_counts</span><span class="p">.</span><span class="n">toPandas</span><span class="p">()</span>
+
+<span class="c1"># Print the head of pd_counts
+</span><span class="k">print</span><span class="p">(</span><span class="n">pd_counts</span><span class="p">.</span><span class="n">head</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="put-some-spark-in-your-data">Put some Spark in your data</h4>
+
+<p>이전과 달리, pandas DataFrame을 spark DataFrame으로 만드는 법 또한 당연히 존재합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create pd_temp
+</span><span class="n">pd_temp</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Create spark_temp from pd_temp
+</span><span class="n">spark_temp</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">pd_temp</span><span class="p">)</span>
+
+<span class="c1"># Examine the tables in the catalog
+</span><span class="k">print</span><span class="p">(</span><span class="n">spark</span><span class="p">.</span><span class="n">catalog</span><span class="p">.</span><span class="n">listTables</span><span class="p">())</span>
+
+<span class="c1"># Add spark_temp to the catalog
+</span><span class="n">spark_temp</span><span class="p">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">"temp"</span><span class="p">)</span>
+
+<span class="c1"># Examine the tables in the catalog again
+</span><span class="k">print</span><span class="p">(</span><span class="n">spark_temp</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="dropping-the-middle-man">Dropping the middle man</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Don't change this file path
+</span><span class="n">file_path</span> <span class="o">=</span> <span class="s">"/usr/local/share/datasets/airports.csv"</span>
+
+<span class="c1"># Read in the airports data
+</span><span class="n">airports</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Show the data
+</span><span class="n">airports</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h2 id="2-manipulating-data">2. Manipulating data</h2>
+
+<p><br /></p>
+
+<h4 id="creating-columns">Creating columns</h4>
+
+<p><code class="language-plaintext highlighter-rouge">.withColumn()</code>  2개의 arguments 필요로하며, 새로운 column이름과, 데이터를 필요로합니다. 새로운 column은 객체이여야 합니다.</p>
+
+<p>예시:  <code class="language-plaintext highlighter-rouge">df = df.withColumn("newCol", df.oldCol + 1)</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create the DataFrame flights
+</span><span class="n">flights</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">table</span><span class="p">(</span><span class="s">"flights"</span><span class="p">)</span>
+
+<span class="c1"># Show the head
+</span><span class="n">flights</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Add duration_hrs
+</span><span class="n">flights</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"duration_hrs"</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">air_time</span><span class="o">/</span><span class="mi">60</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="sql-in-a-nutshell">SQL in a nutshell</h4>
+
+<p>SQL 쿼리는 데이터베이스에 포함된 하나 이상의 테이블에서 파생된 테이블을 반환합니다.</p>
+
+<p>모든 SQL 쿼리는 데이터 베이스에 데이터로 수행하려는 작업을 알려주는 명령으로 구성됩니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>다음과 같이 연산을 할 수 도 있습니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">origin</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">air_time</span> <span class="o">/</span> <span class="mi">60</span> <span class="k">FROM</span> <span class="n">flights</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">students</span>
+<span class="k">WHERE</span> <span class="n">grade</span> <span class="o">=</span> <span class="s1">'A'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="sql-in-a-nutshell-2">SQL in a nutshell (2)</h4>
+
+<p>데이터베이스에서 집계하는 작업을 수행하는 것은, 데이터 양을 줄이는데 효과적입니다. 이는 SQL에서 <code class="language-plaintext highlighter-rouge">GROUP BY</code> 를 통해서 수행됩니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">flights</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">origin</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">origin</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">flights</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="n">origin</span><span class="p">,</span> <span class="n">dest</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="filtering-data">Filtering Data</h4>
+
+<p>SQL에서 where를 사용했던 것처럼, DataFrame에서 <code class="language-plaintext highlighter-rouge">.filter</code> 를 사용하는 방법도 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="s">"air_time &gt; 120"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+<span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">air_time</span> <span class="o">&gt;</span> <span class="mi">120</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>SQL에서는 다음의 코드로 동작했을 것입니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">flights</span> <span class="k">WHERE</span> <span class="n">air_time</span> <span class="o">&gt;</span> <span class="mi">120</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Filter flights by passing a string
+</span><span class="n">long_flights1</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="s">"distance &gt; 1000"</span><span class="p">)</span>
+
+<span class="c1"># Filter flights by passing a column of boolean values
+</span><span class="n">long_flights2</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">distance</span>  <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Print the data to check they're equal
+</span><span class="n">long_flights1</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">long_flights2</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="selecting">Selecting</h4>
+
+<p>Spark에서는 <code class="language-plaintext highlighter-rouge">SELECT</code> 를 <code class="language-plaintext highlighter-rouge">.select()</code> 를 통해 사용합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">withColumn()</code> 과의 차이점은, <code class="language-plaintext highlighter-rouge">select()</code> 은 지정한 열만 반환하지만, <code class="language-plaintext highlighter-rouge">withColumn()</code> 은 모든 DataFrame 열을 반환합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Select the first set of columns
+</span><span class="n">selected1</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">"tailnum"</span><span class="p">,</span> <span class="s">"origin"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">)</span>
+
+<span class="c1"># Select the second set of columns
+</span><span class="n">temp</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">carrier</span><span class="p">)</span>
+
+<span class="c1"># Define first filter
+</span><span class="n">filterA</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"SEA"</span>
+
+<span class="c1"># Define second filter
+</span><span class="n">filterB</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">dest</span> <span class="o">==</span> <span class="s">"PDX"</span>
+
+<span class="c1"># Filter the data, first by filterA then by filterB
+</span><span class="n">selected2</span> <span class="o">=</span> <span class="n">temp</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">filterA</span><span class="p">).</span><span class="nb">filter</span><span class="p">(</span><span class="n">filterB</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="selecting-ii">Selecting II</h4>
+
+<p><code class="language-plaintext highlighter-rouge">.select()</code> 안에서 연산도 가능합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">flights.select(flights.air_time/60)</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">.alias()</code> 를 통해 SQL에서 <code class="language-plaintext highlighter-rouge">as</code>처럼 사용되던 것을 구현할 수 도 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">flights.select((flights.air_time/60).alias("duration_hrs"))</code></p>
+
+<p>혹인 <code class="language-plaintext highlighter-rouge">.selectExpr()</code> 를 사용할 수도 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">flights.selectExpr("air_time/60 as duration_hrs")</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define avg_speed
+</span><span class="n">avg_speed</span> <span class="o">=</span> <span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">distance</span><span class="o">/</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">air_time</span><span class="o">/</span><span class="mi">60</span><span class="p">)).</span><span class="n">alias</span><span class="p">(</span><span class="s">"avg_speed"</span><span class="p">)</span>
+
+<span class="c1"># Select the correct columns
+</span><span class="n">speed1</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">"origin"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">,</span> <span class="s">"tailnum"</span><span class="p">,</span> <span class="n">avg_speed</span><span class="p">)</span>
+
+<span class="c1"># Create the same table using a SQL expression
+</span><span class="n">speed2</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">selectExpr</span><span class="p">(</span><span class="s">"origin"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">,</span> <span class="s">"tailnum"</span><span class="p">,</span> <span class="s">"distance/(air_time/60) as avg_speed"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="aggregating">Aggregating</h3>
+
+<p><code class="language-plaintext highlighter-rouge">.groupBy()</code> 를 통해, <code class="language-plaintext highlighter-rouge">.min()</code>,  <code class="language-plaintext highlighter-rouge">.max()</code>,  <code class="language-plaintext highlighter-rouge">.count()</code>등을 사용할 수 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">df.groupBy().min("col").show()</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Find the shortest flight from PDX in terms of distance
+</span><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"PDX"</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="nb">min</span><span class="p">(</span><span class="s">"distance"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Find the longest flight from SEA in terms of air time
+</span><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"SEA"</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="nb">max</span><span class="p">(</span><span class="s">"air_time"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="aggregating-ii">Aggregating II</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Average duration of Delta flights
+</span><span class="n">flights</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">carrier</span> <span class="o">==</span> <span class="s">"DL"</span><span class="p">).</span><span class="nb">filter</span><span class="p">(</span><span class="n">flights</span><span class="p">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">"SEA"</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="n">avg</span><span class="p">(</span><span class="s">"air_time"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Total hours in the air
+</span><span class="n">flights</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"duration_hrs"</span><span class="p">,</span> <span class="n">flights</span><span class="p">.</span><span class="n">air_time</span><span class="o">/</span><span class="mi">60</span><span class="p">).</span><span class="n">groupBy</span><span class="p">().</span><span class="nb">sum</span><span class="p">(</span><span class="s">"duration_hrs"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="grouping-and-aggregating-i">Grouping and Aggregating I</h4>
+
+<p><code class="language-plaintext highlighter-rouge">groupBy()</code> 뒤, sum, count 등을 추가하지않으면, 다음 처럼 사용 가능합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Group by tailnum
+</span><span class="n">by_plane</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">groupBy</span><span class="p">(</span><span class="s">"tailnum"</span><span class="p">)</span>
+
+<span class="c1"># Number of flights each plane made
+</span><span class="n">by_plane</span><span class="p">.</span><span class="n">count</span><span class="p">().</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Group by origin
+</span><span class="n">by_origin</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">groupBy</span><span class="p">(</span><span class="s">"origin"</span><span class="p">)</span>
+
+<span class="c1"># Average duration of flights from PDX and SEA
+</span><span class="n">by_origin</span><span class="p">.</span><span class="n">avg</span><span class="p">(</span><span class="s">"air_time"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="grouping-and-aggregating-ii">Grouping and Aggregating II</h4>
+
+<p><code class="language-plaintext highlighter-rouge">groupBy</code> 뿐만 아니라, <code class="language-plaintext highlighter-rouge">.agg()</code> 도 사용 가능합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">.agg()</code> 메소드는 <code class="language-plaintext highlighter-rouge">pyspark.sql.functions</code> 에 포함되어 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Import pyspark.sql.functions as F
+</span><span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="n">F</span>
+
+<span class="c1"># Group by month and dest
+</span><span class="n">by_month_dest</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">groupBy</span><span class="p">(</span><span class="s">"month"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">)</span>
+
+<span class="c1"># Average departure delay by month and destination
+</span><span class="n">by_month_dest</span><span class="p">.</span><span class="n">avg</span><span class="p">(</span><span class="s">"dep_delay"</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Standard deviation of departure delay
+</span><span class="n">by_month_dest</span><span class="p">.</span><span class="n">agg</span><span class="p">(</span><span class="n">F</span><span class="p">.</span><span class="n">stddev</span><span class="p">(</span><span class="s">"dep_delay"</span><span class="p">)).</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="joining">Joining</h4>
+
+<p>Joining은 많이 사용되는 방법 중 하나입니다.</p>
+
+<p>조인은 다른 2개의 테이블을 결합시키게 됩니다.</p>
+
+<p>PySpark에서는 DataFrame 함수로, <code class="language-plaintext highlighter-rouge">.join()</code> 을 사용합니다. 세개의 인자가 있는데, 결합하고자 하는 테이블, on, how 입니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">on</code> 은, 어떤 컬럼을 기준으로 join하는지를, <code class="language-plaintext highlighter-rouge">how</code>는 leftouter 등 어떤 방식으로 join 하는지를 선택하는 것 입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1"># Examine the data
+</span> <span class="k">print</span><span class="p">(</span><span class="n">airports</span><span class="p">.</span><span class="n">show</span><span class="p">())</span>
+ 
+ <span class="c1"># Rename the faa column
+</span> <span class="n">airports</span> <span class="o">=</span> <span class="n">airports</span><span class="p">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s">"faa"</span><span class="p">,</span> <span class="s">"dest"</span><span class="p">)</span>
+ 
+ <span class="c1"># Join the DataFrames
+</span> <span class="n">flights_with_airports</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">airports</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s">"dest"</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">"leftouter"</span><span class="p">)</span>
+ 
+ <span class="c1"># Examine the new DataFrame
+</span> <span class="k">print</span><span class="p">(</span><span class="n">flights_with_airports</span><span class="p">.</span><span class="n">show</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h2 id="3-getting-started-with-machine-learning-pipelines">3. Getting started with machine learning pipelines</h2>
+
+<p><br /></p>
+
+<h4 id="machine-learning-pipelines">Machine Learning Pipelines</h4>
+
+<p><code class="language-plaintext highlighter-rouge">pyspark.ml</code> 의 중심은, <code class="language-plaintext highlighter-rouge">Transformer</code> 와 <code class="language-plaintext highlighter-rouge">Estimator</code> 클래스입니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Transformer</code> 클래스는, <code class="language-plaintext highlighter-rouge">.transformer()</code> 함수를 통해서, DataFrame을 변환합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Bucketizer</code>를 이용하여, 연속된 피처 혹은 클래스로 부터, discrete bins을 만들거나, <code class="language-plaintext highlighter-rouge">PCA</code>를 통해 데이터셋의 주성분 분석을 할 수 있습니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Estimator</code>클래스는, <code class="language-plaintext highlighter-rouge">.fit()</code>를 통해 실행됩니다. <code class="language-plaintext highlighter-rouge">StringIndexerModel</code> 혹은 <code class="language-plaintext highlighter-rouge">RandomForestModel</code> 이 이것에 해당됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="join-the-dataframes">Join the DataFrames</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Rename year column
+</span><span class="n">planes</span> <span class="o">=</span> <span class="n">planes</span><span class="p">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s">"year"</span><span class="p">,</span><span class="s">"plane_year"</span><span class="p">)</span>
+
+<span class="c1"># Join the DataFrames
+</span><span class="n">model_data</span> <span class="o">=</span> <span class="n">flights</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">planes</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s">"tailnum"</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">"leftouter"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="data-types">Data types</h4>
+
+<p>Spark는 numeric 데이터만, 핸들링 할 수 있습니다.</p>
+
+<p>우리가 데이터를 선언하면, Spark는 해당 데이터에 대한 정보를 파악합니다. 불행히도 항상 옳바르게 판단하지는 않습니다. DataFrame의 일부 열은, 실제 숫자 값이 아닌, 숫자가 퐇마된 문자열임을 알 수 있습니다.</p>
+
+<p>이러한 문제를 해결하기 위해서 <code class="language-plaintext highlighter-rouge">.withColumn()</code> 와 함께<code class="language-plaintext highlighter-rouge">.cast()</code>를 사용합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">.cast()</code> 는 인자로 하나만 입력 받는데, 정수일경우 “integer”를 decimal numbers인 경우 “double”을 입력하면 됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="string-to-integer">String to integer</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"col"</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">.</span><span class="n">col</span><span class="p">.</span><span class="n">cast</span><span class="p">(</span><span class="s">"new_type"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Cast the columns to integers
+</span><span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"arr_delay"</span><span class="p">,</span> <span class="n">model_data</span><span class="p">.</span><span class="n">arr_delay</span><span class="p">.</span><span class="n">cast</span><span class="p">(</span><span class="s">"integer"</span><span class="p">))</span>
+<span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"air_time"</span><span class="p">,</span> <span class="n">model_data</span><span class="p">.</span><span class="n">air_time</span><span class="p">.</span><span class="n">cast</span><span class="p">(</span><span class="s">"integer"</span><span class="p">))</span>
+<span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"month"</span><span class="p">,</span> <span class="n">model_data</span><span class="p">.</span><span class="n">month</span><span class="p">.</span><span class="n">cast</span><span class="p">(</span><span class="s">"integer"</span><span class="p">))</span>
+<span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"plane_year"</span><span class="p">,</span>  <span class="n">model_data</span><span class="p">.</span><span class="n">plane_year</span><span class="p">.</span><span class="n">cast</span><span class="p">(</span><span class="s">"integer"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="create-a-new-column">Create a new column</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create the column plane_age
+</span><span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"plane_age"</span><span class="p">,</span> <span class="n">model_data</span><span class="p">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">model_data</span><span class="p">.</span><span class="n">plane_year</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="making-a-boolean">Making a Boolean</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create is_late
+</span><span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"is_late"</span><span class="p">,</span> <span class="n">model_data</span><span class="p">.</span><span class="n">arr_delay</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Convert to an integer
+</span><span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">"label"</span><span class="p">,</span> <span class="n">model_data</span><span class="p">.</span><span class="n">is_late</span><span class="p">.</span><span class="n">cast</span><span class="p">(</span><span class="s">"integer"</span><span class="p">))</span>
+
+<span class="c1"># Remove missing values
+</span><span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="s">"arr_delay is not NULL and dep_delay is not NULL and air_time is not NULL and plane_year is not NULL"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="strings-and-factors">Strings and factors</h4>
+
+<p>모델링을 위해선, 숫자형 데이터가 필요합니다. 따라서, String을 숫자형 데이터로 변환해야 합니다.</p>
+
+<p>Pyspark에서는, <code class="language-plaintext highlighter-rouge">pyspark.ml.feature</code> 하위 모듈에 이를 처리하는 기능이 내장되어 있습니다. 이는 one-hot-vector를 생성하는 방법을 이용합니다.</p>
+
+<p>먼저 <code class="language-plaintext highlighter-rouge">StringIndexer</code>를 생성합니다. 이 클래스이 멤버는 <code class="language-plaintext highlighter-rouge">Estimator</code>문자열 열이 있는 DataFrame의 고유 문자열를 매핑합니다. 그리고, <code class="language-plaintext highlighter-rouge">Estimator</code>는 매핑된 메타데이터를 포함한 DataFrame의 <code class="language-plaintext highlighter-rouge">Transformer</code>를 리턴합니다. 또한, 문자열 컬럼과 관련있는 숫자형 컬럼도 리턴합니다.</p>
+
+<p>두번 째 단계는, 이 컬럼을 <code class="language-plaintext highlighter-rouge">OneHotEncoder</code>를 이용하여 인코드합니다.</p>
+
+<p><br /></p>
+
+<h4 id="carrier">Carrier</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create a StringIndexer
+</span><span class="n">carr_indexer</span> <span class="o">=</span> <span class="n">StringIndexer</span><span class="p">(</span><span class="n">inputCol</span><span class="o">=</span><span class="s">"carrier"</span><span class="p">,</span> <span class="n">outputCol</span><span class="o">=</span><span class="s">"carrier_index"</span><span class="p">)</span>
+
+<span class="c1"># Create a OneHotEncoder
+</span><span class="n">carr_encoder</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">inputCol</span><span class="o">=</span><span class="s">"carrier_index"</span><span class="p">,</span> <span class="n">outputCol</span><span class="o">=</span><span class="s">"carrier_fact"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="destination">Destination</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create a StringIndexer
+</span><span class="n">dest_indexer</span> <span class="o">=</span> <span class="n">StringIndexer</span><span class="p">(</span><span class="n">inputCol</span><span class="o">=</span><span class="s">"dest"</span><span class="p">,</span> <span class="n">outputCol</span><span class="o">=</span><span class="s">"dest_index"</span><span class="p">)</span>
+
+<span class="c1"># Create a OneHotEncoder
+</span><span class="n">dest_encoder</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">inputCol</span><span class="o">=</span><span class="s">"dest_index"</span><span class="p">,</span> <span class="n">outputCol</span><span class="o">=</span><span class="s">"dest_fact"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="assemble-a-vector">Assemble a vector</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Make a VectorAssembler
+</span><span class="n">vec_assembler</span> <span class="o">=</span> <span class="n">VectorAssembler</span><span class="p">(</span><span class="n">inputCols</span><span class="o">=</span><span class="p">[</span><span class="s">"month"</span><span class="p">,</span> <span class="s">"air_time"</span><span class="p">,</span> <span class="s">"carrier_fact"</span><span class="p">,</span> <span class="s">"dest_fact"</span><span class="p">,</span> <span class="s">"plane_age"</span><span class="p">],</span> <span class="n">outputCol</span><span class="o">=</span><span class="s">"features"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="create-the-pipeline">Create the pipeline</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Import Pipeline
+</span><span class="kn">from</span> <span class="nn">pyspark.ml</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+
+<span class="c1"># Make the pipeline
+</span><span class="n">flights_pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">stages</span><span class="o">=</span><span class="p">[</span><span class="n">dest_indexer</span><span class="p">,</span> <span class="n">dest_encoder</span><span class="p">,</span> <span class="n">carr_indexer</span><span class="p">,</span> <span class="n">carr_encoder</span><span class="p">,</span> <span class="n">vec_assembler</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="test-vs-train">Test vs Train</h4>
+
+<p>모델링을 위해서 중요한 것 중 하나는, 데이터를 나누는 것입니다.</p>
+
+<p>Spark에서는 모든 변환 후에 데이터를 분할하는 것이 중요합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Fit and transform the data
+</span><span class="n">piped_data</span> <span class="o">=</span> <span class="n">flights_pipe</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model_data</span><span class="p">).</span><span class="n">transform</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Split the data into training and test sets
+</span><span class="n">training</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">piped_data</span><span class="p">.</span><span class="n">randomSplit</span><span class="p">([.</span><span class="mi">6</span><span class="p">,</span> <span class="p">.</span><span class="mi">4</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h2 id="4-model-tuning-and-selection">4. Model tuning and selection</h2>
+
+<p><br /></p>
+
+<h4 id="create-the-modeler">Create the modeler</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Import LogisticRegression
+</span><span class="kn">from</span> <span class="nn">pyspark.ml.classification</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+
+<span class="c1"># Create a LogisticRegression Estimator
+</span><span class="n">lr</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="cross-validation">Cross validation</h4>
+
+<p>훈련 데이터를 몇 개의 다른 파티션으로 분할하여 작동합니다.</p>
+
+<p>데이터가 분할되면, 파티션 중 하나가 따로 설정되며 모델이 다른 파티션에 작동하고, 보류된 파티션에 대해 loss를 측정합니다.</p>
+
+<p>이것은 각 파티션에 대해 반복되며 각 파티션의 loss값의 평균을 출력합니다.</p>
+
+<p>이를 교차 검증 로규앖이라고 하며 실제 오류에 대한 좋은 추정치를 제공합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">pyspark.ml.evaluation</code> 를 통해서 값을 평가 할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Import the evaluation submodule
+</span><span class="kn">import</span> <span class="nn">pyspark.ml.evaluation</span> <span class="k">as</span> <span class="n">evals</span>
+
+<span class="c1"># Create a BinaryClassificationEvaluator
+</span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">evals</span><span class="p">.</span><span class="n">BinaryClassificationEvaluator</span><span class="p">(</span><span class="n">metricName</span><span class="o">=</span><span class="s">"areaUnderROC"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="make-a-grid">Make a grid</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Import the tuning submodule
+</span><span class="kn">import</span> <span class="nn">pyspark.ml.tuning</span> <span class="k">as</span> <span class="n">tune</span>
+
+<span class="c1"># Create the parameter grid
+</span><span class="n">grid</span> <span class="o">=</span> <span class="n">tune</span><span class="p">.</span><span class="n">ParamGridBuilder</span><span class="p">()</span>
+
+<span class="c1"># Add the hyperparameter
+</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">addGrid</span><span class="p">(</span><span class="n">lr</span><span class="p">.</span><span class="n">regParam</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">.</span><span class="mi">1</span><span class="p">,</span> <span class="p">.</span><span class="mi">01</span><span class="p">))</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">addGrid</span><span class="p">(</span><span class="n">lr</span><span class="p">.</span><span class="n">elasticNetParam</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Build the grid
+</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="p">.</span><span class="n">build</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="make-the-validator">Make the validator</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Create the CrossValidator
+</span><span class="n">cv</span> <span class="o">=</span> <span class="n">tune</span><span class="p">.</span><span class="n">CrossValidator</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
+               <span class="n">estimatorParamMaps</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+               <span class="n">evaluator</span><span class="o">=</span><span class="n">evaluator</span>
+               <span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="fit-the-models">Fit the model(s)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Call lr.fit()
+</span><span class="n">best_lr</span> <span class="o">=</span> <span class="n">lr</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">training</span><span class="p">)</span>
+
+<span class="c1"># Print best_lr
+</span><span class="k">print</span><span class="p">(</span><span class="n">best_lr</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="evaluate-the-model">Evaluate the model</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Use the model to predict the test set
+</span><span class="n">test_results</span> <span class="o">=</span> <span class="n">best_lr</span><span class="p">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+
+<span class="c1"># Evaluate the predictions
+</span><span class="k">print</span><span class="p">(</span><span class="n">evaluator</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_results</span><span class="p">))</span>
+</code></pre></div></div>
+
+:ET
