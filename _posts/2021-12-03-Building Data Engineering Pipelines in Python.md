@@ -13,7 +13,7 @@ image: /post_img/oop.jpg
 
 ## 1. Ingesting Data
 
-#### Data is valuable
+#### Data is valuable 
 
 - 현대 조직은, 데이터 수지빙 얼마나 가치 있는지 인식하고 있습니다.
 
