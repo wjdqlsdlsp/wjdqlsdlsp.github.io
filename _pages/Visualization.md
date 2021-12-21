@@ -10,6 +10,26 @@ image:
 
 
 ***
+![]({{site.baseurl}}/images/visualization_all/bigmac_scatter.png)
+*빅맥지수 - 빅맥가격과 GDP의 관계*
+
+GDP를 이용하여 그룹을 지정하고 그들의 평균 빅맥 가격을 시각화한 그래프입니다.
+이를통해, GDP가 높은국가는 빅맥의 가격이 높은 것을 알 수 있습니다.
+
+***
+![]({{site.baseurl}}/images/visualization_all/bigmac_line.png)
+*빅맥지수 - 연도별, 전세계 빅맥 평균가격*
+
+각 년도별, 전세계 빅맥 가격 변화 추이입니다.
+빅맥의 가격은 항상 올라갔다고 생각했는데, 우리나라와 달리, 현지가격이 떨어진 국가도 있었으머,전세계 통화 정책 등으로 인해 가격의 변동이 심한 국가도 있었습니다.
+
+***
+![]({{site.baseurl}}/images/visualization_all/3d3.png)
+*3D 시각화*
+
+PCA를 통해 차원 축소를 진행하였으며, 이를 시각화를 통해 나타냈습니다.
+
+***
 ![]({{site.baseurl}}/images/visualization_all/titanic1.png)
 *타이타닉 - 각 클래스별 생존율 비교*
 
