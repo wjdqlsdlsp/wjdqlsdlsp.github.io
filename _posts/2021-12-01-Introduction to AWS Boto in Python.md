@@ -1,12 +1,12 @@
 ---
 layout: post
 title:  "Introduction to AWS Boto in Python"
-date:   2021-12-01
+date:   2021-12-26
 categories: 데이터엔지니어
 tags: 데이터엔지니어
 image: /post_img/oop.jpg
 ---
-# 미완성
+
 
 # Introduction to AWS Boto in Python
 

@@ -9,25 +9,25 @@ image: /post_img/python-logo2.jpg
 # 효율적인 파이썬 코드 쓰는 법
 
 ## 1. Foundations for efficiencies
-<br>
+
 ### 효율적인 프로그래밍이란? 
-<br>
+
 - 빠르고, 실행과 결과 반환 사이의 대기 시간이 짧습니다.
 
 - 리소스를 능숙하게 할당하고 불필요한 오버 헤드를 받지 않습니다.
 
 
 
-> 빠른 런타임과 작은 메모리 사용량에 대한 정의는 작업에 따라 달라집니다.
-> 효율적인 코드 작성의 목표는 지연 시간과 오버헤드를 모두 줄이는 것입니다.
+빠른 런타임과 작은 메모리 사용량에 대한 정의는 작업에 따라 달라집니다.
+효율적인 코드 작성의 목표는 지연 시간과 오버헤드를 모두 줄이는 것입니다.
 
-
+<br>
 
 ### Python
-<br>
+
 파이썬은 코드 가독성을 자랑하는 언어입니다. 
 
-> 파이썬 코드를 작성하는 것을 종종 Pythonic 코드라고도 합니다. (처음 들어봤네요..)
+파이썬 코드를 작성하는 것을 종종 Pythonic 코드라고도 합니다. (처음 들어봤네요..)
 
 Pythonic 코드는 덜 정황하고 해석하기 쉬운 경향이 있습니다.
 
@@ -44,9 +44,9 @@ doubled_numbers = [x * 2 for x in numbers]
 
 파이썬은 기본 원칙을 따르지않는 코드를 지원하지만 이러한 유형의 코드는 느리게 실행되는 경향이 있습니다.
 
-> 몰랐던 사실 : 인라인 코드 쓰는이유가 단순히 보기 이뻐서 ( 가독성 ) 때문인 줄 알았는데, 직접해보니 속도차이가 엄청 나네요....
+몰랐던 사실 : 인라인 코드 쓰는이유가 단순히 보기 이뻐서 ( 가독성 ) 때문인 줄 알았는데, 직접해보니 속도차이가 엄청 나네요....
 
-
+<br>
 
 ### 파이썬 철학
 
@@ -76,11 +76,10 @@ If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!
 ```
 
-
+<br>
 
 ### Python 표준 라이브러리
 
-<br>
 #### Type
 
 - List
@@ -88,7 +87,7 @@ Namespaces are one honking great idea -- let's do more of those!
 - Set
 - Dict
 
-
+<br>
 
 #### Function
 
@@ -101,7 +100,7 @@ Namespaces are one honking great idea -- let's do more of those!
 - zip()
 - and others
 
-
+<br>
 
 #### modules
 
@@ -112,7 +111,7 @@ Namespaces are one honking great idea -- let's do more of those!
 - math
 - and others
 
-
+<br>
 
 #### range
 
@@ -123,11 +122,9 @@ print(nums_list)
 
 [output]
 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-```
-```python
-# 1칸씩 건너뛰며
-nums = range(2,11,2)
 
+# 2칸씩 건너뛰며
+nums = range(2,11,2)
 nums_list = list(nums)
 print(nums_list)
 
@@ -136,26 +133,21 @@ print(nums_list)
 ```
 
 
+<br>
 
 #### enumerate()
 
 ```python
 letters = ['a','b','c','d']
-
 indexed_letters = enumerate(letters)
-
-indexed_letters = list(indexed_letters)
 print(indexed_letters)
 
 [output]
 [(0, 'a'), (1, 'b'), (2, 'c'), (3, 'd')]
-```
-```python
+
 # start index 설정
 letters = ['a','b','c','d']
-
 indexed_letters = enumerate(letters, start = 5)
-
 indexed_letters = list(indexed_letters)
 print(indexed_letters)
 
@@ -164,20 +156,18 @@ print(indexed_letters)
 ```
 
 
+<br>
 
 #### map()
 
 ```python
 nums = [1.5, 2.3, 3.4, 4.6, 5.0]
-
 rnd_nums = map(round, nums)
-
 print(list(rnd_nums))
 
 [output]
 [2, 2, 3, 5, 5]
-```
-```python
+
 # lambda 와 같이 사용
 nums = [1,2,3,4,5]
 
@@ -188,7 +178,7 @@ print(list(sqrd_nums))
 [output]
 [1, 4, 9, 16, 25]
 ```
-
+<br>
 
 #### Practice
 
@@ -201,7 +191,7 @@ print(nums_list2)
 [1, 3, 5, 7, 9, 11]
 ```
 
-> 매번 `list(range(1,12,2))` 만 사용했는데, 해보니까 `[*range(1,12,2)]`가 더 빠르고 깔끔하네요
+매번 `list(range(1,12,2))` 만 사용했는데, 해보니까 `[*range(1,12,2)]`가 더 빠르고 깔끔하네요
 
 
 
@@ -288,7 +278,7 @@ print(nums[nums > 0])
 [1 2]
 ```
 
-
+<br>
 
 
 
@@ -307,7 +297,9 @@ The slowest run took 4.61 times longer than the fastest. This could mean that an
 100000 loops, best of 5: 9.72 µs per loop
 ```
 
-> import time 선언 후 time.time() 만 사용했었는데, %timeit 사용하니 보다 자세히 표현되네용...
+import time 선언 후 time.time() 만 사용했었는데, %timeit 사용하니 보다 자세히 표현되네용...
+
+<br>
 
 #### Specifying number of runs/loops
 
@@ -321,7 +313,7 @@ The slowest run took 5.82 times longer than the fastest. This could mean that an
 
 `-r 플래그` 를 이용하여 실행 수를 지정하고, `-n 플래그`를 사용하여 루프 수를 지정 할 수 있음
 
-
+<br>
 
 #### Using %timeit in line magic mode
 
@@ -335,7 +327,7 @@ for x in range(10):
 1000000 loops, best of 5: 1.24 µs per loop
 ```
 
-
+<br>
 
 #### Saving output
 
@@ -361,7 +353,7 @@ times.worst
 0.00011633400026767049
 ```
 
-
+<br>
 
 #### Comparing times
 
@@ -384,7 +376,7 @@ diff = (f_time.compile_time - l_time.compile_time) * (10** 9)
 print("l_time better than f_time by {} ns".format(diff))
 ```
 
-
+<br>
 
 #### Code profiling
 
@@ -432,7 +424,7 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
     10         1          1.0      1.0      0.6      return hero_data
 ```
 
-
+<br>
 
 #### Quick and dirty approach
 
@@ -454,9 +446,7 @@ sys.getsizeof(nums_list)
 %mprun -f convert_units convert_units(heroes, hts, wts)
 ```
 
-------
-
-
+<br>
 
 ## 3. Efficiently combining, counting, and iterating
 <br>
