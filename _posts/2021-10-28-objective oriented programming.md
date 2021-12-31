@@ -377,7 +377,7 @@ class Employee:
         else:
             self.salary = Employee.MIN_SALARY
             
-	@classmethod
+    @classmethod
     def from_file(cls, filename):
         with open(filename, "r") as f:
             name = f.readline()
@@ -471,8 +471,8 @@ class BankAccount:
 class SavinsAccount(BankAccount):
     def __init__(self, balance, interest_rate):
         # Call the parent constructor using ClassName.__init__()
-		BanKAccount.__init__(self, balance) 
-		self.interest_rate = interest_rate
+        BanKAccount.__init__(self, balance) 
+        self.interest_rate = interest_rate
         
 acct = SavingsAccount(1000, 0.03)
 acct.interest_rate
@@ -492,15 +492,15 @@ acct.interest_rate
 ```python
 class CheckingAccount(BankAccount):
     def __init__(self, balance, limit):
-		BanKAccount.__init__(self, content) 
-		self.limit = limit
+      BanKAccount.__init__(self, content) 
+      self.limit = limit
     def deposit(self, amount):
-        self.balance += amount
+      self.balance += amount
     def withdraw(self, amount, fee=0):
-        if fee <=self.limit:
-            BankAccount.withdraw(self, amount-fee)
-        else:
-            BankAccount.withdraw(self, amount-self.limit)
+      if fee <=self.limit:
+        BankAccount.withdraw(self, amount-fee)
+      else:
+        BankAccount.withdraw(self, amount-self.limit)
 ```
 
 생성자와 동일하게, 상속받은 클래스를 추가하여 깔끔하게 코드 구현이 가능합니다.
@@ -557,7 +557,6 @@ class Customer:
         self.id, self.name = id, name
     def __eq__(self, other):
         print("__eq__() is called")
-        
         return (self.id == other.id) and (self.name == other.name)
 
 customer1 = Customer(123, "Maryam Azar")

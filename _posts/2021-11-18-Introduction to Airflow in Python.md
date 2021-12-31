@@ -1020,14 +1020,16 @@ Airflow config object: {{ conf }}
 
 #### Macros
 
-Airflow 변수 외에도 매크로 변수가 있습니다. `{{ macros }}`
+Airflow 변수 외에도 매크로 변수가 있습니다.
 
 매크로 패키지는 Airflow 템플릿에 대한 다양한 유용한 개체 또는 메서드에 대한 참조를 제공합니다.
 
-- `{{ macros.datetime }}`: The `datetime.datetime` object
-- `{{ macros.timedelta }}`: The `timedelta` object
-- `{{ macros.uuid }}`: Python's `uuid` object
-- `{{ macros.ds_add('2020-04-15', 5) }}`: 일부 추가 기능도 사용 가능 ( 템플릿 내에서 날짜 계산을 쉽게 수행 할 수 있는 방법을 제공)
+```txt
+macros.datetime : The `datetime.datetime` object
+macros.timedelta : The `timedelta` object
+macros.uuid : Python's `uuid` object
+macros.ds_add('2020-04-15', 5) : 일부 추가 기능도 사용 가능 ( 템플릿 내에서 날짜 계산을 쉽게 수행 할 수 있는 방법을 제공)
+```
 
 <br>
 

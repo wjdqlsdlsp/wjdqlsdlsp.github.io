@@ -746,7 +746,7 @@ spark-submit \
 
 <br>
 
-#### The tset pyramid: where to invest your efforts
+#### The test pyramid: where to invest your efforts
 
 때때로 사람들은 테스트를 피하는데, 소프트웨어에 더 많은 기능을 추가하는데 더 많은 시간을 소요합니다.
 
@@ -1015,7 +1015,7 @@ jobs:
 
 <br>
 
-#### Scheduling with crom
+#### Scheduling with cron
 
 예를 들어 변동 예측 알고리즘은 매주 실행해야 할 수 있습니다.
 
