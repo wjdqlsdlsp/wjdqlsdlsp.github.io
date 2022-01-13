@@ -570,7 +570,7 @@ print([cell.cell_contents for cell in new_function.__closure__])
 ```python
 @double_args
 def multiply(a,b):
-    return a+b
+    return a*b
 
 multiply(1,5)
 ```
