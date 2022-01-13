@@ -472,13 +472,13 @@ print(x)
 42
 -------------------
 def foo():
-    x = 10
+  x = 10
 	def bar():
-        nonlocal x
-        x = 200
-        print(x)
-    bar()
+    nonlocal x
+    x = 200
     print(x)
+  bar()
+  print(x)
 foo()
 
 [output]
