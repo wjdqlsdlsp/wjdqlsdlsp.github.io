@@ -9,6 +9,9 @@ image:
 
 아래는 제가 작업한 시각화 일부를 정리하였습니다. 모든 작업은 파이썬 Matplotlib를 이용해서 제작하였습니다.
 
+***
+![]({{site.baseurl}}/images/visualization_all/sp500.png)
+*S&P500 10년 상승률*
 
 ***
 ![]({{site.baseurl}}/images/visualization_all/bigmac_scatter.png)
