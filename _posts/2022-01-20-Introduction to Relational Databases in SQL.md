@@ -613,7 +613,7 @@ CREATE TABLE a (
 	id integer PRIMARY KEY,
 	column_a varchar(64),
 	...
-	b_id integer REFERENCES b (id)
+	b_id integer REFERENCES b (id) ON DELETE CASCADE
 );
 ```
 
