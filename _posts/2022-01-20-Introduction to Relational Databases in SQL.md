@@ -2,7 +2,7 @@
 
 layout: post
 
-title:  "Introduction to AWS Boto in Python"
+title:  "Introduction to Relational Databases in SQL"
 
 date:   2022-01-20
 
@@ -15,7 +15,7 @@ image: /post_img/oop.jpg
 ---
 
 
-**# Introduction to AWS Boto in Python**
+
 
 
 
