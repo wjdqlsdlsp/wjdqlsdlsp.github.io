@@ -1,0 +1,13 @@
+I"G<p><strong># Introduction to AWS Boto in Python</strong></p>
+
+<h2 id="1-your-first-database">1. Your first database</h2>
+
+<p>데이터 베이스를 만드는 것은, csv나 excel파일을 이용하는 것보다 많은 이점을 가집니다.</p>
+
+<h2 id="2-enforce-data-consistency-with-attribute-constraints">2. Enforce data consistency with attribute constraints</h2>
+
+<h2 id="3-uniquely-identify-records-with-key-constraints">3. Uniquely identify records with key constraints</h2>
+
+<h2 id="4-glue-together-tables-with-foreign-keys">4. Glue together tables with foreign keys</h2>
+
+:ET

@@ -1,0 +1,185 @@
+I"o)<p><strong># Introduction to AWS Boto in Python</strong></p>
+
+<h2 id="1-your-first-database">1. Your first database</h2>
+
+<p>데이터 베이스를 만드는 것은, csv나 excel파일을 이용하는 것보다 많은 이점을 가집니다.</p>
+
+<p><br /></p>
+
+<h4 id="a-relational-database">A relational database</h4>
+
+<ul>
+  <li>
+    <p>데이터베이스는 개체를 테이블에 저장하여 모델링합니다. (professor, universities, companies)</p>
+  </li>
+  <li>
+    <p>각 테이블에는 단일 항목 유형의 데이터만 포함됩니다. (Companies for bank “Credit Suisse”)</p>
+  </li>
+</ul>
+
+<p>이것은 엔티티를 한 번만 저장하여 중복성을 줄입니다.</p>
+
+<ul>
+  <li>데이터베이스를 사용하여 엔티티 간의 관계를 모델링 할 수 있습니다. (교수는 대학, 회사 여러곳에서 일할 수 있고, 회사는 여러 교수를 고용할 수 있다.)</li>
+</ul>
+
+<p>이러한 구성을 통해, 엔티티가 서로 관련되는 방식을 정확히 정의할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="have-a-look-at-the-postgresql-database">Have a look at the PostgreSQL database</h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">table_schema</span><span class="p">,</span> <span class="k">table_name</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">tables</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">table_name</span><span class="p">,</span> <span class="n">columns_name</span><span class="p">,</span> <span class="n">data_type</span>
+<span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">columns</span>
+<span class="k">WHERE</span> <span class="k">table_name</span> <span class="o">=</span> <span class="s1">'pg_config'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> 
+<span class="k">FROM</span> <span class="n">university_professors</span>
+<span class="k">LIMIT</span> <span class="mi">3</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="one-entity-type-in-the-database">One “entity type” in the database</h4>
+
+<p align="center"><img src="/images/post_img/sql1.png" /></p>
+
+<p>위와 같은 그림을 엔티티-관계 다이어그램이라고 합니다.</p>
+
+<p>사각형은 소위 엔티티 유형을 나타내고, 연결된 원은 속성(또는 열)을 나타냅니다.</p>
+
+<p align="center"><img src="/images/post_img/sql2.png" /></p>
+
+<p>위와 같이 이용하면, 중복성이 줄어들게 됩니다. 하지만, 원래 속성 중 하나인 기능이 여전히 누락되어 있습니다. 이를 위해서 제휴 테이블을 따로 생성하는 것이 올바른 방법입니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">ADD</span> <span class="n">university_shortname</span> <span class="nb">text</span><span class="p">;</span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="k">table_name</span><span class="p">(</span>
+	<span class="n">column_a</span> <span class="n">data_type</span><span class="p">,</span>
+	<span class="n">column_b</span> <span class="n">data_type</span><span class="p">,</span>
+	<span class="n">column_c</span> <span class="n">data_type</span>
+<span class="p">);</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table_name</span>
+<span class="k">ADD</span> <span class="n">column_d</span> <span class="n">data_type</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>이를 위해 가장 먼저 해야하는 것은 테이블을 만드는 것입니다. 위와 같이, SQL의 CREATE TABLE 명령어를 사용합니다. 최소한 이 명령에는 테이블 이름과 해당 데이터 유형이 있는 하나 이상의 열이 필요합니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">weather</span><span class="p">(</span>
+	<span class="n">clouds</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="n">temperature</span> <span class="nb">numeric</span><span class="p">,</span>
+	<span class="n">weather_station</span> <span class="nb">char</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>예를 들어, 적적할게 세 개의 열이 있는 날씨 테이블을 만들 수 있습니다.</p>
+
+<p>각 열의 데이터 타입을 지정해야합니다.</p>
+
+<p><br /></p>
+
+<h4 id="distinct-data-in-the-new-tables">DISTINCT data in the new tables</h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">university_professors</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>테이블을 분할하는 것의 한 가지 장점은 중복성이 감소된다는 것입니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">organization</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">university_professors</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>하지만 완벽하게, 고유의 조직으로 분리하지는 못합니다.</p>
+
+<p><br /></p>
+
+<h4 id="insert-distinct-records-into-the-new-tables">INSERT DISTINCT records INTO the new tables</h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">organizations</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">organization</span><span class="p">,</span>
+	<span class="n">organization_sector</span>
+<span class="k">FROM</span> <span class="n">university_professors</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>기존 테이블에서 새 테이블로 데이터를 복사하려면, INSERT INTO SELECT DISTINCT 패턴을 사용할 수 있습니다.</p>
+
+<p><br /></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="k">table_name</span> <span class="p">(</span><span class="n">column_a</span><span class="p">,</span> <span class="n">column_b</span><span class="p">)</span>
+<span class="k">VALUES</span> <span class="p">(</span><span class="nv">"value_a"</span><span class="p">,</span> <span class="nv">"value_b"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>이것은 수동으로 값을 삽입하는 INSERT INTO 의 일반적인 사례입니다.</p>
+
+<p><br /></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">affiliations</span><span class="p">(</span>
+	<span class="n">first_name</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="n">last_name</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="n">university_shortname</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="k">function</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="n">organisation</span> <span class="nb">text</span>
+<span class="p">);</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table_name</span>
+<span class="k">RENAME</span> <span class="k">COLUMN</span> <span class="n">old_name</span> <span class="k">TO</span> <span class="n">new_name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>column의 이름을 변경하고 싶으면, ALTER TABLE을 통해 변경할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="drop-a-column-in-affiliations">DROP a column in affiliations</h4>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">affiliations</span><span class="p">(</span>
+	<span class="n">firstname</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="n">lastname</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="n">university_shortname</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="k">function</span> <span class="nb">text</span><span class="p">,</span>
+	<span class="n">organization</span> <span class="nb">text</span>
+<span class="p">);</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">table_name</span>
+<span class="k">DROP</span> <span class="k">COLUMN</span> <span class="k">column_name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>university_shortname이 필요없기에, 이를 DROP 하기 위해서는 위와 같이 사용합니다.</p>
+
+<p><br /></p>
+
+<h2 id="2-enforce-data-consistency-with-attribute-constraints">2. Enforce data consistency with attribute constraints</h2>
+
+<p><br /></p>
+
+<p>데이터베이스 개념은 데이터를 특정 구조로 밀어 넣는 것입니다.</p>
+
+<p>데이터 유형, 관계 및 기타 규칙을 적용하는 사전 정의된 모델입니다.</p>
+
+<p>일반 적으로 이러한 규칙을 무결성 제약 조건이라고 하지만 다른 이름이 존재합니다.</p>
+
+<p><br /></p>
+
+<h4 id="integrity-constrains">Integrity constrains</h4>
+
+<p>무결성 제약조건은 대략 세가지의 유형으로 나눌 수 있습니다.</p>
+
+<ul>
+  <li>Attribute constraints - 데이터 타입</li>
+  <li>Key constraints -  고유키</li>
+  <li>Referential integrity constraints - foreign keys</li>
+</ul>
+
+<h2 id="3-uniquely-identify-records-with-key-constraints">3. Uniquely identify records with key constraints</h2>
+
+<h2 id="4-glue-together-tables-with-foreign-keys">4. Glue together tables with foreign keys</h2>
+
+:ET
