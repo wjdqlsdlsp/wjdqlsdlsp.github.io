@@ -1,0 +1,110 @@
+I"=<h1 id="aws---saa-ebs">AWS - SAA ~EBS</h1>
+
+<p><br /></p>
+
+<h4 id="elastic-block-store-ebs">Elastic Block Store (EBS)</h4>
+
+<ul>
+  <li>네트워크를 통해 인스턴스에 연결되는 볼륨형태의 저장공간 ( 네트워크를 사용하기 때문에 데이터 전송간의 딜레이가 있을수 있습니다. )</li>
+  <li>EBS를 통해 데이터를 유지할 수 있습니다.</li>
+  <li>특정 AZ에 묶입니다.</li>
+  <li>EC2 인스턴스로부터 탈부착 가능</li>
+  <li>프로비저닝된 수용성 ( 얼마나 공간이 필요한지 정의해야함 )</li>
+  <li>공간이 더 필요할 경우 시간이 지남에 따라 용량을 늘릴 수 있음</li>
+  <li>Delete on Termination 옵션이 설정되어 있으면, 인스턴스가 삭제될때 루트 볼륨이 같이 삭제됩니다.</li>
+</ul>
+
+<h4 id="ebs-스냅샷">EBS 스냅샷</h4>
+
+<ul>
+  <li>백업 ( 스냅샷 )을 생성할 수 있습니다.</li>
+  <li>스냅샷을 위해 EBS를 인스턴스로부터 떼어낼 필요는 없지만, 완벽하게 진행하기 위해서는 권장됩니다.</li>
+  <li>스냅샷 이후, 다른 AZ or 리전으로 카피 가능</li>
+</ul>
+
+<h4 id="ami---amazone-machine-image">AMI - Amazone Machine Image</h4>
+
+<ul>
+  <li>EC2 인스턴스의 커스터마이즈
+    <ul>
+      <li>나만의 소프트웨어, 구성, 운영시스템, 모니터링 등 을 설정할 수 있습니다.</li>
+      <li>더 빠르게 부팅하고, 더 빠르게 구성할 수 있습니다. ( AMI안에 내장되어 있어서 )</li>
+    </ul>
+  </li>
+  <li>AMI는 특정 리전에 구축되어있습니다. ( 다른지역에서 사용하려면 지역간에 복사 )</li>
+</ul>
+
+<h4 id="ec2-instance-store">EC2 Instance Store</h4>
+
+<ul>
+  <li>EBS 볼륨은 네트워크 드라이브이기에, 성능의 한계가 있습니다.</li>
+  <li>EC2 Instance Store는 하드웨어 디스크가 EC2에 부착된 형식이기 때문에 높은 성능을 보여줍니다.</li>
+  <li>더 나은 I/O 성능을 보여줍니다.</li>
+  <li>단, 인스턴스가 종료되거나, 중지될 경우, 인스턴스 스토어의 저장공간 또한 손실됩니다.</li>
+  <li>버퍼, 캐쉬, 스크래치 데이터, 임시 컨텐츠 등을 저장하기에 적절</li>
+  <li>하드웨어가 손실됬을 때 큰 손실을 입을 가능성이 있습니다.</li>
+  <li>EC2 인스턴스를 사용하기로 했다면, 백업이나 복제가 필수적입니다.</li>
+</ul>
+
+<h4 id="ebs-volume-types">EBS Volume Types</h4>
+
+<ul>
+  <li>gp2 / gp3 : SSD 볼륨</li>
+  <li>Io 1/ io 2 : SSD 볼륨, Highest - performance</li>
+  <li>St 1 : HDD 볼륨,</li>
+  <li>sc 1 : HDD 볼륨, 덜 사용하는 데이터 저장에 적절</li>
+</ul>
+
+<h4 id="ebs-multi-attach---io1io2-family">EBS Multi-Attach - io1/io2 family</h4>
+
+<ul>
+  <li>EBS 볼륨을 여러개의 EC2 인스턴스에 부착하는 방법 ( 같은 AZ )</li>
+  <li>각각의 인스턴스는 full read &amp; write 권한을 가집니다.</li>
+</ul>
+
+<h4 id="ebs-encryption">EBS Encryption</h4>
+
+<ul>
+  <li>암호화된 EBS 생성하면 다음을 얻게 됩니다.
+    <ul>
+      <li>저장 데이터가 볼륨 내에서 암호화됩니다.</li>
+      <li>인스턴스와 볼륨 사이에 이동중인 모든 데이터가 암호화됩니다.</li>
+      <li>모든 스냅샷이 암호화됩니다.</li>
+      <li>스냅샷에서 생성된 모든 볼륨이 암호화됩니다.</li>
+    </ul>
+  </li>
+  <li>암호화 과정은 투명하게 처리되기 때문에 따로 할일은 없습니다. ( AWS에서 EC2 EBS에 의해 처리)</li>
+  <li>이러한 암호화는 가능하면 모든 것에 적용하기를 권장합니다. - 이는 매우 적은 지연만을 가져옴</li>
+  <li>KMS의 키를 활용합니다. (AES-256)</li>
+</ul>
+
+<h4 id="efs---elastic-file-system">EFS - Elastic File System</h4>
+
+<ul>
+  <li>Managed NFS 혹은 네트워크 파일 시스템이라고 불립니다.</li>
+  <li>이는 AZ 영역을 넘어서 여러 인스턴스에 탑재될 수 있습니다.</li>
+  <li>가용성이 높고, 확장 가능하지만, 가격이 매우 비쌉니다. ( 단 사용한 만큼만 지불 )</li>
+  <li>컨텐츠 관리, 웹서빙, 데이터 공유, 워드프레스 웹사이트 같은 것에 사용</li>
+  <li>NFSv4.1 프로토콜 사용</li>
+  <li>security group을 이용해서 EFS에 접근을 컨트롤</li>
+  <li>EFS는 리눅스 기반에만 작동합니다.</li>
+  <li>암호화를 위해서는 KMS키를 사용합니다.</li>
+  <li>각각의 2가지의 모드가 존재
+    <ul>
+      <li>Performance mode
+        <ul>
+          <li>General purpose : 웹서버 등의 사용 사례 ( 지연 민감 파일 시스템 )</li>
+          <li>Max I/O : 지연시간이 길어지지만, 사용량은 더 좋아집니다. ( 빅데이터에 적절 )</li>
+        </ul>
+      </li>
+      <li>Throughput mode
+        <ul>
+          <li>Bursting ( 처리량이 파일시스템의 크기와 같이 확장 )</li>
+          <li>Provisioned ( 구체적인 양 설정 )</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Storage Tiers 가 존재하여 수명주기 설정으로 자주 사용하지 않는 데이터는 가격이 싼 저장공간으로 이동 가능</li>
+</ul>
+:ET

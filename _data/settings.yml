@@ -11,9 +11,7 @@ author:
   name: ParkJeongBin
   image: home_img.jpg
   say-hello: <strong>박정빈</strong>
-  bio: 안녕하세요, 저는 데이터 전문가를 목표로 공부하는 학생입니다. 데이터 엔지니어링, 데이터 분석/시각화에 관심이 많습니다. 방문해주셔서 감사합니다 ! :)
-
-
+  bio: 데이터를 좋아하는 Data enthusiast.
 
 #-------------------------------
 # Contact links

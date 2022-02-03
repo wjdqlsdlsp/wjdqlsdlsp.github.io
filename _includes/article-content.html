@@ -6,7 +6,7 @@
     <div class="article__wrapper">
 
         {% if post.image %}
-          <a href="{{post.url | prepend: site.baseurl}}" class="article__image" style="background-image: url({{site.baseurl}}/images/{{post.image}})">
+          <a href="{{post.url | prepend: site.baseurl}}" class="article__image" style="background-image: url({{site.baseurl}}/images/{{post.image}}); height:350px; ">
           </a>
         {% else %}
           {% assign without-image = 'article-without-image' %}
@@ -15,11 +15,11 @@
         <div class="article__content {{ without-image }}">
           <div class="article-tags">
           {% if post.tags.size >= 1 %}
-            <div class="article-tags__box">
-              {% for tag in post.tags %}
+            <!-- <div class="article-tags__box"> -->
+              <!-- {% for tag in post.tags %}
                 <a href="{{ site.baseurl }}/tag/{{ tag }}" class="article__tag">{{ tag }}</a>
-              {% endfor %}
-            </div>
+              {% endfor %} -->
+            <!-- </div> -->
           {% else %}
           {% endif %}
           </div>
