@@ -22,14 +22,14 @@
             <!-- </div> -->
           {% else %}
           {% endif %}
+          
           </div>
-      
           <h2 class="article__title">
             <a href="{{ post.url | prepend: site.baseurl }}">{{post.title}}</a>
           </h2>
-      
+          <a href="{{post.url | prepend: site.baseurl}}" style="color:gray;">
           <p class="article__excerpt">{% if post.description %}{{ post.description }}{% else %}{{ post.content | strip_html | truncate: 185 }}{% endif %}</p>
-          
+          </a>
           <div class="article__footer">
             <div class="article__meta">
               <span class="article__date"><time datetime="{{ post.date | date_to_xmlschema }}">{% assign date_format = site.minima.date_format | default: "%B %-d, %Y" %}{{ post.date | date: date_format }}</time></span>
@@ -37,9 +37,8 @@
 
             <a href="{{post.url | prepend: site.baseurl}}" class="read-more">Keep Reading <i class="ion ion-ios-arrow-forward"></i></a>
           </div>
-
         </div>
-
+      
       </div>
       
   </div>

@@ -1,0 +1,23 @@
+I"\<h4 id="scalability">Scalability</h4>
+
+<ul>
+  <li>확장성은, 어플리케이션/시스템들의 사이즈가 더 커질 수 있음을 의미합니다.</li>
+  <li>두가지 종류의 확장성
+    <ul>
+      <li>Vertical Scalability ( 수직 확장성 )</li>
+      <li>Horizontal Scalability ( 수평 확장성 )</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="high-availability">High availability</h4>
+
+<ul>
+  <li>높은 가용성은, 확장성이랑 다릅니다.</li>
+  <li>이는 최소 2개이상의 데이터센터 or 가용지역을 이용중임을 의미합니다.</li>
+  <li></li>
+</ul>
+
+:ET
