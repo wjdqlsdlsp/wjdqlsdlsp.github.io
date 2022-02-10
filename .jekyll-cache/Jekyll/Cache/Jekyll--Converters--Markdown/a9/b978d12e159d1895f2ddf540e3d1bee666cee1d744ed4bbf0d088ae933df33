@@ -1,0 +1,980 @@
+I"��<h2 id="1-introduction-to-big-data-analysis-with-spark">1. Introduction to Big Data analysis with Spark</h2>
+
+<p><br /></p>
+
+<h4 id="빅데이터란-">빅데이터란 ?</h4>
+
+<p>빅데이터에 대한 단일 정의는 없습니다. 공급 업체, 실무자 및 비지니스 전문가는 이를 다르게 사용합니다.</p>
+
+<p>사전적 의미 : 기존의 데이터 처리 소프트웨어에 비해 너무 복잡한 데이터 세트의 애플리케이션</p>
+
+<p><br /></p>
+
+<h4 id="빅데이터를-설명하는-3가지">빅데이터를 설명하는 3가지</h4>
+
+<ul>
+  <li>양 - 데이터의 크기</li>
+  <li>속도 - 데이터를 생성하고 처리 할 수 있는 속도</li>
+  <li>다양성 - 서로 다른 데이터 소스 및 형식</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="빅데이터-컨셉">빅데이터 컨셉</h4>
+
+<ul>
+  <li>클러스터 컴퓨팅 - 여러 시스템의 리소스를 풀링하여 작업을 완료합니다.</li>
+  <li>병렬 컴퓨팅 - 많은 계산이 동시에 수행되는 계산 유형</li>
+  <li>분산 컴퓨팅 - 병렬로 작업을 실행하는 노드 또는 네트워크 컴퓨터</li>
+  <li>배치 프로세싱 - 데이터를 더 작은 조각으로 나누고 각 조각을 개별 컴퓨터에서 실행</li>
+  <li>실시간 처리 - 정보를 처리하고 즉시 준비</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="유명한-프레임-워크">유명한 프레임 워크</h4>
+
+<ul>
+  <li>Hadoop / MapReduce - 확장 가능하고 장애 내성이 있는 Java 기반 프레임워크
+    <ul>
+      <li>배치 데이터 프로세싱</li>
+      <li>오픈 소스</li>
+    </ul>
+  </li>
+  <li>Spark - 클러스터 된 컴퓨터에서 빅 데이터를 저장하고 처리하기 위한 프레임 워크
+    <ul>
+      <li>오픈 소스</li>
+      <li>병렬 컴퓨팅</li>
+      <li>배치 및 실시간 데이터 처리에 적합</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark-framework">Spark framework</h4>
+
+<ul>
+  <li>여러 컴퓨터에 데이터와 계산을 배포합니다. ( 클러스터 컴퓨팅  )</li>
+  <li>Spark는 메모리에서 대부분의 게산을 실행하여 제공</li>
+  <li>메모리에서 애플리케이션을 최대 100배 더 빠르게 실행하고 디스크에서할 때 10배 더 빠르게 실행</li>
+  <li>Scala 언어로 작성되었지만, Java, Python, R, SQL도 지원</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark-구성">Spark 구성</h4>
+
+<p align="center"><img src="/images/post_img/spark1.png" /></p>
+
+<p>Spark Core가 구축되고 나머지 Spark 라이브러리는 그 위에 구축됩니다.</p>
+
+<ul>
+  <li>Spark SQL - Python, Java, Scala에서 구조적 및 반 구조적 데이터를 처리하기 위한 라이브러리</li>
+  <li>MLlib ( 머신러닝 ) - 기계학습 알고리즘 라이브러리</li>
+  <li>GraphX - 그래프 조작 및 병렬 그래프 계산 수행을 위한 알고리즘 및 도구 모음</li>
+  <li>Spark Streaming - 실시간 데이터를 위한 확장 가능하고 처리량이 많은 라이브러리</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark의-모드">Spark의 모드</h4>
+
+<ul>
+  <li>Local mode - 랩탑과 같은 단일 컴퓨터에서 Spark를 실행할 수 있는 모드
+    <ul>
+      <li>테스트, 디버깅 및 데모 목적으로 매우 편함</li>
+    </ul>
+  </li>
+  <li>Cluster mode
+    <ul>
+      <li>주로 프로덕션에서 사용</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Local 모드에서 Cluster 모드로 전환하는 것이 기본적인 워크 플로</p>
+
+<ul>
+  <li>로컬모드에서 클러스터 모드로 전환하는 동안 코드를 변경할 필요 없음</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="pyspark">PySpark</h4>
+
+<ul>
+  <li>Spark는 Scala로 작성되었습니다.</li>
+  <li>PySpark는 파이썬에서 Spark를 지원합니다.</li>
+  <li>최신 버전의 PySpark는 Scala와 유사한 계산 기능을 제공합니다.</li>
+  <li>PySpark의 API는 Pandas &amp; Sklearn 패키지와 유사합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark-shell">Spark Shell</h4>
+
+<ul>
+  <li>임시 데이터 분석을 가능하게하는 대화식 쉘 제공</li>
+  <li>Spark 쉘은 클러스터에서 작업을 실행하기 전에 대화형 프로토 타이핑에 유용</li>
+  <li>다른 쉘과 달리 Spark 쉘을 사용하면 디스크에 배포 된 데이터와 상호 작용할 수 있습니다.</li>
+  <li>시스템의 여러 메모리가 있을 때, Spark는 이를 자동으로 배포합니다.</li>
+  <li>spark-shell ( Scala ), PySpark ( Python ), SparkR ( R ) - 세가지 프로그래밍 언어로 쉘을 제공</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="pyspark-shell">PySpark Shell</h4>
+
+<ul>
+  <li>Python에서 Spark의 대화 형 응용 프로그래밍을 개발하기 위한 Python 기반 명령 줄 도구</li>
+  <li>클러스터 연결을 지원하도록 기능이 향상되었습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="sparkcontext">SparkContext</h4>
+
+<ul>
+  <li>Spark기능과 상호 작용하기 위한 진입 점 (entry point)
+    <ul>
+      <li>entry point : 운영 체제에서 제공된 프로그램으로 제어가 전송되는 지점 (집에 들어가는 키)</li>
+    </ul>
+  </li>
+  <li>PySpark 쉘의 SparkContext, sc 라는 변수로 엑세스</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="sparkcontext-1">SparkContext</h4>
+
+<ul>
+  <li>Version - 현재 실행중인 스파크 버전을 보여줍니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sc</span><span class="p">.</span><span class="n">version</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Python Version - 현재 사용중인 Python 버전을 보여줍니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sc</span><span class="p">.</span><span class="n">pythonVer</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Master - 로컬 모드에서 실행할 로컬주소 Or 클러스터의 URL</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sc</span><span class="p">.</span><span class="n">master</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="데이터-로드">데이터 로드</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">parallelize()</code> 메소드</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>1에서 5까지 숫자를 보유한 병렬 컬렉션을 만드는 방법</p>
+
+<p><br /></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">textFile()</code> 메소드</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rdd2</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">"test.txt"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>텍스트 파일을 로드하는 방법</p>
+
+<p><br /></p>
+
+<h4 id="익명함수---파이썬">익명함수 - 파이썬</h4>
+
+<ul>
+  <li>파이썬은, lambda 구문을 통해 런타임에 이름이 바인딩되지 않는 함수를 생성 가능합니다.</li>
+  <li>lambda 함수는, <code class="language-plaintext highlighter-rouge">map()</code> , <code class="language-plaintext highlighter-rouge">filter()</code> 등 다른 함수와 잘 통합되어 있어서, 매우 강력합니다.</li>
+  <li>def와 마찬가지로, lambda는 프로그램에서 나중에 호출할 함수를 만듭니다. ( 이름에 할당하는 대신 함수를 반환 - 익명함수로 알려진 이유 )</li>
+  <li>함수 정의를 인라인하거나, 코드 실행을 연기하는 방법으로 사용</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="lambda">Lambda</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">lambda</span> <span class="n">arguments</span><span class="p">:</span> <span class="n">expression</span>
+</code></pre></div></div>
+
+<p>lambda의 형식은 위와 같습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">double</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="k">print</span><span class="p">(</span><span class="n">double</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="def-vs-lambda">def vs lambda</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">cube</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">3</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
+</code></pre></div></div>
+
+<p>labmda 정의에 의해 lambda는 return문과 항상 반환되는 표현식을 포함합니다.</p>
+
+<p><br /></p>
+
+<h4 id="lambda---map">lambda - map()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">map()</code> 함수는 목록의 모든 항목과 새로운 항목으로 호출됩니다.</li>
+  <li>각 항목에 대해 해당 기능에서 리턴 한 항목이 포함 된 list가 리턴됩니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">map</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">items</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>map함수를 사용하는 예제는 위와 같습니다.</p>
+
+<p><br /></p>
+
+<h4 id="lambda---filter">lambda - filter()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">filter()</code> 함수는 함수와 리스트를 인수로 받습니다.</li>
+  <li>함수가 True로 평가되는 항목이 포함 된 목록과 새 목록이 반환됩니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">filter</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+<span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">%</span><span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">),</span> <span class="n">items</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h2 id="2-programming-in-pyspark-rdds">2. Programming in PySpark RDD’s</h2>
+
+<p><br /></p>
+
+<h4 id="rdd">RDD</h4>
+
+<ul>
+  <li>Resilient Distrubuted Datasets ( 탄력적 분산 데이터 세트 )</li>
+  <li>클러스터에 분산 된 데이터 모음</li>
+  <li>RDD는 PySpark의 기본 및 백본 데이터 유형</li>
+  <li>Spark가 데이터 처리를 시작하면 데이터를 파티션으로 나누고, 각 노드가 데이터 조각을 포함하여 클러스터 노드에 데이터를 분배</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark2.png" /></p>
+
+<p><br /></p>
+
+<h4 id="rdd-속성">RDD 속성</h4>
+
+<ul>
+  <li>Resilient ( 복원력 ) - 장애를 견뎌내거나 누락되거나 손상된 파티션을 다시 계산할 수 있는 기능</li>
+  <li>Distributed ( 분산 ) - 효율적인 계산을 위해 클러스터의 여러 노드에 걸쳐 작업을 확장합니다.</li>
+  <li>Datasets - 파티션 된 데이터의 모음 인 데이터 세트 ( 배열, 테이블, 튜플, 객체 )</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rdd-작성-방법">RDD 작성 방법</h4>
+
+<ul>
+  <li>RDD를 생성하는 가장 간단한 방법은 기존 객체 컬렉션을 취하는 방법 ( 목록, 배열, 집합을 SparkContext의 parellelize 메소드에 전달 )</li>
+  <li>RDD를 작성하는 것보다 일반적인 방법은 HDFS에 저장된 파일 또는 외부 데이터 세트에서 데이터를 로드하는 것
+    <ul>
+      <li>Files in HDFS</li>
+      <li>Objects in Amazon S3 bucket</li>
+      <li>lines in a text file</li>
+    </ul>
+  </li>
+  <li>기존 RDD에서 RDD를 만드는 방법</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="parallelized-collection">Parallelized collection</h4>
+
+<ul>
+  <li>RDD는 SparkContext의 parallelize 메소드를 사용하여 목록 또는 세트에서 작성됩니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">numRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>첫번째 - numRDD라는 RDD는 숫자 1,2,3,4를 포함하는 리스트 목록에서 작성됩니다.</p>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">helloRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">(</span><span class="s">"Hello world"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>두번째 - helloRDD라는 RDD는 “Hello world”라는 문자열에서 작성됩니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">type</span><span class="p">(</span><span class="n">helloRDD</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">Output</span><span class="p">]</span>
+<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">pyspark</span><span class="p">.</span><span class="n">rdd</span><span class="p">.</span><span class="n">PipelinedRDD</span><span class="s">'&gt;
+</span></code></pre></div></div>
+
+<p>Python의 type 메소드를 사용하여 생성 된 객체가 RDD인지 확인 할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="외부-데이터-세트">외부 데이터 세트</h4>
+
+<ul>
+  <li>외부 데이터 세트의 RDD는 PySpark에서 가장 일반적입니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">textFile()</code> 메소드를 사용하여 작성</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fileRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">"README.md"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="pyspark-파티셔닝">PySpark 파티셔닝</h4>
+
+<ul>
+  <li>파티션을 처리하는 방법을 이해하여 병렬 처리를 제어 할 수 있습니다.</li>
+  <li>Spark의 파티션은 큰 데이터 세트의 분할이며, 각 부분은 클러스터의 여러 위치에 저장됩니다.</li>
+  <li>기본적으로 Spark는 몇가지 요소를 기반으로 RDD를 만들 때 데이터를 분할합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">numRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">minPartitions</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>minPartitions 라는 인자를 통해 최소 파티션 갯수를 정의할 수 있습니다.</p>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fileRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">textFile</span><span class="p">(</span><span class="s">"README.md"</span><span class="p">,</span> <span class="n">minPartitions</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>RDD의 파티션 수는 항상 <code class="language-plaintext highlighter-rouge">getNumPartitions()</code> 함수를 통해 알 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="pyspark-operations">PySpark operations</h4>
+
+<ul>
+  <li>Pyspark에서 두가지 유형의 작업을 지원합니다.
+    <ul>
+      <li>Transformations - 새 RDD를 리턴하는 RDD조작</li>
+      <li>Actions - 일부 계싼을 수행하는 조작</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rdd-transformations">RDD Transformations</h4>
+
+<ul>
+  <li>내결함성에서 RDD를 지원하고 리소스 사용을 최적화하는 기능은 지연 평가 ( Lazy evaluation )</li>
+  <li>Lazy evaluation
+    <ul>
+      <li>Spark는 RDD 및 실행에서 수행하는 모든 작업에서 그래프를 만듭니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark3.png" /></p>
+
+<p>그림과 같이 RDD에 대해 조치가 수행 될 때만 그래프가 시작됩니다. 이를 Spark의 Lzy evaluation 이라고 합니다.</p>
+
+<p><br /></p>
+
+<h4 id="map-transformation">map() Transformation</h4>
+
+<ul>
+  <li>map 변환은 함수를 받아서 RDD의 각 요소에 적용합니다.</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark4.png" /></p>
+
+<p>1,2,3,4의 요소를 가진 RDD로 부터, map 변환은 함수를 받아서 RDD의 각 요소에 적용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">RDD_map</span> <span class="o">=</span> <span class="n">RDD</span><span class="p">.</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="filter-transformation">filter() Transformation</h4>
+
+<ul>
+  <li>Filter 변환은 함수를 받아서 조건을 통과하는 요소 만있는 RDD를 반환합니다.</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark5.png" /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">RDD_filter</span> <span class="o">=</span> <span class="n">RDD</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="flatmap-transformation">flatMap() Transformation</h4>
+
+<ul>
+  <li>RDD의 각 요소에 대해 여러 값을 리턴한다는 점을 제외하고 map 변환과 유사</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark6.png" /></p>
+
+<p>위의 사진과 같이 문자열을 split하거나 할 때 자주 사용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([</span><span class="s">"hello world"</span><span class="p">,</span> <span class="s">"how are you"</span><span class="p">])</span>
+<span class="n">RDD_flatmap</span> <span class="o">=</span> <span class="n">RDD</span><span class="p">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">" "</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="union-transformation">union() Transformation</h4>
+
+<ul>
+  <li>Union 변환은 한 RDD와 다른 RDD의 통합을 리턴합니다.</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark7.png" /></p>
+
+<p>위의 그림을 보면, inputRDD를 필터링하고, 두개의 RDD인 errorsRDD, warningsRDD를 만듭니다.</p>
+
+<p>이후, 두개의 RDD를 union 변환을 이용해서 합칩니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">inputRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">textFIle</span><span class="p">(</span><span class="s">"logs.txt"</span><span class="p">)</span>
+<span class="n">errorRDD</span> <span class="o">=</span> <span class="n">inputRDD</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">"error"</span> <span class="ow">in</span> <span class="n">x</span><span class="p">.</span><span class="n">split</span><span class="p">())</span>
+<span class="n">warningsRDD</span> <span class="o">=</span> <span class="n">inputRDD</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">"warnings"</span> <span class="ow">in</span> <span class="n">x</span><span class="p">.</span><span class="n">split</span><span class="p">())</span>
+<span class="n">combinedRDD</span> <span class="o">=</span> <span class="n">errorRDD</span><span class="p">.</span><span class="n">union</span><span class="p">(</span><span class="n">warningsRDD</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="rdd-actions">RDD Actions</h4>
+
+<ul>
+  <li>Action은 RDD에 적용되어 계산을 실행 한 후 값을 반환하는 작업입니다.</li>
+  <li>Basic RDD Actions
+    <ul>
+      <li>collect()</li>
+      <li>take(N)</li>
+      <li>first()</li>
+      <li>count()</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="collect-and-take">collect() and take()</h4>
+
+<ul>
+  <li>collect() 는 RDD에서 전체 요소 목록을 리턴합니다.</li>
+  <li>take(N) 은 RDD에서 ‘N’개의 요소를 인쇄합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD_map</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD_map</span><span class="p">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="first-and-count">first() and count()</h4>
+
+<ul>
+  <li>first() 는 RDD의 첫번재 요소를 리턴합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD_map</span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+</code></pre></div></div>
+
+<ul>
+  <li>count() 는 RDD의 총 요소 수를 리턴하는데 사용됩니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="키--값-rdd">키 / 값 RDD</h4>
+
+<ul>
+  <li>실제 데이터 세트의 대부분은 일반적으로 키 / 값 쌍을 이룹니다. ex) 팀 - 플레이어</li>
+  <li>데이터 집합의 일반적인 패턴은 각 행이 하나 이상의 값에 매핑되는 키입니다.</li>
+  <li>이러한 데이터를 처리하기 위해, Pyspark는 pair RDD라는 특수 데이터 구조를 제공합니다.</li>
+  <li>pair RDD에서 키는 식별자를 나타내고, 값은 데이터를 나타냅니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="pair-rdds-만들기">pair RDDs 만들기</h4>
+
+<ul>
+  <li>키-값 튜플 or 일반 RDD에서 만들기</li>
+  <li>key-value pair 형태의 데이터에서 만들기</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">my_tuple</span> <span class="o">=</span> <span class="p">[(</span><span class="s">'Sam'</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="p">(</span><span class="s">'Mary'</span><span class="p">,</span> <span class="mi">34</span><span class="p">),</span> <span class="p">(</span><span class="s">'Peter'</span><span class="p">,</span> <span class="mi">25</span><span class="p">)]</span>
+<span class="n">pairRDD_tuple</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">my_tuple</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">my_list</span> <span class="o">=</span> <span class="p">[</span><span class="s">'Sam 23'</span><span class="p">,</span> <span class="s">'Mary 34'</span><span class="p">,</span> <span class="s">'Peter 25'</span><span class="p">]</span>
+<span class="n">regularRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">my_list</span><span class="p">)</span>
+<span class="n">pairRDD_RDD</span> <span class="o">=</span> <span class="n">regularRDD</span><span class="p">.</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Paired RDD Transformations
+    <ul>
+      <li>reduceByKey(func) - 같은 키를 가진 값으로 결합</li>
+      <li>groupByKey() - 같은 키를 가진 그룹으로 묶기</li>
+      <li>sortByKey() - 키를 기준으로 정렬</li>
+      <li>Join() - 2개의 RDD를 그들의 키를 기반으로 합침</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="reducebykey">reduceByKey()</h4>
+
+<ul>
+  <li>함수를 사용하여 값을 동일한 키와 결합하는 변환</li>
+  <li>데이터 세트의 각 키마다 하나씩 여러 병렬 작업을 실행</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">regularRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="s">"Messi"</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="p">(</span><span class="s">"Ronaldo"</span><span class="p">,</span> <span class="mi">34</span><span class="p">),</span> <span class="p">(</span><span class="s">"Neymar"</span><span class="p">,</span> <span class="mi">22</span><span class="p">),</span> <span class="p">(</span><span class="s">"Messi"</span><span class="p">,</span> <span class="mi">24</span><span class="p">)])</span>
+<span class="n">pairRDD_reducebykey</span> <span class="o">=</span> <span class="n">regularRDD</span><span class="p">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">pairRDD_reducebykey</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="sortbykey">sortByKey()</h4>
+
+<ul>
+  <li>키에 정의 된 순서가 있는 한 쌍의 RDD를 정렬</li>
+  <li>SortByKey 변환은 키를 기준으로 오름차순 또는 내림차순으로 정렬된 RDD를 리턴</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pairRDD_reducebykey_rev</span> <span class="o">=</span> <span class="n">pairRDD_reducebykey</span><span class="p">.</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">pairRDD_reducebykey_rev</span><span class="p">.</span><span class="n">sortByKey</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">).</span><span class="n">collect</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="groupbykey">groupByKey()</h4>
+
+<ul>
+  <li>키별로 데이터를 그룹화 합니다.</li>
+  <li>데이터가 원하는 형식으로 입력되면, groupByKey 변환은 pair RDD에서 동일한 키를 가진 모든 값을 그룹화합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">airports</span> <span class="o">=</span> <span class="p">[(</span><span class="s">"US"</span><span class="p">,</span><span class="s">"JFK"</span><span class="p">),</span> <span class="p">(</span><span class="s">"UK"</span><span class="p">,</span> <span class="s">"LHR"</span><span class="p">),</span> <span class="p">(</span><span class="s">"FR"</span><span class="p">,</span> <span class="s">"CDG"</span><span class="p">),</span> <span class="p">(</span><span class="s">"US"</span><span class="p">,</span> <span class="s">"SFO"</span><span class="p">)]</span>
+<span class="n">regularRDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">airports</span><span class="p">)</span>
+<span class="n">pairRDD_group</span> <span class="o">=</span> <span class="n">regularRDD</span><span class="p">.</span><span class="n">groupByKey</span><span class="p">().</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">cont</span><span class="p">,</span> <span class="n">air</span> <span class="ow">in</span> <span class="n">pairRDD_group</span><span class="p">:</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">cont</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">air</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="join">Join</h4>
+
+<ul>
+  <li>키를 기준으로 두 쌍의 RDD를 결합합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD1</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="s">"Messi"</span><span class="p">,</span> <span class="mi">34</span><span class="p">),</span> <span class="p">(</span><span class="s">"Ronaldo"</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="s">"Neymar"</span><span class="p">,</span> <span class="mi">24</span><span class="p">)])</span>
+<span class="n">RDD2</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="s">"Ronaldo"</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span> <span class="p">(</span><span class="s">"Neymar"</span><span class="p">,</span> <span class="mi">120</span><span class="p">),</span> <span class="p">(</span><span class="s">"Messi"</span><span class="p">,</span> <span class="mi">100</span><span class="p">)])</span>
+
+<span class="n">RDD1</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">RDD2</span><span class="p">).</span><span class="n">collect</span><span class="p">()</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[(</span><span class="s">'Neymar'</span><span class="p">,(</span><span class="mi">24</span><span class="p">,</span><span class="mi">120</span><span class="p">)),</span> <span class="p">(</span><span class="s">'Ronaldo'</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="mi">80</span><span class="p">)),</span> <span class="p">(</span><span class="s">'Messi'</span><span class="p">,</span> <span class="p">(</span><span class="mi">34</span><span class="p">,</span><span class="mi">100</span><span class="p">))]</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="reducefunc">reduce(func)</h4>
+
+<ul>
+  <li>reduce(func)는 두 요소에서 작동하는 함수로, RDD에 함수를 적용한 결과로, 동일한 유형의 새 요소를 리턴합니다.</li>
+  <li>함수는 병렬로 올바르게 계산 될 수 있도록 commutative and associative 해야합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">RDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">RDD</span><span class="p">.</span><span class="nb">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">14</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="saveastextfile">saveAsTextFile()</h4>
+
+<ul>
+  <li>대부분의 경우 데이터의 크기가 커서 RDD에 대한 collect() 를 실행하지 않는 것이 좋습니다.</li>
+  <li>이런 경우, HDFS or S3에 데이터를 쓰는 것이 일반적입니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">saveAsTextFile()</code> 은 RDD를 특정 디렉토리에 텍스트 파일로 저장하는데 사용 할 수 있습니다.</li>
+  <li>기본적으로, <code class="language-plaintext highlighter-rouge">saveAsTextFile()</code>은 각 파티션과 함께 RDD를 디렉토리 내 별도의 파일로 저장합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD</span><span class="p">.</span><span class="n">saveAsTextFile</span><span class="p">(</span><span class="s">"tempFile"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">coalesce()</code>를 사용해서 RDD를 single text file로 저장 할 수 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RDD</span><span class="p">.</span><span class="n">coalesce</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="n">saveAsTextFile</span><span class="p">(</span><span class="s">"tempFile"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>위는 디렉토리 내에서 RDD를 단일 파일로 저장하는 예시입니다.</p>
+
+<p><br /></p>
+
+<h4 id="pair-rdd-함수">pair RDD 함수</h4>
+
+<ul>
+  <li>pair RDD변환에는 pair RDD에 사용할 수 있는 RDD 동작들이 있습니다.</li>
+  <li>그러나 pair RDD는 PySpark의 일부 추가 작업을 수행합니다.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">countByKey()</code></li>
+      <li><code class="language-plaintext highlighter-rouge">collectAsMap()</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="countbykey">countByKey()</h4>
+
+<ul>
+  <li>(Key, Value) 형태의 RDD에서만 사용할 수 있습니다.</li>
+  <li>countByKey 작업을 사용하면, 각 키의 요소 수를 계산할 수 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="s">"a"</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">"b"</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">"a"</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+<span class="k">for</span> <span class="n">kee</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">rdd</span><span class="p">.</span><span class="n">countByKey</span><span class="p">().</span><span class="n">items</span><span class="p">():</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">kee</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+  
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">(</span><span class="s">'a'</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">(</span><span class="s">'b'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>countByKey는 크기가 메모리에 들어가기에 충분히 작은 데이터 세트에만 사용해야 합니다.</p>
+
+<p><br /></p>
+
+<h4 id="collectasmap">collectAsMap()</h4>
+
+<ul>
+  <li>RDD의 key-value pair를 딕셔너리로 리턴합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)]).</span><span class="n">collectAsMap</span><span class="p">()</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">{</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h2 id="3-pyspark-sql--dataframes">3. PySpark SQL &amp; DataFrames</h2>
+
+<p><br /></p>
+
+<h4 id="pyspark-dataframe">Pyspark DataFrame</h4>
+
+<ul>
+  <li>PySpark SQL은 구조화 된 데이터를 위한 라이브러리입니다.</li>
+  <li>PySpark RDD API와 달리, PySpark SQL은 더 많은 것을 제공합니다.</li>
+  <li>Pyspark SQL은 DataFrame라는 프로그래밍 추상화를 제공합니다.</li>
+  <li>DataFrame은 명명 된 열이있는 변경 불가능한 분산 데이터 콜렉션 입니다.</li>
+  <li>DataFrame은 다음과 같은 대규모 구조화 된 데이터 수집을 처리하도록 설계되었습니다. ( RDS, JSON 등 )</li>
+  <li>DataFrame API는 Python, R, Scala, Java 를 지원합니다.</li>
+  <li>DataFrame은 SQL 쿼리( SELECT * from table ) or 표현식 함수( df.select() )를 지원합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="dataframe-진입점--entry-point-">DataFrame 진입점 ( Entry point )</h4>
+
+<ul>
+  <li>SparkSession 은 Spark DataFrame의 진입점을 제공합니다.</li>
+  <li>SparkSession은 RDD에서 SparkContext가 수행했던 작업을 수행합니다.</li>
+  <li>SparkSession은 데이터프레임을 만들고, 등록 할 수 있습니다.</li>
+  <li>SparkSession 또한 PySpark 쉘이 가능합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="dataframe-만들기">DataFrame 만들기</h4>
+
+<ul>
+  <li>기존 RDD에서 createDataFrame 메소드를 사용하여 만들기</li>
+  <li>read 메소드를 사용해서, CSV, JSON, TXT와 같은 파일 데이터 소스로 부터 만들기</li>
+  <li>스키마를 정의해야 합니다.
+    <ul>
+      <li>DataFrame의 데이터 구조이며, Spark가 데이터에 대한 쿼리를 보다 효율적으로 최적화하는데 도움이 됩니다.</li>
+      <li>열 이름, 데이터 타입, 해당 열에 null or 빈 값 허용 여부 등</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rdd---dataframe">RDD -&gt; DataFrame</h4>
+
+<ul>
+  <li>RDD에서 DataFrame을 만들려면, RDD와 스키마를 createDataFrame 메소드에 전달해야 합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">iphones_RDD</span> <span class="o">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">parallelize</span><span class="p">([</span>
+  <span class="p">(</span><span class="s">"XS"</span><span class="p">,</span> <span class="mi">2018</span><span class="p">,</span> <span class="mf">5.65</span><span class="p">,</span> <span class="mf">2.79</span><span class="p">,</span> <span class="mf">6.24</span><span class="p">),</span>
+  <span class="p">(</span><span class="s">"XR"</span><span class="p">,</span> <span class="mi">2018</span><span class="p">,</span> <span class="mf">5.94</span><span class="p">,</span> <span class="mf">2.98</span><span class="p">,</span> <span class="mf">6.84</span><span class="p">),</span>    
+  <span class="p">(</span><span class="s">"X10"</span><span class="p">,</span> <span class="mi">2017</span><span class="p">,</span> <span class="mf">5.65</span><span class="p">,</span> <span class="mf">2.79</span><span class="p">,</span> <span class="mf">6.13</span><span class="p">),</span>    
+  <span class="p">(</span><span class="s">"8Plus"</span><span class="p">,</span> <span class="mi">2017</span><span class="p">,</span> <span class="mf">6.23</span><span class="p">,</span> <span class="mf">3.07</span><span class="p">,</span> <span class="mf">7.12</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">'Model'</span><span class="p">,</span> <span class="s">'Year'</span><span class="p">,</span> <span class="s">'Height'</span><span class="p">,</span> <span class="s">'Width'</span><span class="p">,</span> <span class="s">'Weight'</span><span class="p">]</span>
+
+<span class="n">iphones_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">iphones_RDD</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">iphones_df</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="n">pyspark</span><span class="p">.</span><span class="n">sql</span><span class="p">.</span><span class="n">dataframe</span><span class="p">.</span><span class="n">DataFrame</span>
+</code></pre></div></div>
+
+<p>위와 같이, 스키마를 지정해서 인자로 넘겨줘야 합니다.</p>
+
+<p>만약 스키마가 없을 경우, 데이터에서 스키마를 유추하려고 시도합니다.</p>
+
+<p><br /></p>
+
+<h4 id="csvjsontxt">CSV/JSON/TXT</h4>
+
+<ul>
+  <li>CSV / JSON / TXT 를 통해 DataFrame을 만들 경우, spark.read 속성을 사용합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_csv</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">"people.csv"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">inferSchema</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">df_json</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">json</span><span class="p">(</span><span class="s">"people.json"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">inferSchema</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">df_txt</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">txt</span><span class="p">(</span><span class="s">"people.txt"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">inferSchema</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>파일 유형에 관계없이, 파일 경로와, header, inferSchema 두개의 매개 변수가 필요합니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">header</code> - 첫 번째 행을 열 이름으로 취급 ( True / False )</p>
+
+<p><code class="language-plaintext highlighter-rouge">inferSchema</code> - DataFrame 판독기에 schema를 추측하도록 지시 ( True / False )</p>
+
+<p><br /></p>
+
+<h4 id="dataframe-operators">DataFrame operators</h4>
+
+<ul>
+  <li>RDD와 동일하게, DataFrame에 작업도 두가지로 나눠집니다.
+    <ul>
+      <li>Transformations</li>
+      <li>Actions</li>
+    </ul>
+  </li>
+  <li>DataFrame은 집계를 필터링, 그룹화 또는 계산하기 위한 PySpark SQL을 사용할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="select-and-show">select() and show()</h4>
+
+<ul>
+  <li>select 변환은 DataFrame에서 하나 이상의 열을 추출하는데 사용 ( select 작업 안에 열 이름을 전달 )</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_id_age</span> <span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">'Age'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>DataFrame에서 행을 인쇄하려면 Action을 실행해야 합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">show()</code> 는 기본적으로 20행을 인쇄하는 액션입니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_id_age</span><span class="p">.</span><span class="n">show</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>위와 같이, N값을 주면 처음부터 N행 까지 인쇄합니다.</p>
+
+<p><br /></p>
+
+<h4 id="filter-and-show">filter() and show()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">filter()</code> 는 select과 달리, 지정된 조건을 통과하는 행만 선택합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">new_df_age21</span> <span class="o">=</span> <span class="n">new_df</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">new_df</span><span class="p">.</span><span class="n">Age</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">)</span>
+<span class="n">new_df_age21</span><span class="p">.</span><span class="n">show</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="groupby-and-count">groupby() and count()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">groupby()</code>변환은, DataFrame을 그룹화하여 집계를 실행할 수 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df_age_group</span> <span class="o">=</span> <span class="n">test</span><span class="p">.</span><span class="n">df</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'Age'</span><span class="p">)</span>
+<span class="n">test_df_age_group</span><span class="p">.</span><span class="n">count</span><span class="p">().</span><span class="n">show</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="orderby">orderby()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">orderby()</code> 변환은, 주어진 열을 기준으로 정렬 된 DataFrame을 반환합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df_age_group</span><span class="p">.</span><span class="n">count</span><span class="p">().</span><span class="n">orderBy</span><span class="p">(</span><span class="s">'Age'</span><span class="p">).</span><span class="n">show</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="dropduplicates">dropDuplicates()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">dropDuplicates()</code> 변환은, 중복 행이 제거 된 새 DataFrame을 반환합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df_no_dup</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">"User_ID"</span><span class="p">,</span> <span class="s">"Gender"</span><span class="p">,</span> <span class="s">"Age"</span><span class="p">).</span><span class="n">dropDuplicates</span><span class="p">()</span>
+<span class="n">test_df_no_dup</span><span class="p">.</span><span class="n">count</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="withcolumnrenamed">withColumnRenamed()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">withColumnRenamed()</code> - 기존 열의 이름을 바꾸어 새 DataFrame을 반환합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df_sex</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s">'Gender'</span><span class="p">,</span> <span class="s">'Sex'</span><span class="p">)</span>
+<span class="n">test_df_sex</span><span class="p">.</span><span class="n">show</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="printschema">printSchema()</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">printSchema()</code>는 열 유형을 확인하기 위해 사용합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df</span><span class="p">.</span><span class="n">printSchema</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="columns-actions">columns actions</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">columns</code> 액션은, 데이터프레임의 열 이름을 문자열 배열로 반환합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df</span><span class="p">.</span><span class="n">columns</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="describe-actions">describe() actions</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">describe()</code> 액션은, DataFrame에서 숫자 열의 요약 통계를 계산하는데 사용합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df</span><span class="p">.</span><span class="n">describe</span><span class="p">().</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>describe()에 인자로 열 이름을 입력하지 않으면, DataFrame에 있는 모든 숫자 열에 대한 통계를 출력합니다.</p>
+
+<p><br /></p>
+
+<h4 id="dataframe-api-vs-sql-queries">DataFrame API vs SQL queries</h4>
+
+<ul>
+  <li>Pyspark는 DataFrame API, SQL queries 두가지 방법으로 조작할 수 있습니다.</li>
+  <li>DataFrame API
+    <ul>
+      <li>프로그래밍 인터페이스를 제공합니다.</li>
+      <li>기본적으로 데이터 상호 작용하기 위한, DSL ( Domain-Specific Language )</li>
+      <li>프로그래밍 방식으로 훨씬 쉽게 구성할 수 있습니다.</li>
+    </ul>
+  </li>
+  <li>SQL queries
+    <ul>
+      <li>훨씬 간결하고 이해하기 쉽습니다.</li>
+      <li>이식성이 있으며, 지원되는 모든 언어를 수정하지 않고 사용할 수 있습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="sql-queries">SQL Queries</h4>
+
+<ul>
+  <li>SparkSession은 SQL 쿼리를 실행하는 데 사용할 수 있는 SQL이라는 메서드를 제공합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">sql()</code> 메소드는 SQL 문을 인수로 사용합니다.</li>
+  <li>sql쿼리는 DataFrame에 대해 직접 실행할 수 없습니다. - 기존 DataFrame에 대해 SQL 쿼리를 발행하기 위해 임시테이블을 작성하는 <code class="language-plaintext highlighter-rouge">createOrReplaceTempView</code> 함수를 사용합니다</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">"table1"</span><span class="p">)</span>
+
+<span class="n">df2</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="s">"SELECT filed1, field2 from table1"</span><span class="p">)</span>
+<span class="n">df2</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>위와 같이 임시 테이블을 생성 후, SQL 쿼리를 사용합니다.</p>
+
+<p>결과 출력에 경우, DataFrame이므로, collect, first, show 등의 액션으로 작업을 실행 합니다.</p>
+
+<p><br /></p>
+
+<h4 id="sql-query-를-이용한-집계">SQL query 를 이용한 집계</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">test_df</span><span class="p">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">"test_table"</span><span class="p">)</span>
+<span class="n">query</span> <span class="o">=</span> <span class="s">'''
+				SELECT Age, max(Purchase)
+				FROM test_table
+				GROUP BY Age
+				'''</span>
+<span class="n">spark</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="n">query</span><span class="p">).</span><span class="n">show</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>SQL 쿼리를 통해 원하는 데이터를 집계 추출한다음, spark.sql을 통해 로드합니다.</p>
+:ET

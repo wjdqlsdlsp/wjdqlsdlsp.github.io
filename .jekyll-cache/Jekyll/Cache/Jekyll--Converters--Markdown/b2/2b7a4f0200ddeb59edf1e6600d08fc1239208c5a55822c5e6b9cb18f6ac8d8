@@ -1,0 +1,659 @@
+I"�^<h4 id="scalability">Scalability</h4>
+
+<ul>
+  <li>확장성은, 어플리케이션/시스템들의 사이즈가 더 커질 수 있음을 의미합니다.</li>
+  <li>두가지 종류의 확장성
+    <ul>
+      <li>Vertical Scalability ( 수직 확장성 )</li>
+      <li>Horizontal Scalability ( 수평 확장성 )</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="high-availability">High availability</h4>
+
+<ul>
+  <li>높은 가용성은, 확장성이랑 다릅니다.</li>
+  <li>이는 최소 2개이상의 데이터센터 or 가용지역을 이용중임을 의미합니다.</li>
+  <li>하나의 데이터 센터가 작동불가 상태가 되도 다른 지역에서 작동하게 됩니다. ( 재난 대응 )</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="load-balancing">Load balancing</h4>
+
+<ul>
+  <li>로드 밸런스는, 서버 트래픽을 여러개의 서버로 분산하는 다운스트림형태입니다.</li>
+  <li>하나의 DNS로 사용가능하다는 장점도 있음</li>
+  <li>장애대응에 효과적</li>
+  <li>헬스체크를 통해 인스턴스가 사용가능한 상태인지 확인</li>
+  <li>SSL을 통한 https 사용가능</li>
+  <li>쿠키를 이용한 stickiness 사용가능</li>
+  <li>다른 AZ간의 high availability</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="로드밸런서-종류">로드밸런서 종류</h4>
+
+<ul>
+  <li>Classic Load Balancer
+    <ul>
+      <li>2009 년부터 사용된 구버전 ( 지금은 잘 사용하지 않음 )</li>
+      <li>HTTP, HTTPS, TCP, SSL 등 지원</li>
+    </ul>
+  </li>
+  <li>Application Load Balancer
+    <ul>
+      <li>2016 년부터 사용된 신버전</li>
+      <li>HTTP, HTTPS, WebSocket 지원</li>
+    </ul>
+  </li>
+  <li>Network Load Balancer
+    <ul>
+      <li>2017년 부터 사용</li>
+      <li>TCP, TLS, UDP 지원</li>
+    </ul>
+  </li>
+  <li>Gateway Load Balancer
+    <ul>
+      <li>2020년 부터 사용</li>
+      <li>네트워크 레이어를 운영하는 3개의 ip 프로토콜 제공</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="alb운영시-client-ip를-알아야할-때">ALB운영시, client IP를 알아야할 때</h4>
+
+<ul>
+  <li>ALB를 기본으로 운영시, EC2 인스턴스는 클라이언트의 Ip주소를 알수 없습니다.</li>
+  <li>이를 알기 위해서, 클라이언트의 주소를 ALB가 X-Forwarded-For에 client ip 주소를 저장합니다.</li>
+  <li>Ec2 인스턴스는 클라이언트 ip가 필요할 때, X-forwarded-for로 부터 가져옵니다. (x-forwarded-port, x-forwarded-proto를 통해 port, proto 또한 가져올 수 있습니다.)</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="alb-와-nlb의-차이">ALB 와 NLB의 차이</h4>
+
+<ul>
+  <li>ALB는 Layer7 수준 - http, https에서 작동</li>
+  <li>NLB는 Layer4 수준 - TCP, UDP 에서 작동</li>
+  <li>Layer4를 이용하기 때문에 NLB의 지연율이 훨 적음 ( ~100ms vs ~400ms )</li>
+  <li>NLB는 AZ하나당 하나의 고정된 IP 주소를 가집니다. ( ALB는 고정된 host주소를 가지는 것과 차이 )</li>
+  <li>NLB는 극도로 높은 성능을 요구할 때 사용됩니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="gateway-load-balancer">Gateway Load Balancer</h4>
+
+<ul>
+  <li>보유한 네트워크에 침입 탐지 및 방지 시스템 등을 이용하고자 할때 주로 사용</li>
+  <li>Layer3 수준(Network layer)에서 작동합니다.</li>
+  <li>2가지의 기능을 가집니다.
+    <ul>
+      <li>투명 네트워크 게이트웨이 - 모든 트래픽이 vpc에 있고 입구와 출구를 통해서 네트워크가 이동할 텐데, 이것이 로드밸런서가 됩니다.</li>
+      <li>로드밸런서의 역할</li>
+    </ul>
+  </li>
+  <li>6081포트에서 GENEVE 프로토콜을 이용</li>
+</ul>
+
+<h4 id="sticky-sessions">Sticky Sessions</h4>
+
+<ul>
+  <li>동일한 유저는 동일한 인스턴스로 연결하는 설정</li>
+  <li>쿠키를 이용하여 기능을 사용</li>
+  <li>Application-based Cookies 두가지의 쿠기 종류
+    <ul>
+      <li>Custom cookie
+        <ul>
+          <li>목표에 의해 생성된 맞춤 쿠키</li>
+          <li>앱에 필요한 모든 맞춤 속성을 포함할 수 있으며, 쿠키 이름은 각각 목적에 따라 개별적으로 특화되어야하는데 AWSALB, AWSALBAPP등 몇몇 쿠키이름은 이미 ELB가 사용하기 때문에 사용하면안됩니다.</li>
+        </ul>
+      </li>
+      <li>Applicaiton cookie
+        <ul>
+          <li>로드밸런서에 의해 생성</li>
+          <li>AWSALBAPP쿠키 사용</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Duration-based Cookies
+    <ul>
+      <li>로드밸런서에 의해 생성 쿠키이름은 ALB에서 사용하는 AWSALB, CLB에서 사용하는 AWSELB가 됩니다.</li>
+      <li>만료기간이 있습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="cross-zone-load-balancing">Cross Zone Load Balancing</h4>
+
+<ul>
+  <li>ALB
+    <ul>
+      <li>항상 가능 ( 비활성화 불가능 )</li>
+      <li>AZ간 데이터 전송에서는 비용을 지불하지 않음</li>
+    </ul>
+  </li>
+  <li>NLB
+    <ul>
+      <li>기본적으로 비활성화</li>
+    </ul>
+  </li>
+  <li>CLB
+    <ul>
+      <li>기본적으로 비활성화</li>
+      <li>AZ간 데이터전송에는 요금이 부과되지 않음</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="ssl--tls">SSL / TLS</h4>
+
+<ul>
+  <li>SSL인증서를 통해 클라이언트와 로드밸런서 전송중 암호화를 허락합니다.</li>
+  <li>SSL 보안 소켓 레이어를 나타냅니다. ( 연결을 암호화하는데 사용 )</li>
+  <li>TLS는 SSL의 최신버전 입니다. (전송 레이어 보안을 나타냄)</li>
+  <li>TLS가 주로 사용되고있으며, 종종 이를 SSL이라고 부르기도함</li>
+  <li>SSL은 공공 인증기관에서 발급됩니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="ssl---sever-name-indication--sni-">SSL - Sever Name Indication ( SNI )</h4>
+
+<ul>
+  <li>웹서버가 여러 웹사이트를 제공하기 위해 하나의 웹서버에서 여러 SSL인증서를 로드하는 방법</li>
+  <li>핸드쉐이크를 통해 , “이 서버에 연결하고 싶다” 요청을 하면, 서버가 어떤 인증서를 로딩하는지 파악하고 새당 인증서를 발급</li>
+  <li>ALB &amp; NLB(새로운 버전), CloudFront에서만 작동합니다. ( CLB에서는 작동하지 않음 ) - CLB가 다중 웹사이트에 대한 지원을 하기위해서는 여러개의 CLB를 운영해야함 ( CLB하나당 1개의 SSL을 지원 )</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="connection-draining">Connection Draining</h4>
+
+<ul>
+  <li>Feature naming
+    <ul>
+      <li>CLB - Connection Draining</li>
+      <li>ALB &amp; NLB - Deregistration Delay</li>
+    </ul>
+  </li>
+  <li>인스턴스 등록이 취소되거나 비정상으로 표시되는 동안 인스턴스가 진행중인 요청 또는 활성 요청을 하는데, 약간의 시간을 주는 기능</li>
+  <li>0~3600초의 드레이닝 시간을 설정할 수 있습니다. (0인 경우, 드레이닝 설정 안함 상태)</li>
+  <li>짧으면 짧을수록 빠르게 오프라인되도록 진행함</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="auto-scaling-group">Auto Scaling Group</h4>
+
+<ul>
+  <li>증가된 로드 및 감소된 로드에 따라 인스턴스의 환경(갯수)를 조절함</li>
+  <li>ELB에 연결하여 자동화 된 인스턴스 환경을 구축할 수 있음</li>
+  <li>최소, 최대 인스턴스 갯수를 지정함으로 동적으로 대응</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="auto-scaling-alarms">Auto Scaling Alarms</h4>
+
+<ul>
+  <li>CloudWatch alarms을 기반으로 한 ASG을 계산하는 것이 가능</li>
+  <li>측정항목을 설정하고 해당 측정항목이 설정한 값 이상 혹은 이하가 됬을 때 대응 (평균 CPU 양 등)</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="asg---dynamic-scaling-policies">ASG - Dynamic Scaling Policies</h4>
+
+<ul>
+  <li>Target Tracking Scaling
+    <ul>
+      <li>가장 설정하기 쉬운 설정</li>
+      <li>예) 모든 EC2 인스턴스의 사용량이 평균 40프로를 넘지 않게 설정해라</li>
+    </ul>
+  </li>
+  <li>Simple / Step Scaling
+    <ul>
+      <li>CloudWatch Alarms을 통해 설정량 이상일 때 2개의 유닛을 추가해라 or 2개를 삭제해라 등</li>
+    </ul>
+  </li>
+  <li>Scheduled Actions
+    <ul>
+      <li>조정이 필요한 시간에 인스턴스를 증가 했다가 이후에 줄여라 ( 오후 5 ~ 오후 9시에는 인스턴스를 증가시켰다가 해당시간이 아니면 줄여라 )</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="asg---predictive-scaling">ASG - Predictive Scaling</h4>
+
+<ul>
+  <li>Predictive Scaling
+    <ul>
+      <li>예측을 통해 계획을 조정하는 방법 (머신러닝 기반)</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="사용하기-좋은-metrics">사용하기 좋은 metrics</h4>
+
+<ul>
+  <li>CPU사용량</li>
+  <li>타켓당 요청 갯수 ( 인스턴스 하나당 요청을 얼마나 받는지 )</li>
+  <li>평균 네트워크 In/Out량</li>
+  <li>커스텀 메트릭 (CloudWath를 통해 설정)</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="asg---cooldowns">ASG - Cooldowns</h4>
+
+<ul>
+  <li>조정활동 이후, 쿨다운 기간을 가짐 ( 기본값 300 )</li>
+  <li>이기간 동안에는 인스턴스를 추가하거나 삭제하지 않음</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rds">RDS</h4>
+
+<ul>
+  <li>RDS는 Relational Database Service의 약어</li>
+  <li>이는 SQL을 사용하는 데이터베이스입니다.</li>
+  <li>AWS를 통해 클라우드에서 데이터 베이스 운영이 가능합니다.
+    <ul>
+      <li>Postgres</li>
+      <li>MySQL</li>
+      <li>MariaDB</li>
+      <li>Oracle</li>
+      <li>Microsoft SQL Server</li>
+      <li>Aurora</li>
+    </ul>
+  </li>
+  <li>RDS는 managed service입니다.
+    <ul>
+      <li>데이터베이스 제공은 물론, OS가 탑재되어있어 완전한 자동화가 가능합니다.</li>
+      <li>지속적으로 백업파일을 생성할 수 있고, 타임스탬프를 통한 복원이 가능합니다.</li>
+      <li>대쉬보드를 통한 모니터링이 가능합니다.</li>
+      <li>복제를 통한 읽기 전용을 구축하고, 이로인해 데이터베이스 성능이 증가합니다.</li>
+      <li>Multi AZ에서 구축가능합니다.</li>
+      <li>유지보수가 가능합니다.</li>
+      <li>확장가능합니다.</li>
+      <li>스토리지는 EBS에 의해 제어됩니다. (gp2, io1)</li>
+    </ul>
+  </li>
+  <li>SSH를 통해 인스턴스에 접근할 수 없습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rds---storage-auto-scaling">RDS - Storage Auto Scaling</h4>
+
+<ul>
+  <li>저장공간이 부족해지면, RDS는 이를 감지하고 자동으로 스케일업합니다.</li>
+  <li>최댓값을 설정할 수 있습니다.</li>
+  <li>모든 AWS 데이터베이스가 이 기능을 지원합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="read-replicas">Read Replicas</h4>
+
+<ul>
+  <li>읽기 전용 스케일 복제입니다.</li>
+  <li>쓰기와 읽기가 동시에 작동된다고 하면 너무 많은 리퀘스트가 있어 성능이 떨어집니다.</li>
+  <li>이를 위해 읽기전용 데이터베이스를 복제합니다
+    <ul>
+      <li>같은 AZ</li>
+      <li>다른 AZ</li>
+      <li>다른 리전</li>
+    </ul>
+  </li>
+  <li>ASYNC replication - 비동기식 복제: 마스터 인스턴스로부터 복제하여 읽기전용 레플리케이션을 설치</li>
+  <li>복제된 데이터베이스는 오직 SELECT 문구만 가능 ( INSERT, UPDATE, DELETE 등 불가 )</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rds-multi-az">RDS Multi AZ</h4>
+
+<ul>
+  <li>재해복구를위해 멀티 AZ를 사용합니다.</li>
+  <li>SYNC replication을 통해 새로운 RDS DB인스턴스를 복제합니다. ( 마스터에 새로운 데이터가 저장되면 복제된 곳에도 데이터가 복제되어야함 )</li>
+  <li>이들은 같은 DNS를 사용하기 때문에 마스터인스턴스에 재해가 생기더라도 Failover함</li>
+  <li>이를 활성화 할때, RDS를 멈출 필요없음( Zero downtime ) - modify를 통해 해당 옵션을 활성화하면 끝</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rds-security---encryption">RDS Security - Encryption</h4>
+
+<ul>
+  <li>AWS의 KMS를 통해 마스터 데이터베이스와 read replication를 암호화 할 수 있습니다.</li>
+  <li>마스터 인스턴스가 암호화 되어있지않으면, read replica도 암호화되지 않습니다.</li>
+  <li>Transparent Data Encrytion ( TDE )를 적용 할 수 있습니다. - ( Oracle and SQL Server )</li>
+  <li>In - flight encrytion
+    <ul>
+      <li>SSL인증서를 이용한 암호화 방식으로, RDS를 암호화하는 동시에, in-flight(클라이언트와 데이터베이스간의 데이터 전송)가 가능합니다.</li>
+      <li>모든 클라이언트가 SSL을 사용하기를 강요하기 위해서는
+        <ul>
+          <li>PosterSQL : rds.force_ssl = 1를 설정해야합니다.</li>
+          <li>MySQL : SQL 명령문을 실행</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>암호화되지 않은 RDS를 암호화는 방법은 EC2 암호화 방식과 동일하게 스냅샷 생성후 카피를 통해 암호화 설정 활성화</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="rds---networkiam-security">RDS - Network&amp;IAM Security</h4>
+
+<ul>
+  <li>보통 퍼블릭 서브넷이 아닌 프라이빗 서브넷 배치</li>
+  <li>RDS보안은 RDS인스턴스에 부착한 보안그룹을 설정합니다.</li>
+  <li>IAM 정책을 설정함으로 데이터베이스를 읽기, 삭제, 추가 등을 설정가능</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="aurora">Aurora</h4>
+
+<ul>
+  <li>AWS의 특허기술이므로, 오픈소스가 아니며, PostgreSQL, MySQL와 호환가능</li>
+  <li>클라우드 최적화로 만들어져, 다른 데이터베이스보다 성능이 좋습니다.</li>
+  <li>스토리지가 자동으로 확장됩니다.</li>
+  <li>MySQL이 5개의 replica를 갖는것과 다르게, Aurora는 최대 15개까지 가질 수 있습니다.</li>
+  <li>복제 속도또한 매우 빠르게 설계되었습니다.</li>
+  <li>다른 RDS에 비해 약 20%정도 비싸지만, 그만큼 성능이 훨씬 효율적입니다.</li>
+  <li>3개의 AZ에 6개의 카피를 가지게됩니다.
+    <ul>
+      <li>write를 위해서는 4개의 카피가 필요합니다.</li>
+      <li>read를 위해서는 3개의 카피가 필요합니다. ( 높은 가용성을 가집니다. )</li>
+      <li>자동 복구기능이 있습니다. ( P2P식의 복제를 통해 자동 복구를 진행합니다 )</li>
+      <li>수많은 볼륨에 의존합니다.</li>
+    </ul>
+  </li>
+  <li>다른 RDS처럼 read replica를 생성하고, 만약 마스터 인스턴스가 다운됬을 때, 어떤 read replica든 마스터 인스턴스가 될 수 있습니다. ( 높은 가용성 )</li>
+  <li>데이터베이스에 read 요청량이 많아질 경우, 자동으로 Auto Scaling하여 read replica를 생성하는데 이는 reader Endpoint를 통해서 모든 read replica에 자동으로 연결됩니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="aurora-serveless">Aurora Serveless</h4>
+
+<ul>
+  <li>실제 사용에 근거한 자동 스케일링을 제공합니다.</li>
+  <li>이는 간혈적이거나 예측 불가능한 워크로드를 가지고 있을때 유용합니다.</li>
+  <li>어떠한 용량 계획이 필요없습니다.</li>
+  <li>초단위로 비용을 지불합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="global-aurora">Global Aurora</h4>
+
+<ul>
+  <li>Aurora는 하나의 주요 리전을 가집니다.</li>
+  <li>5개의 서브 리전을 가집니다. ( 읽기 전용 )</li>
+  <li>각각의 서브 리전은 16개의 read replica를 가집니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="aurora-ml">Aurora ML</h4>
+
+<ul>
+  <li>Aurora는 다양한 ML-based 예측을 제공합니다.</li>
+  <li>간단하고, 최적화되고, 보안화된 상태에서 Aurora ML 서비스를 이용할 수 있습니다.
+    <ul>
+      <li>SageMaker</li>
+      <li>Comprehend</li>
+    </ul>
+  </li>
+  <li>머신러닝 경험이 없어도 간단해서 이용 할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="elasticache">ElastiCache</h4>
+
+<ul>
+  <li>RDS에서 관리된 관리형 데이터베이스를 제공받는것처럼 ElastiCathe는 관리된 Redis나 Memcached를 제공합니다.</li>
+  <li>캐시는 인메모리 데이터베이스로 높은 성능과, 짧은 지연시간을 가지고, read intensive 워크로드를 위해 데이터베이스의 로드를 제거합니다.</li>
+  <li>빈번하게 쿼리되는 데이터베이스 내용을 캐시에 저장함으로 이점을 누릴수 있습니다.</li>
+  <li>RDS와 동일한 이점을 가지고 있기 때문에 유지보수가 좋습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="redis">Redis</h4>
+
+<ul>
+  <li>멀티 AZ 지원 ( Auto Failiover )</li>
+  <li>Read replica는 read를 스케일하기 위해 사용</li>
+  <li>높은 가용성을 가짐</li>
+  <li>영구 캐시로 데이터 지속성도 있음</li>
+  <li>백업기능도 있음</li>
+  <li>RDS와 유사</li>
+</ul>
+
+<h4 id="memcashed">Memcashed</h4>
+
+<ul>
+  <li>멀티 노드를 사용하여, 파티셔닝 ( sharding  )</li>
+  <li>높은 가용성 x</li>
+  <li>복제 x</li>
+  <li>영구 캐시 x</li>
+  <li>백업 저장 x</li>
+  <li>멀티 스레드 아키텍쳐</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="cache-security">Cache Security</h4>
+
+<ul>
+  <li>IAM 인증을 지원하지 않음 ( AWS API 수준의 보안에서 사용 - 캐시생성, 삭제 등)</li>
+  <li>Redis AUTH - 레디스 클러스터 생성시 비밀번호/토큰을 설정 할 수 있습니다. 이는 캐시에 들어갈 때 비밀번호를 입력하도록 요청, 보안그룹이상의 보안</li>
+  <li>SSL을 통한 in flight encrytion 가능</li>
+  <li>Memcashed - 조금더 높은 수준의 SASL 기반 인증을 지원</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="elasticache-패턴">ElastiCache 패턴</h4>
+
+<ul>
+  <li>Lazy Loading - 모든 read데이터가 캐시되고, 데이터가 캐시안에서 오래 있을 수 이씁니다.</li>
+  <li>Write Through - 데이터베이스로 write 될때마다 데이터를 캐시에 추가하고 업데이트하여 오래된 데이터가 없도록합니다.</li>
+  <li>Session Store - Time to Live ( TTL ) 속성을 통해 세션을 만료할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="route-53">Route 53</h4>
+
+<ul>
+  <li>A - 호스트네임을 IPv4로 맵핑</li>
+  <li>AAAA - 호스트네임을 IPv6로 맵핑</li>
+  <li>CNAME - 호스트네임을 다른 호스트네임으로 맵핑
+    <ul>
+      <li>목표 호스트네임은 당연히 A레코드 혹은 AAAA레코드</li>
+      <li>CNAME을 DNS의 top노드에서 생성 못함 ( example.com 는 불가능하지만, www.example.com는 가능)</li>
+    </ul>
+  </li>
+  <li>NS - 호스팅 영역을 위한 DNS 쿼리에 답할수있는 DNS네임 or IP주소</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="hosted-zones">Hosted Zones</h4>
+
+<ul>
+  <li>호스팅 영역은 레코드들의 컨테이너, 트래픽 도메인과 서브 도메인으로 루트하는 방법을 정의합니다.</li>
+  <li>두가지의 호스팅
+    <ul>
+      <li>퍼블릭 호스팅 영역</li>
+      <li>프라이빗 호스팅 영역</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="cname-vs-alias">CNAME vs Alias</h4>
+
+<ul>
+  <li>도메인 호스트네임을 다른 이름으로 변경하고싶으면 두가지 선택이있습니다.</li>
+  <li>CNAME
+    <ul>
+      <li>호스트네임을 다른 호스트네임이 가르킬수 있도록 설정 (app.domain.com -&gt; blabla.anything.com)</li>
+      <li>루트가 아닌 도메인 네임을 가진 경우에만 작동합니다.</li>
+    </ul>
+  </li>
+  <li>Alias
+    <ul>
+      <li>Route 53만의 특징에 해당하며, 호스트 네임을 특정한 AWS리소스를 가르킬 수 있도록 합니다. (app.domain.com -&gt; blabla.amazonaws.com)</li>
+      <li>루트 도메인도 가르킬 수 있습니다.</li>
+      <li>무료입니다.</li>
+      <li>네이티브 헬스체크기능이 있습니다.</li>
+      <li>단, EC2 DNS name은 설정할 수 없습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="routing-policies">Routing Policies</h4>
+
+<ul>
+  <li>Simple - 랜덤으로 연결</li>
+  <li>Weighted - 각각의 ip마다 가중치를 설정하고 이에따라 연결</li>
+  <li>Latency based - 가장 적은 latency를 가지는 곳으로 연결</li>
+  <li>Failover - 헬스체크를 통해, primary로 설정한 인스턴스가 unhealthy하다면, 서브로 설정한 인스턴스로 연결</li>
+  <li>Geolocation - 사용자 위치를 기반으로 연결 ( 특정 국가에서 오면 어디로 연결 등 )</li>
+  <li>Multi-Value Answer - 헬스체크를 통해, ALB처럼 밸런스를 유지 ( 단 ELB를 대체할 수 는 없음 )</li>
+  <li>Geoproximity - 설정한 bias를 기반으로 영역을 나눠 해당하는 영역으로 연결 ( 트래픽 플로우를 이용하면 시각적 측면으로 영역을 볼 수 있음 )</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="route-53---health-checks">Route 53 - Health Checks</h4>
+
+<ul>
+  <li>퍼블릭 리소스에 연결하기위해 헬스체크 진행</li>
+  <li>헬스체크는 3가지 타입이있습니다.
+    <ul>
+      <li>엔드포인트를 활용한 헬스체크 ( application, server, other AWS resource )</li>
+      <li>다른 헬스체크 모니터링을 통한 헬스체크 ( Calculated Health Checks )</li>
+      <li>CloudWatch Alarms 모니터링을 통한 헬스체크 ( DynamoDB, RDS )</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="domain-registar">Domain Registar</h4>
+
+<ul>
+  <li>타사의 도메인을 Route 53에 등록하면, AWS에서 관리를 해줌</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="beanstalk">Beanstalk</h4>
+
+<ul>
+  <li>코드를 통해서 AWS 환경을 제어 ( 매번 같은 환경을 구축하는데 이를 반복할 필요없이 짜여진 환경을 만들 수 있음 )</li>
+  <li>Application, Application Version, Environment 등 설정</li>
+  <li>다양한 언어를 제공함</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="s3">S3</h4>
+
+<ul>
+  <li>AWS의 파일 저장 시스템</li>
+  <li>무한하게 스케일링 가능한 저장공간</li>
+  <li>버킷이라는 저장소 단위가 있음</li>
+  <li>버킷은 리전레벨 ( 버킷은 유니크한 이름을 가져야 함 )</li>
+  <li>파일(오브젝트)은 키라고 칭함</li>
+  <li>오브젝트는 최대 5TB를 가질 수 있지만, 한번에 업로드 할 때 5GB씩 밖에 업로드가 안되기때뭉네 분할해서 업로드 해야합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="s3---versioning">S3 - Versioning</h4>
+
+<ul>
+  <li>S3파일은 버전을 통한 관리가 됩니다.</li>
+  <li>같은 버킷에 같은 이름의 키가 업로드 될경우, version에따른 관리가 됩니다.</li>
+  <li>이를 통해 의도하지 않은 삭제로 부터 보호받을 수 있습니다. ( 이전 버전은 다시 복구 가능 )</li>
+  <li>버전관리가 활성화되지 않은 파일은 null 로 저장됩니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="s3-encryption">S3 Encryption</h4>
+
+<ul>
+  <li>AWS는 4가지의 암호화를 제공합니다.
+    <ul>
+      <li>SSE S3 - 암호화를 위해 처리된 키를 AWS에 의해 관리됩니다.
+        <ul>
+          <li>SSE는 서버측 암호화를 뜻합니다. ( Server Side Encrytion )</li>
+        </ul>
+      </li>
+      <li>SSE KMS - KMS를 통해 암호화 키를 관리합니다.</li>
+      <li>SSE-C - 개인이 암호화 키를 관리합니다.</li>
+      <li>Client Side Encryption - 개인이 암호화를 합니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="s3-security">S3 Security</h4>
+
+<ul>
+  <li>유저 측면
+    <ul>
+      <li>IAM 정책</li>
+    </ul>
+  </li>
+  <li>리소스 측면
+    <ul>
+      <li>Bucket 정책</li>
+      <li>Object Access Control List ( ACL )</li>
+      <li>Bucket Access Control List ( ACL )</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="cors---cross-origin-resource-sharing">CORS - Cross-Origin-Resource-Sharing</h4>
+
+<ul>
+  <li>origin이란, 스키마, 호스트, 포트입니다.</li>
+  <li>웹브라우저는 가동중인 보안이 있으며, CORS는 기본적으로 웹사이트를 방문하자마 오직 다른 출처가 이런 요청을 하도록 허락하는 경우에만 다른 출처를 요구할수있습니다.</li>
+</ul>
+:ET
