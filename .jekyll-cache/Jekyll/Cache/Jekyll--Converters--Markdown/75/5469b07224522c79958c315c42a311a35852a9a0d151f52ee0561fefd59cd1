@@ -1,0 +1,1068 @@
+I"��<h2 id="1-dataframe-details">1. DataFrame details</h2>
+
+<p><br /></p>
+
+<h4 id="data-cleaning">Data Cleaning</h4>
+
+<ul>
+  <li>파이프라인 처리에 사용할 원시 데이터를 준비하는 과정을 Data Cleaning 이라고 정의합니다.</li>
+  <li>Data Cleaning 는 모든 프로덕션 데이터 시스템의 필수입니다.</li>
+  <li>데이터가 깨끗하지 않을 경우 신뢰할 수 없으며 문제가 발생할 수 있습니다.</li>
+  <li>몇가지 과정
+    <ul>
+      <li>텍스트 서식 변경 or 바꾸기</li>
+      <li>데이터를 기반으로 한 계산</li>
+      <li>불완전한 데이터 제거 or 쓰레기 데이터 제거</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="data-cleaning-하는-이유">Data Cleaning 하는 이유</h4>
+
+<p>전형적인 Data System 문제</p>
+
+<ul>
+  <li>성능 최적화 문제</li>
+  <li>데이터 흐름 구성 문제</li>
+</ul>
+
+<p><br /></p>
+
+<p>Spark의 장점</p>
+
+<ul>
+  <li>데이터 처리 용량의 확장</li>
+  <li>데이터 핸들링을 위한 프레임워크 제공</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="데이터-정제-예시">데이터 정제 예시</h4>
+
+<p align="center"><img src="/images/post_img/spark8.png" /></p>
+
+<p>OLTP -&gt; OLAP 구조로 변경해야 사용하기 좋습니다.</p>
+
+<p><br /></p>
+
+<h4 id="spark-schemas">Spark Schemas</h4>
+
+<ul>
+  <li>데이터 정리의 주요 기능은 모든 데이터가 예상 형식인지 확인해야 합니다.</li>
+  <li>Spark는 스키마를 사용하여 데이터 세트의 유효성을 검사하는 기본 제공 기능을 제공합니다.</li>
+  <li>스키마는 주어진 DataFrame에 대한 열의 수와 유형을 정의하고 유효성을 검사합니다.</li>
+  <li>스키마에는 다양한 유형의 필드가 포함될 수 있습니다.
+    <ul>
+      <li>string</li>
+      <li>date</li>
+      <li>integer</li>
+      <li>array</li>
+    </ul>
+  </li>
+  <li>정의된 스키마를 통해 Spark는 읽는 동안 준수하지 않는 데이터를 필터링하여 예상 된 정확성을 보장합니다.</li>
+  <li>스키마는 성능적인 이점을 가집니다.
+    <ul>
+      <li>데이터를 가져올 때, 스키마를 추론하려고 시도하면서 데이터를 두번 읽게 되는데, 이를 정의할 경우 생략할 수 있습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark-schema-example">Spark Schema Example</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pyspark.sql.types</span>
+<span class="n">peopleSchema</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
+  <span class="n">StructField</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
+  <span class="n">StructField</span><span class="p">(</span><span class="s">'age'</span><span class="p">,</span> <span class="n">IntegerType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">),</span>
+  <span class="n">StructField</span><span class="p">(</span><span class="s">'city'</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">True</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="n">people_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="s">'csv'</span><span class="p">).</span><span class="n">load</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'rawdata.csv'</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">peopleSchema</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>위와 같이, 각 필드에 대한 항목을 포함하는 StructField로 구성된 StructType을 정의합니다.</p>
+
+<p>각 StructField는 필드임, dataType, 데이터 null 여부 로 구성됩니다.</p>
+
+<p>스키마를 구성하고, spark.read를 통해 파일을 읽어올 때 정의합니다.</p>
+
+<p><br /></p>
+
+<h4 id="python-변수">Python 변수</h4>
+
+<ul>
+  <li>Mutable</li>
+  <li>Flexibility</li>
+  <li>Concurrency - 동일한 데이터를 수정하려는 여러 동시 구성 요소</li>
+  <li>이러한 작업들은 복잡성을 추가할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark-변수---immutability">Spark 변수 - Immutability</h4>
+
+<ul>
+  <li>반드시 필요한 것은 아니지만 불변성은 함수형 프로그램의 구성 요소입니다.</li>
+  <li>한번 정의되고 초기화 후에 수정할 수 없습니다.</li>
+  <li>변수 이름을 재사용하면, 원래 데이터가 삭제됩니다.</li>
+  <li>Spark는 모든 클러스터 구성 요소간에 데이터를 공유할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="예시">예시</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'voterdata.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>데이터가 생성되면, 두 가지 추가 작업을 수행하려고 합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span> <span class="o">=</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'fullyear'</span><span class="p">,</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">voter_df</span> <span class="o">=</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="n">voter_df</span><span class="p">.</span><span class="n">year</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>위의 작업은, 실제 데이터를 수정하는 것이 아니라, 새로운 데이터에 연산을 진행하고 값을 저장합니다.</p>
+
+<p>이후, 데이터 프레임에서 원래 연도 열을 삭제합니다.</p>
+
+<p><br /></p>
+
+<h4 id="spark---lazy-processing">Spark - Lazy Processing</h4>
+
+<ul>
+  <li>대규모 데이터 세트에서 빠르게 수행하는 이유</li>
+  <li>Spark의 Lazy Processing은 작업이 수행 될 때까지 실제로 거의 발생하지 않습니다.</li>
+  <li>이전 예시에 데이터를 핸들링하지만, 실제로는 데이터를 읽거나 추가, 수정하지 않습니다.</li>
+  <li>Spark는 원하는 작업에 대한 지침(변환)을 업데이트합니다.</li>
+  <li>이러한 기능을 통해 Spark는 원하는 결과를 얻디 위해 가장 효율적인 작업 집합을 수행합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span> <span class="o">=</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'fullyear'</span><span class="p">,</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">voter_df</span> <span class="o">=</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="n">voter_df</span><span class="p">.</span><span class="n">year</span><span class="p">)</span>
+
+<span class="n">voter_df</span><span class="p">.</span><span class="n">count</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>이전 코드에서, count()함수를 통해 Action을 취하기 전 까지 실제로 작동하지 않습니다.</p>
+
+<p><br /></p>
+
+<h4 id="csv-파일의-문제점">CSV 파일의 문제점</h4>
+
+<ul>
+  <li>스키마가 정의되지 않았습니다.</li>
+  <li>중첩데이터를 사용하기 위해서는 특수하게 핸들링 해야합니다. ( 이스케이프 문자, 쉼표 등 )</li>
+  <li>인코딩 형식으로 인해 사용되는 언어가 제한됩니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark-and-csv-files">Spark and CSV files</h4>
+
+<ul>
+  <li>일반적인 CSV파일 문제 외에도 Spark에는 CSV데이터를 처리하는 몇가지 특정 문제가 있습니다.</li>
+  <li>CSV 파일을 가져오고 구문 분석하는 과정은 상당히 느립니다.
+    <ul>
+      <li>가져오는 프로세스 중, 작업자간에 파일을 공유할 수 없습니다. ( 병렬처리 불가 )</li>
+      <li>스키마가 정의되지 않은 경우 스키마를 유추하기 전에 모든 데이터를 읽어야합니다. ( 이중 )</li>
+    </ul>
+  </li>
+  <li>Spark에는 predicate pushdown이라는 기능이 있습니다. ( CSV에서는 불가 )
+    <ul>
+      <li>최소한의 작업을 수행하도록 작업을 정렬하는 방법 ( 파일 스캔을 효율적으로 할 수 있는 기능 )</li>
+      <li>처리 전 데이터 필터링은 predicate pushdown의 기본 최적화 중 하나입니다.</li>
+      <li>이를 통해 대용량 데이터 세트에서 처리해야하는 정보의 양이 크게 줄어 듭니다.</li>
+      <li>하지만 CSV데이터에 대해서는 적용할 수 없습니다.</li>
+    </ul>
+  </li>
+  <li>Spark 프로세스는 여러단계를 가지며, 중간 단계 파일 표현을 활용할 수 있습니다.
+    <ul>
+      <li>이러현 표현을 통해 소스에서 데이터를 다시 생성하지 않고, 데이터를 사용할 수 있습니다.</li>
+      <li>단, CSV를 사용하려면 스키마, 인코딩 형식 등을 정의하는 상당한 추가 작업이 필요합니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="parquet-format">Parquet Format</h4>
+
+<ul>
+  <li>Parquet은 Hadoop기반 시스템에서 사용하기 위해 개발 된 압축되어 있는 데이터 형식입니다.</li>
+  <li>Spark, Hadoop, Apache Impala 등이 포함됩니다.</li>
+  <li>Parquet 형식은 청크(Chunk, <파일 더미=""> - PNG, IFF, MP3, AVI 같은 멀티 미디어 파일 형식) 로 액세스 할 수있는 데이터로 구성됩니다.</파일></li>
+  <li>전체 파일을 처리하지 않고도 효율적인 읽기 / 쓰기 작업이 가능합니다.</li>
+  <li>이 구조화 된 형식은 Spark의 predicate pushdown을 지원합니다. - 상당한 성능 향상을 제공</li>
+  <li>Parquet 파일은 자동으로 스키마 정보를 포함하고 데이터 인코딩을 처리합니다.</li>
+  <li>Parquet 파일은 바이너리 파일 형식이며 적절한 도구로만 사용할 수 있습니다. ( 텍스트 편집기로 편집 할 수 있는 CSV파일과는 대조적 )</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="working-with-parquet">Working with Parquet</h4>
+
+<ul>
+  <li>Parquet files 읽는 방법1</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="s">'parquet'</span><span class="p">).</span><span class="n">load</span><span class="p">(</span><span class="s">'filename.parquet'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>CSV파일 형식을 읽는 것처럼, format메소드를 이용해서 형식 지정</p>
+
+<ul>
+  <li>Parquet files 읽는 방법2</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'filename.parquet'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Spark.read.parquet함수를 통해서 바로 읽는 방법</p>
+
+<p><br /></p>
+
+<ul>
+  <li>Parquet files를 작성하는 방법</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">write</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="s">'parquet'</span><span class="p">).</span><span class="n">save</span><span class="p">(</span><span class="s">'filename.parquet'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">write</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'filename.parquet'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="parquet-and-sql">Parquet and SQL</h4>
+
+<ul>
+  <li>Parquet 파일은 Spark내에서 다양한 용도로 사용됩니다. ( SQL 작업을 수행하는데 완벽 )</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">flight_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'flights.parquet'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Parquet파일에 대해 SQL 쿼리를 수행하려면 스파크를 통해 데이터 프레임을 만들어야 합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">flight_df</span><span class="p">.</span><span class="n">createOrReplaceTempView</span><span class="p">(</span><span class="s">'flights'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>이후 createOrReplaceTempView() 메서드를 통해 Parquet 데이터의 별칭을 SQL 테이블로 추가합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">short_flights_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">sql</span><span class="p">(</span><span class="s">'SELECT * FROM flgiths WHERE flightduration &lt; 100'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>마지막으로 SQL 구문과 스파크를 사용하려 쿼리합니다.</p>
+
+<p>이러한 방법은 Parquet를 백업 저장소로 사용하고 있기 때문에 우리가 가진 모든 성능 이점을 얻습니다.</p>
+
+<p><br /></p>
+
+<h2 id="2-manipulating-dataframes-in-the-real-world">2. Manipulating DataFrames in the real world</h2>
+
+<p><br /></p>
+
+<h4 id="dataframe">DataFrame</h4>
+
+<ul>
+  <li>DataFrame 은 행과 열로 구성되며, 일반적으로 데이터베이스 테이블과 유사합니다.</li>
+  <li>DataFrame은 변경할 수 없습니다. 데이터 구조나 내용이 변경되면 새로운 DataFrame이 생성됩니다.</li>
+  <li>DataFrame은 변환을 사용하여 수정됩니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">voter_df</span><span class="p">.</span><span class="n">name</span><span class="p">.</span><span class="n">like</span><span class="p">(</span><span class="s">'M%'</span><span class="p">))</span>
+
+<span class="n">voters</span> <span class="o">=</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="s">'position'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>filter() 명령은 이름이 문자 ‘M’으로 시작하는 행만 반환합니다.</p>
+
+<p>select() 명령은, 입력한 컬럼에 해당하는 열만 반환합니다.</p>
+
+<p><br /></p>
+
+<h4 id="dataframe-변환">DataFrame 변환</h4>
+
+<ul>
+  <li>Filter / Where
+    <ul>
+      <li>인수에 정의 된 요구 사항을 충족하는 행만 포함</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">voter_df</span><span class="p">.</span><span class="n">date</span> <span class="o">&gt;</span> <span class="s">'1/1/2019'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Select
+    <ul>
+      <li>요청 된 열을 반환</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="n">voter_df</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>withColumn
+    <ul>
+      <li>DataFrame에 새 열을 만듭니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'year'</span><span class="p">,</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">date</span><span class="p">.</span><span class="n">year</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>drop
+    <ul>
+      <li>DataFrame에서 열을 제거합니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="s">'unused_column'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="filtering-data">Filtering data</h4>
+
+<ul>
+  <li>필터링을 사용하면 원하는 결과와 일치하는 데이터만 사용할 수 있습니다.
+    <ul>
+      <li>결측치 제거</li>
+      <li>이상 데이터 제거</li>
+      <li>DataFrame 분할 ( 결합된 데이터 syslog 파일 등 )</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">voter_df</span><span class="p">[</span><span class="s">'name'</span><span class="p">].</span><span class="n">isNotNull</span><span class="p">())</span>
+<span class="n">voter_df</span><span class="p">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">voter_df</span><span class="p">.</span><span class="n">date</span><span class="p">.</span><span class="n">year</span> <span class="o">&gt;</span> <span class="mi">1800</span><span class="p">)</span>
+<span class="n">voter_df</span><span class="p">.</span><span class="n">where</span><span class="p">(</span><span class="n">voter_df</span><span class="p">[</span><span class="s">'_c0'</span><span class="p">].</span><span class="n">contains</span><span class="p">(</span><span class="s">'VOTE'</span><span class="p">))</span>
+<span class="n">voter_df</span><span class="p">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">_c1</span><span class="p">.</span><span class="n">isNull</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="문자열-변환">문자열 변환</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">pyspark.sql.functions</code> 에 포함되어 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pyspark.sql.functions</span> <span class="k">as</span> <span class="n">F</span>
+
+<span class="n">voter_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'upper'</span><span class="p">,</span> <span class="n">F</span><span class="p">.</span><span class="n">upper</span><span class="p">(</span><span class="s">'name'</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>withColumn() 함수를 사용하여 문자열 변환을 합니다. upper 함수를 통해 Name의 대문자로 변환</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'splits'</span><span class="p">,</span> <span class="n">F</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="s">' '</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>처리 전용 중간 열을 만들 수 있는데, 이는 여러 단계가 필요한 복잡한 변환을 명확히 하는데 유용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'year'</span><span class="p">,</span> <span class="n">voter_df</span><span class="p">[</span><span class="s">'_c4'</span><span class="p">].</span><span class="n">cast</span><span class="p">(</span><span class="n">IntegerType</span><span class="p">()))</span>
+</code></pre></div></div>
+
+<p>문자열 열을 정수로 변환하는 방식의 변환도 유용합니다.</p>
+
+<p><br /></p>
+
+<h4 id="arraytype-column-functions">ArrayType() column functions</h4>
+
+<ul>
+  <li>Spark로 데이터 정리를 수행하는 동안 ArrayType() 열과 상호 작용해야 할 수 있는데, 이는 일반적인 파이썬의 List와 유사합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">.size(&lt;column&gt;)</code> 는 지정된 ArrayType() 인수에 있는 항목 수를 반환합니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">.getItem(&lt;index&gt;)</code> 는 인덱스 인수를 취하고 목록 열의 해당 인덱스에 있는 항목을 반환합니다.</li>
+  <li>이 외에도 다양한 함수가 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="conditional-clauses">Conditional clauses</h4>
+
+<ul>
+  <li>Spark에서 기존의 if / then / else 문을 수행 할 수 있지만, DataFrame의 각 행이 독립적으로 평가되므로 심각한 성능 저하를 초래합니다. ( 최적화 된 기본 제공 조건을 사용하면 이 문제가 완화됩니다. )</li>
+  <li><code class="language-plaintext highlighter-rouge">.when()</code></li>
+  <li><code class="language-plaintext highlighter-rouge">.otherwise()</code></li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="예시-1">예시</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.when(&lt;if condition&gt;, &lt;then x&gt;)</code></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">df</span><span class="p">.</span><span class="n">Age</span><span class="p">,</span> <span class="n">when</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">Age</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">,</span> <span class="s">"Adult"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<ul>
+  <li>여러개의 <code class="language-plaintext highlighter-rouge">when()</code></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">df</span><span class="p">.</span><span class="n">Age</span><span class="p">,</span> <span class="n">when</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">Age</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">,</span> <span class="s">"Adult"</span><span class="p">).</span><span class="n">when</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">Age</span> <span class="o">&lt;</span> <span class="mi">18</span><span class="p">,</span> <span class="s">"Minor"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.otherwise()</code></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">df</span><span class="p">.</span><span class="n">Age</span><span class="p">,</span> <span class="n">when</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">Age</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">,</span> <span class="s">"Adult"</span><span class="p">).</span><span class="n">otherwise</span><span class="p">(</span><span class="s">"Minor"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>otherwise문은 else문과 유사합니다.</p>
+
+<p><br /></p>
+
+<h4 id="사용자-정의-함수">사용자 정의 함수</h4>
+
+<ul>
+  <li>사용자 정의 함수 or UDFs ( User Defined Functions )
+    <ul>
+      <li>파이썬 메소드</li>
+      <li><code class="language-plaintext highlighter-rouge">pyspark.sql.functions.udf</code> 를 통해서 호출됩니다.</li>
+      <li>변수로 저장되며, Spark 함수로 호출 할 수 있습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="예시-2">예시</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">reverseString</span><span class="p">(</span><span class="n">mystr</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">mystr</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>먼저 파이썬 함수를 정의합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">udfReverseString</span> <span class="o">=</span> <span class="n">udf</span><span class="p">(</span><span class="n">reverseString</span><span class="p">,</span> <span class="n">StringType</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p>함수를 래핑하고 나중에 사용할 수 있도록 변수에 저장합니다.</p>
+
+<p>정의한 메서드의 이름과, 반환 할 Spark 데이터 유형이 인자로 들어갑니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">user_df</span> <span class="o">=</span> <span class="n">user_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'ReverseName'</span><span class="p">,</span> <span class="n">udfReverseString</span><span class="p">(</span><span class="n">user_df</span><span class="p">.</span><span class="n">Name</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>정의한 UDF를 이용해서, 새로운 열을 추가합니다.</p>
+
+<p><br /></p>
+
+<h4 id="다른-예시">다른 예시</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">sortingCap</span><span class="p">():</span>
+  <span class="k">return</span> <span class="n">random</span><span class="p">.</span><span class="n">choice</span><span class="p">([</span><span class="s">'G'</span><span class="p">,</span> <span class="s">'H'</span><span class="p">,</span> <span class="s">'R'</span><span class="p">,</span> <span class="s">'S'</span><span class="p">])</span>
+<span class="n">udfSortingCap</span> <span class="o">=</span> <span class="n">udf</span><span class="p">(</span><span class="n">sortingCap</span><span class="p">,</span> <span class="n">StringType</span><span class="p">())</span>
+<span class="n">user_df</span> <span class="o">=</span> <span class="n">user_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'Class'</span><span class="p">,</span> <span class="n">udfSortingCap</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p>다른 예시는 인수가 필요하지 않은 함수를 사용하는 것입니다.</p>
+
+<p><br /></p>
+
+<h4 id="partitioning">Partitioning</h4>
+
+<ul>
+  <li>Spark는 DataFrame을 파티션 or 청크로 분할합니다.</li>
+  <li>파티션은 자동으로 정의, 확대, 축소 합니다. (사용중인 Spark 클러스터 유형에 따라 크게 다를 수 있습니다.)</li>
+  <li>파티션의 크기는 다양하지만 일반적으로 파티션의 크기를 동일하게 유지하는게 좋습니다.</li>
+  <li>각 파티션이 독립적으로 처리됩니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="lazy-processing">Lazy processing</h4>
+
+<ul>
+  <li>Spark의 모든 변환 작업은 지연됩니다.</li>
+  <li>실제로 수행하는 것이 아니라, DataFrame에 수행해야 하는 작업을 정의합니다.</li>
+  <li>정의한 변환 작업은 Spark Action 작업을 실행할 때 실행됩니다.</li>
+  <li>Spark는 최상의 성능을 위해 변환을 재정렬 할 수 있습니다.</li>
+  <li>일반적으로는 눈에 띄지 않지만, 때때로 예기치 못한 문제가 발생할 수 도 있습니다. (ID오류 등)
+    <ul>
+      <li>이로 인해 실제로 문제가 발생하지는 않지만 무엇을 예상해야 하는지 모르는 경우 데이터가 비정상적으로 보일 수 있습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="adding-ids">Adding IDs</h4>
+
+<ul>
+  <li>관계형 데이터베이스에는 행을 식별하는 데 사용되는 필드가있습니다.</li>
+  <li>이러한 ID는 일반적으로 값이 증가하고 순차적이며 가장 중요한 고유 한 정수입니다.</li>
+  <li>이러한 ID는 본질적으로 병렬적이지 않다는 문제를 가집니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="monotonically-increasing-ids">Monotonically increasing IDs</h4>
+
+<ul>
+  <li>Spark에는 <code class="language-plaintext highlighter-rouge">monotonically_increasing_id()</code> 라는 내장 함수가 있습니다.</li>
+  <li>값이 증가하고 고유한 정수 ID를 제공합니다.</li>
+  <li>이러한 ID는 반드시 순차적인 것은 아닙니다. ( 값 사이에 종종 매우 큰 간격이 있을 수 있습니다. )</li>
+  <li>일반 관계형 ID와 달리 Spark는 완전히 병렬입니다.</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark9.png" /></p>
+
+<p>테이블의 ID필드는 값이 증가하는 정수이지만 순차적이지 않습니다.</p>
+
+<p><br /></p>
+
+<h4 id="참고">참고</h4>
+
+<ul>
+  <li>파티션과 단조롭게 증가하는 ID의 작동방식은 많은 차이가 있습니다.</li>
+  <li>특히 join 이 관련된 경우 작업의 순서가 맞지 않습니다.</li>
+  <li>변환을 테스트 해보는 것이 좋습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h2 id="3-improving-performance">3. Improving Performance</h2>
+
+<p><br /></p>
+
+<h4 id="caching-in-spark">Caching in Spark</h4>
+
+<ul>
+  <li>클러스터에 있는 처리 노드의 메모리 또는 디스크에있는 DataFrame</li>
+  <li>캐싱은 후속 변환 or 작업의 속도를 향상시킵니다. ( 원래 데이터 소스에서 더 이상 데이터를 검색 할 필요가 없습니다. )</li>
+  <li>캐싱을 사용하면 클러스터의 리소스 사용률이 감소합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="캐싱의-단점">캐싱의 단점</h4>
+
+<ul>
+  <li>매우 큰 데이터 세트는 캐시 된 데이터 프레임 용으로 예약 된 메모리에 맞지 않을 수 있습니다.</li>
+  <li>나중에 요청 된 변환에 따라 캐시는 성능에 도움이 되는 작업을 수행하지 못할 수 있습니다.</li>
+  <li>데이터 세트가 메모리에 캐시 된 상태로 유지되지 않으면 디스크에 지속될 수 있습니다.</li>
+  <li>Spark 클러스터의 디스크 구성에 따라 성능이 크게 향상되지 않을 수 있습니다.</li>
+  <li>리소스 및 로컬 디스크 I / O 가 느린 경우 개체 캐싱을 피하는 것이 좋습니다.</li>
+  <li>캐시된 개체의 수명이 보장되지 않습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="caching-팁">Caching 팁</h4>
+
+<ul>
+  <li>캐싱은 매우 유용하지만, DataFrame을 다시 사용할 계획인 경우에만 해당됩니다.
+    <ul>
+      <li>단일 작업에만 필요한 경우 캐싱할 필요가 없습니다.</li>
+    </ul>
+  </li>
+  <li>캐싱으로 성능을 측정하는 가장 좋은 방법은 다양한 구성을 테스트하는 것입니다.
+    <ul>
+      <li>처리주기의 다양한 지점에서 데이터 프레임을 캐싱하고 처리 시간이 개선되는지 확인하세요</li>
+    </ul>
+  </li>
+  <li>메모리 또는 빠른 NVMe / SSD 스토리지에 캐시하세요.</li>
+  <li>대용량을 처리하는 경우 로컬 하드 드라이브가 유용할 수 있습니다.</li>
+  <li>정상적인 캐싱이 작동하지 않는 것 같으면, Parquet표현을 만들어 보세요</li>
+  <li>작업이 끝나면 DataFrame 캐싱을 수동으로 중지 할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="caching-만들기">Caching 만들기</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.cashe()</code> 함수 호출을 통해 만들 수 있습니다.
+    <ul>
+      <li>주어진 Action 이전에 DataFrame 객체에 대한 캐시를 만듭니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'voter_data.txt.gz'</span><span class="p">)</span>
+<span class="n">voter_df</span><span class="p">.</span><span class="n">cache</span><span class="p">().</span><span class="n">count</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>위와 같은 방법으로 cache를 저장할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span> <span class="o">=</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'ID'</span><span class="p">,</span> <span class="n">monotonically_increasing_id</span><span class="p">())</span>
+<span class="n">voter_df</span> <span class="o">=</span> <span class="n">voter_df</span><span class="p">.</span><span class="n">cache</span><span class="p">()</span>
+<span class="n">voter_df</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>다음과 같이 변수에 담을 수 도 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="cache-operations">Cache operations</h4>
+
+<ul>
+  <li>Spark 캐싱과 함께 몇 가지 다른 옵션을 사용할 수 있습니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">.is_cached</code> 함수를 통해 캐시되었는지 확인 할 수 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">print</span><span class="p">(</span><span class="n">voter_df</span><span class="p">.</span><span class="n">is_cached</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.unpersist()</code> 를 통해 캐시를 해제할 수 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span><span class="p">.</span><span class="n">unpersist</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="spark-clusters">Spark clusters</h4>
+
+<ul>
+  <li>Spark 클러스터는 드라이버 프로세스와 필요한만큼의 작업자 프로세스라는 두가지 유형으로 구성됩니다.</li>
+  <li>드라이버는 작업 할당 및 작업자의 데이터 결과 통합을 처리합니다.</li>
+  <li>작업자는 일반적으로 Spark 작업의 실제 변환 / 작업 을 처리합니다. 작업이 할당되면 독립적으로 작동하고 결과를 운전자에게 다시 보고합니다.</li>
+  <li>Spark 클러스터를 실행하는 방법은 여러방법이 있으며, 작업자 환경에 따라 다릅니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="import-performance">Import performance</h4>
+
+<ul>
+  <li>사용 가능한 가져오기 개체가 많을 수록 클러스터가 작업을 더 잘 분할 할 수 있습니다.</li>
+  <li>큰 클러스터를 사용하면, 각 작업자가 가져오기 프로세스에 참여할 수 있습니다.</li>
+  <li>큰 파일은 여러개의 작은 파일보다 성능이 훨씬 떨어집니다.</li>
+  <li>
+    <p>더 큰 파일이지만, 더 작은 파일간에 분할 된 동일한 양의 데이터를 쉽게 처리할 수 있습니다.</p>
+  </li>
+  <li>여러 파일이 있는 경우에도 단일 import 문을 정의 할 수 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">airport_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'airport-*.txt.gz'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>가져오기 파일 이름을 정의 할 때 모든 형식의 표준 와일드 카드 기호를 사용할 수 있습니다.</p>
+
+<ul>
+  <li>개체의 크기가 같으면 클러스터는 매우 큰 개체와 매우 작은 개체를 혼합하는 것보다 성능이 좋습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="schemas">Schemas</h4>
+
+<ul>
+  <li>Spark의 잘 정의 된 스키마는 갸져오기 성능을 크게 향상합니다.</li>
+  <li>스키마가 정의되지 않은 경우 가져오기 작업은 구조를 추론하기 위해 데이터를 여러번 읽어야합니다.
+    <ul>
+      <li>데이터가 많으면 속도가 매우 느립니다.</li>
+    </ul>
+  </li>
+  <li>Spark는 데이터 개체를 사용자와 동일하게 정의하지 않을 수도 있습니다.</li>
+  <li>Spark 스키마는 가져오기시 유효성 검사도 제공합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="개체를-더-작은-개체로-분할하는-방법">개체를 더 작은 개체로 분할하는 방법</h4>
+
+<ul>
+  <li>split, cut, awk 같은 내장 OS 유틸리티 사용</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">split</span> <span class="nt">-l</span> 10000 <span class="nt">-d</span> largefile chunk-
+       &lt;쪼갤 갯수&gt;  &lt;쪼갤 파일&gt; &lt;접두사&gt;
+</code></pre></div></div>
+
+<ul>
+  <li>파이썬을 사용하여 적합하다고 생각되는 객체로 분할</li>
+  <li>단일 파일을 읽은 다음, Parquet 으로 분할</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_csv</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'singlelargefile.csv'</span><span class="p">)</span>
+<span class="n">df_csv</span><span class="p">.</span><span class="n">write</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'data.parquet'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'data.parquet'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>초기 가져오기가 느리더라도 이후 분석할 때 잘 작동합니다.</p>
+
+<p><br /></p>
+
+<h4 id="configuration-options">Configuration options</h4>
+
+<ul>
+  <li>Spark 에는 설치의 모든 측면을 제어하는 다양한 구성 설정이 있습니다.</li>
+  <li>구성은 클러스터의 특정 요구 사항에 가장 적합하도록 수정할 수 있습니다.</li>
+  <li>구성 설정을 보거나 설정하기 위해서는 Spark를 실행합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spark</span><span class="p">.</span><span class="n">conf</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="o">&lt;</span><span class="n">configuration</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spark</span><span class="p">.</span><span class="n">conf</span><span class="p">.</span><span class="nb">set</span><span class="p">(</span><span class="o">&lt;</span><span class="n">configuration</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="cluster-type">Cluster Type</h4>
+
+<ul>
+  <li>Spark 배포는 사용자의 정확한 요구 사항에 따라 달라질 수 있습니다.</li>
+  <li>Single node ( 단일 시스템 )</li>
+  <li>Standalone ( 드라이버 및 작업자로 전용 머신이 있는 독립형 클러스터 )</li>
+  <li>Managed ( 관리되는 클러스터 )
+    <ul>
+      <li>YARN</li>
+      <li>Mesos</li>
+      <li>Kubernetes</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="driver">Driver</h4>
+
+<ul>
+  <li>Spark 클러스터 당 하나의 드라이버가 있습니다.</li>
+  <li>클러스터의 다양한노드 / 프로세스에 대한 작업 할당 처리
+    <ul>
+      <li>드라이버는 모든 프로세스 및 작업의 상태를 모니터링하고 모든 작업을 처리합니다.</li>
+    </ul>
+  </li>
+  <li>클러스터에 있는 다른 프로세스의 결과 통합</li>
+  <li>공유 데이터( 리소스 등 작업에 필요한 데이터 )에 대한 모든 액세스를 처리</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="driver-tip">Driver Tip</h4>
+
+<ul>
+  <li>다른 노드에 비해 메모리를 두배로 늘리는 것이 좋습니다. ( 이는 작업 모니터링 및 데이터 통합 작업에 유용합니다. )</li>
+  <li>Spark 시스템과 마찬가지로 빠른 로컬 저장소는 이상적인 설정에서 Spark를 실행하는데 유용합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="worker">Worker</h4>
+
+<ul>
+  <li>작업자는 드라이버가 할당 한 실행중인 작업을 처리하고 이러한 결과를 드라이버에게 전달합니다.</li>
+  <li>작업자는 모든 코드, 데이터 및 주어진 작업을 완료하는 데 필요한 리소스에 대한 액세스 합니다.</li>
+  <li>권장사항
+    <ul>
+      <li>작업 유형에 따라 더 많은 작업자 노드가 더 큰 노드보다 낫습니다.</li>
+      <li>Spark의 모든 것과 마찬가지로, 다양한 구성을 테스트하여 워크로드에 대한 균형을 찾습니다.</li>
+      <li>작업자는 캐싱, 중간 파일 등을 위해 고속 로컬 스토리지를 사용할 수 있습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="spark-execution-plan">Spark execution plan</h4>
+
+<ul>
+  <li>스파크가 성에 미치는 영향을 이해하려면 내부에서 수행되는 작업을 볼 수 있어야 합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">voter_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">select</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">'VOTER NAME'</span><span class="p">]).</span><span class="n">distinct</span><span class="p">()</span>
+<span class="n">voter_df</span><span class="p">.</span><span class="n">explain</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p align="center"><img src="/images/post_img/spark10.png" /></p>
+
+<p><br /></p>
+
+<h4 id="shuffling">Shuffling</h4>
+
+<ul>
+  <li>Spark는 클러스터의 다양한 노드에 데이터를 배포합니다. 이에 부작용이 셔플링입니다.</li>
+  <li>셔플링은 특정 작업을 완료하는데 필요한 데이터 조각을 다양한 작업자에게 이동하는 것입니다.</li>
+  <li>사용자로 부터 복잡성을 감춥니다.</li>
+  <li>몇개의 노드에 모든 데이터가 필요한 경우, 필요한 전송을 완료하는데 속도가 느릴 수 있습니다.</li>
+  <li>클러스터링의 전체 처리량을 낮춥니다.
+    <ul>
+      <li>작업자는 데이터가 전송되기를 기다리는 시간을 소비합니다. ( 이는 나머지 작업에 사용할 수 있는 작업자의 수를 제한합니다. )</li>
+    </ul>
+  </li>
+  <li>셔플링은 종종 필요한 구성요소이지만, 가능한 최소화하는 것이 좋습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="셔플링-제한">셔플링 제한</h4>
+
+<ul>
+  <li>셔플링을 완전히 제거하는 것은 까다로울 수 있지만, 이를 제한 할 수 있는 몇가지 사항이 있습니다.</li>
+  <li><code class="language-plaintext highlighter-rouge">.repartition(num_partitions)</code> 를 사용하지 않습니다.
+    <ul>
+      <li>repartition 함수는 요청된 파티션 수인 단일 인수를 사용하는 함수입니다.</li>
+      <li>repartition에는 노드와 프로세스간에 데이터를 완전히 섞어야 하며 비용이 많이 듭니다.</li>
+      <li>파티션 수를 줄여야 하는 경우, <code class="language-plaintext highlighter-rouge">.coalesce(num_partitions)</code> 을 사용하세요. 이는 전체 데이터 셔플없이 데이터를 통합합니다. ( 더 적은 파티션 수를 입력해야 합니다. )</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">.join()</code> 함수의 사용을 조심하세요.
+    <ul>
+      <li>join함수의 사용은 무차별 적으로 셔플 작업을 유발할 수 있으며, 클러스터 로드가 증가하고 처리 시간이 느려집니다.</li>
+      <li><code class="language-plaintext highlighter-rouge">.broadcast()</code> 를 사용해서 DataFrame을 합치세요.</li>
+    </ul>
+  </li>
+  <li>최적화 하세요.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="broadcasting">Broadcasting</h4>
+
+<ul>
+  <li>Spark에서 브로드캐스팅은 각 작업자에게 개체의 복사본을 제공하는 방법입니다.</li>
+  <li>각 작업자가 자체 데이터 사본을 가지고 있으면 노드 간 통신이 덜 필요합니다.</li>
+  <li>이것은 데이터 셔플을 제한하고 노드가 독립적으로 작업할 가능성이 높습니다.</li>
+  <li>브로드캐스팅을 사용하면, 속도를 크게 높힐 수 있습니다.
+    <ul>
+      <li>특히 조인되는 DataFrame 중 하나가 다른 것보다 훨씬 작은 경우 <code class="language-plaintext highlighter-rouge">join()</code> 작업을 수행</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">.broadcast(&lt;DataFrame&gt;)</code> 를 통해 구현합니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pyspark.sql.functions</span> <span class="kn">import</span> <span class="n">broadcast</span>
+<span class="n">combined_df</span> <span class="o">=</span> <span class="n">df_1</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">broadcast</span><span class="p">(</span><span class="n">df_2</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>아주 작은 것을 사용하면, 브로드 캐스팅이 느려질 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="data-pipeline">Data Pipeline</h4>
+
+<ul>
+  <li>데이터 파이프라인은 단순한 단계 집합입니다.</li>
+  <li>입력 데이터소스는 단계별로 이동하여 원하는 출력으로 변환해야 합니다.</li>
+  <li>데이터 파이프라인은 여러 단계 or 구성 요소로 구성되며, 여러 시스템이 걸쳐있을 수도 있습니다.</li>
+  <li>데이터 파이프라인은 많은 시스템과 통신 할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="data-pipeline-구성">Data Pipeline 구성</h4>
+
+<ul>
+  <li>데이터 파이프라인은 크게 입력, 변환, 출력으로 구성됩니다. ( 데이터를 전달하기 전에, 검증 및 분석 단계가 있는 경우도 많습니다. )</li>
+  <li>입력은 CSV, JSON, 텍스트 등을 포함하여 모든 데이터 유형이 될 수 있습니다.</li>
+  <li>다양한 방법을 이용해서 원하는 형식으로 데이터를 변환합니다.
+    <ul>
+      <li>withColumn(), filter(), drop() 등</li>
+    </ul>
+  </li>
+  <li>변환을 정의한 후에는 데이터를 사용 가능한 형식으로 출력해야 합니다.</li>
+  <li>유효성 검사는 테스트를 실행하여, 예상한 대로 결과가 출력되는지 확인합니다.</li>
+  <li>분석은 다음 사용자에게 데이터를 전달하기 전 마지막 단계로, 사용자가 데이터 세트를 더 쉽게 사용할 수 있도록 하는 모든 작업을 포함합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="pipeline-details">Pipeline details</h4>
+
+<ul>
+  <li>데이터 파이프라인은 공식적으로 정의된 개체가 아닙니다. ( 단, Spark 데이터파이프라인 객체를 사용한 경우는 다릅니다. )</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">schema</span> <span class="o">=</span> <span class="n">StructType</span><span class="p">([</span>
+  <span class="n">StructField</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">False</span><span class="p">),</span>
+  <span class="n">StructField</span><span class="p">(</span><span class="s">'age'</span><span class="p">,</span> <span class="n">StringType</span><span class="p">(),</span> <span class="bp">False</span><span class="p">),</span>
+<span class="p">])</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="s">'csv'</span><span class="p">).</span><span class="n">load</span><span class="p">(</span><span class="s">'datafile'</span><span class="p">).</span><span class="n">schema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'id'</span><span class="p">,</span> <span class="n">monotonically_increasing_id</span><span class="p">())</span>
+<span class="p">...</span>
+<span class="n">df</span><span class="p">.</span><span class="n">write</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'outdata.parquet'</span><span class="p">)</span>
+<span class="n">df</span><span class="p">.</span><span class="n">write</span><span class="p">.</span><span class="n">json</span><span class="p">(</span><span class="s">'outdata.json'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="what-are-we-trying-to-parse">What are we trying to parse?</h4>
+
+<ul>
+  <li>데이터를 읽을 때, 완전히 균일 한 파일이 제공되는 경우는 거의 없습니다.</li>
+  <li>대부분의 경우 데이터를 제거하거나, 포맷해야하는 콘텐츠가 있습니다.
+    <ul>
+      <li>Incorrect data
+        <ul>
+          <li>Empty rows</li>
+          <li>Commented lines</li>
+          <li>Headers</li>
+        </ul>
+      </li>
+      <li>Nested structures
+        <ul>
+          <li>Multiple delimiters</li>
+        </ul>
+      </li>
+      <li>Non-regular data
+        <ul>
+          <li>표형식에 맞지 않으며 각각의 다른 수의 열로 구성된 경우</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="예시-stanford-imagenet-annotations">[예시] Stanford ImageNet annotations</h4>
+
+<ul>
+  <li>다양한 ImageNet 이미지에서 개를 찾고 식별하는데 초점을 맞춘 데이터</li>
+  <li>데이터는 모든 식별 된 개 목록을 제공합니다.</li>
+  <li>여러 개가 같은 이미지에 있는 경우를 포함하는 이미지도 존재</li>
+  <li>ImageNet 내의 폴더를 포함한 기타 메타데이터가 포함됩니다. ( 데이터 세트, 이미지 크기 및 이미지 경계 )</li>
+</ul>
+
+<p align="center"><img src="/images/post_img/spark11.png" /></p>
+
+<p><br /></p>
+
+<h4 id="예시-blank-lines-headers-and-comments-제거">[예시] blank lines, headers and comments 제거</h4>
+
+<ul>
+  <li>Spark으 CSV parse는 선택적 매개 변수를 통해 일반적인 데이터 문제를 해결할 수 있습니다.</li>
+  <li>CSV 구문 분석을 사용할 때, 빈 줄이 자동으로 제거됩니다.</li>
+  <li>선택적 명명된 인수 comment를 사용하여 주석을 제거 할 수 있습니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df1</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'datafile.csv.gz'</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s">'#'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>헤더행은, header라는 선택적 매개 변수를 통해 구문 분석할 수 있습니다.</li>
+  <li>스키마가 정의되지 않은 경우 열 이름은 처음에 헤더에 정의된 대로 설정됩니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df1</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'datafile.csv.gz'</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s">'True'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="자동적으로-컬럼-생성">자동적으로 컬럼 생성</h4>
+
+<ul>
+  <li>CSV 데이터를 Spark로 가져올 때, 가능한 경우 자동적으로 DataFrame을 생성합니다.</li>
+  <li>CSV의 텍스트 행을 ‘sep’라는 정의 된 인자를 통해 분할합니다. ( default = ‘,’ )</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df1</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'datafile.csv.gz'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">','</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>CSV 구문 분석기는 구분 문자가 문자열 내에 없는 경우 데이터 구문 분석에도 성공합니다. (‘_c0’ 열에 저장)</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df1</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'datafile.csv.gz'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">'*'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>이 트릭을 이용해서, 중첩되거나 복잡한 데이터 구문 분석을 할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="validation">Validation</h4>
+
+<ul>
+  <li>유효성 검사는 데이터 집합이 예상 형식을 준수하는지 확인하는 과정입니다.</li>
+  <li>행과 열의 수가 맞는지?</li>
+  <li>데이터 타입이 일치하는지?</li>
+  <li>더 복잡한 규칙에 대한 유효성 검사를 진행</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="validating-via-joins">Validating via joins</h4>
+
+<ul>
+  <li>유효성을 검사하는데 사용되는 한가지 기술은 조인을 사용해서 DataFrame의 콘텐츠가 알려진 집합과 일치하는지 확인하는 방법입니다.</li>
+  <li>join을 사용하면 데이터가 집합에 있는지 쉽게 확인 할 수 있습니다.</li>
+  <li>특히 긴 항목 목록에 대해 개별 행의 유효성 검사하는 것과 비교하여 비교적 빠릅니다.</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parsed_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'parsed_data.parquet'</span><span class="p">)</span>
+<span class="n">company_df</span> <span class="o">=</span> <span class="n">spark</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">parquet</span><span class="p">(</span><span class="s">'companies.parquet'</span><span class="p">)</span>
+<span class="n">verified_df</span> <span class="o">=</span> <span class="n">parsed_df</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">company_df</span><span class="p">,</span> <span class="n">parsed_df</span><span class="p">.</span><span class="n">company</span> <span class="o">==</span> <span class="n">compnay_df</span><span class="p">.</span><span class="n">company</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>이러한 방법은, 기준을 충족하지 않는 행을 자동으로 필터링하는 효과가 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="complex-rule-validation">Complex rule validation</h4>
+
+<ul>
+  <li>복잡한 규칙 유효성 검사는 Spark 구성요소를 사용하여 논리를 검사하는 아이디어입니다.</li>
+  <li>Calculations
+    <ul>
+      <li>불규칙한 데이터 세트의 열 수를 확인하기 위한 계산</li>
+    </ul>
+  </li>
+  <li>외부 소스에 대해서 유효성 검사 적 ( 웹서비스, 로컬파일, API 호출 등 )</li>
+  <li>이러한 규칙은 종종 UDF로 구현되며, 논리를 한 곳으로 가져오고 DataFrame의 콘텐츠에 대해 쉽게 설명할 수 있습니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="analysis-calculations--udf-">Analysis calculations ( UDF )</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">def</span> <span class="nf">getAvgSale</span><span class="p">(</span><span class="n">saleslist</span><span class="p">):</span>
+   <span class="n">totalsales</span> <span class="o">=</span> <span class="mi">0</span>
+   <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+   <span class="k">for</span> <span class="n">sale</span> <span class="ow">in</span> <span class="n">saleslist</span><span class="p">:</span>
+     <span class="n">totalsales</span> <span class="o">+=</span> <span class="n">sale</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">sale</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+     <span class="n">count</span> <span class="o">+=</span> <span class="mi">2</span>
+   <span class="k">return</span> <span class="n">totalsales</span> <span class="o">/</span> <span class="n">count</span>
+ 
+ <span class="n">udfGetAvgSale</span> <span class="o">=</span> <span class="n">udf</span><span class="p">(</span><span class="n">getAvgSale</span><span class="p">,</span> <span class="n">DoubleType</span><span class="p">())</span>
+ <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'avg_sale'</span><span class="p">,</span> <span class="n">udfGetAvgSale</span><span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">sales_list</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>이전장에서 했던 것처럼, Python을 이용해서 함수를 정의하고 이를 udf로 정의합니다.</p>
+
+<p><br /></p>
+
+<ul>
+  <li>Spark UDF는 매우 강력하고 유연하며, 때로는 특정 유형의 데이터를 처리하는 유일한 방법입니다.</li>
+  <li>불행히도, UDF는 특히 특정 작업을 위한 내장 Spark함수입니다.
+    <ul>
+      <li>가능한 경우 인라인으로 계산을 수행합니다.</li>
+      <li>인라인 수학 연산을 사용하여, Spark 열을 정의한 다음 최상의 성능을 위해 최적화 할 수 있습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">read</span><span class="p">.</span><span class="n">csv</span><span class="p">(</span><span class="s">'datafile'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'avg'</span><span class="p">,</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">total_sales</span> <span class="o">/</span> <span class="n">df</span><span class="p">.</span><span class="n">sales_count</span><span class="p">))</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">withColumn</span><span class="p">(</span><span class="s">'sq_ft'</span><span class="p">,</span> <span class="n">df</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">df</span><span class="p">.</span><span class="n">length</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>DataFrame의 두 열을 사용하여 계산 된 단순 평균입니다.</p>
+
+<p>두 번째 옵션은, 세 번째 열을 만들기 위해 두 열의 값을 곱합니다.</p>
+
+:ET

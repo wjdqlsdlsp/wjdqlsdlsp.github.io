@@ -1,0 +1,11 @@
+I"Y<h2 id="1-dataframe-details">1. DataFrame details</h2>
+
+<p><br /></p>
+
+<h4 id="data-cleaning">Data Cleaning</h4>
+
+<ul>
+  <li>파이프라인 처리에 사용할 원시 데이터를 준비하는 과정을 Data Cleaning 이라고 정의합니다.</li>
+  <li>Data Cleaning 는 모든 프로덕션 데이터 시스템의 필수입니다.</li>
+</ul>
+:ET
