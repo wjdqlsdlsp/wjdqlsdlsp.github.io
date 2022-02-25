@@ -1,5 +1,5 @@
 .article {
-  margin-bottom: 40px;
+  margin-bottom: 10px;
 
   .article__wrapper {
     display: flex;
@@ -7,30 +7,30 @@
   }
 
   .article__image {
-    width: 50%;
+    width: 40%;
     display: block;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
     background-color: $light-gray;
     &:hover {
-      opacity: 0.9;
+      opacity: 0.7;
     }
 
     &:after {
       content: "";
       display: table;
-      width: 100%;
+      width: 80%;
       padding-bottom: 70%;
     }
   }
 
   .article__content {
-    width: 60%;
-    padding: 50px;
+    width: 80%;
+    padding: 40px;
     margin-left: -10%;
     z-index: 1;
-    border-radius: 3px;
+    border-radius: 13px;
     background: rgba(255, 255, 255, 0.98);
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 
