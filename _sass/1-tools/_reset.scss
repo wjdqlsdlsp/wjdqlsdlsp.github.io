@@ -33,6 +33,20 @@ li > {
  */
 
 table {
+  width: 100%;
+  border : 2px solid #444444;
   border-collapse: collapse;
-  border-spacing: 0;
+  border-spacing: 10;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2;}
+th {
+  background-color: #04AA6D;
+  color: white;
+}
+th, td {
+  border-bottom: 1px solid #ddd;
+}
+td {
+  text-align: center;
 }

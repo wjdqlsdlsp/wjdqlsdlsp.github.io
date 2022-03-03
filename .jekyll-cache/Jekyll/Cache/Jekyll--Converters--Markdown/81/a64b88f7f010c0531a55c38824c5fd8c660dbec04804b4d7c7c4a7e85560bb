@@ -1,0 +1,1268 @@
+I"P�<p align="center"><img src="/images/post_img/mongodb1.png" /></p>
+
+<h2 id="1-flexibly-structured-data">1. Flexibly Structured Data</h2>
+
+<p>MongoDB는 엄격하고 알려진 구조 없이 데이터를 탐색하는 데 도움을 주는 도구입니다.</p>
+
+<p>이를 이용해, 다양한 데이터를 처리하고, 분석 및 통합할 수 있습니다.</p>
+
+<p>또한 요구 사항이 발전함에 따라 문제를 계속 개선하고 수정할 수 있습니다.</p>
+
+<p>오늘날 웹상의 대부분의 애플리케이션 프로그래밍 인터페이스는 특정 데이터 형식을 노출하는데, 이 형식으로 데이터를 표현할 수 있으면 MongoDB를 사용가능합니다.</p>
+
+<p><br /></p>
+
+<h4 id="javascript-object-notation--json-">JavaScript Object Notation ( JSON )</h4>
+
+<ul>
+  <li>JSON은 웹서비스와 클라이언트 코드가 데이터를 전달하는 일반적인 방법입니다.</li>
+  <li>JSON은 MongoDB 데이터 형식의 기초입니다.</li>
+  <li>JSON은 두가지 컬렉션 구조가 존재합니다.
+    <ul>
+      <li>Objects {}</li>
+      <li>Arrays []</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="json--python">JSON &lt;&gt; Python</h4>
+
+<ul>
+  <li>JSON 객체는 Python에 있는 <strong>dictionary</strong> 형식과 같습니다.</li>
+  <li>Array또한, Python Array와 동일합니다.</li>
+  <li>strings, numbers, boolean, null 등이 파이썬에서도 매핑됩니다. <code class="language-plaintext highlighter-rouge">Test Hello world.</code></li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="json--python--mongodb">JSON &lt;&gt; Python &lt;&gt; MongoDB</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>MongoDB</th>
+      <th>JSON</th>
+      <th>Python</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Databases</td>
+      <td>Objects</td>
+      <td>Dictionaries</td>
+    </tr>
+    <tr>
+      <td>&gt; Collections</td>
+      <td>Arrays</td>
+      <td>Lists</td>
+    </tr>
+    <tr>
+      <td>» Documents</td>
+      <td>Objects</td>
+      <td>Dictionaries</td>
+    </tr>
+    <tr>
+      <td>»&gt; Subdocuments</td>
+      <td>Objects</td>
+      <td>Dictionaries</td>
+    </tr>
+    <tr>
+      <td>»&gt; Values</td>
+      <td>Value types</td>
+      <td>Value types + datetim, regex</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br /></p>
+
+<h4 id="example-the-nobel-prize-api-database">Example) The Nobel Prize API data(base)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClinet</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">clinet</span><span class="p">[</span><span class="s">'nobel'</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">collection_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">'prizes'</span><span class="p">,</span> <span class="s">'laureates'</span><span class="p">]:</span>
+  <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span>
+  					<span class="s">"http://api.nobelprize.org/v1/{}.json"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">collection_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+  <span class="n">documents</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">()[</span><span class="n">collection_name</span><span class="p">]</span>
+  <span class="n">db</span><span class="p">[</span><span class="n">collection_name</span><span class="p">].</span><span class="n">insert_many</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<p>pymongo 라이브러리를 통해, 파이썬으로 MongoDB를 호출할 수 있습니다.</p>
+
+<p>이후 client를 선언하고, 데이터베이스와 연결합니다.</p>
+
+<p>반복문을 통해서, 원하는 데이터를 수집합니다.</p>
+
+<p><br /></p>
+
+<h4 id="컬렉션에서-문서를-계산하는-방법--문서를-찾는-방법">컬렉션에서 문서를 계산하는 방법 &amp; 문서를 찾는 방법</h4>
+
+<p>먼저 클라이언트 개체에서 데이터 베이스 및 컬렉션 액세스 합니다.</p>
+
+<ul>
+  <li>Using <strong>[]</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s">"nobel"</span><span class="p">]</span>
+<span class="n">prizes_collection</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s">"prizes"</span><span class="p">]</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Using <strong>.</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="n">nobel</span>
+<span class="n">prizes_collection</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s">"prizes"</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>두가지 방법중 익숙한 방법을 사용하면 됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="count-documents">Count documents</h4>
+
+<p>문서의 수를 계산하기 위해서는 <strong>count_documents</strong> 를 사용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">filter</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">n_prizes</span> <span class="o">=</span><span class="p">.</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">count_documents</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span>
+<span class="n">n_laureates</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>필터를 통해서, 필터링 합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find_one</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>이후, 문서를 가져와 API가 제공하는 원시 JSON 데이터의 스키마를 유추합니다.</p>
+
+<p><br /></p>
+
+<h4 id="문서-찾기">문서 찾기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">filter_doc</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s">'born'</span> <span class="p">:</span> <span class="s">'1845-03-27'</span><span class="p">,</span>
+  <span class="s">'diedCountry'</span> <span class="p">:</span> <span class="s">'Germany'</span><span class="p">,</span>
+  <span class="s">'gender'</span> <span class="p">:</span> <span class="s">'male'</span><span class="p">,</span>
+  <span class="s">'surname'</span> <span class="p">:</span> <span class="s">'Rontgen'</span>
+<span class="p">}</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">filter_doc</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>문서를 찾기 위해서는, 찾고자하는 문서의 정보를 표현합니다.</p>
+
+<p>이후, <strong>count_documents</strong> 를 통해, 해당하는 문서를 찾습니다.</p>
+
+<p><br /></p>
+
+<h4 id="simple-filters">Simple filters</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s">'gender'</span><span class="p">:</span><span class="s">'female'</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>위와 같이, 단일 필터를 수행할 수도 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="composing-filters">Composing filters</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">filter_doc</span> <span class="o">=</span> <span class="p">{</span><span class="s">'gender'</span><span class="p">:</span><span class="s">'female'</span><span class="p">,</span>
+             <span class="s">'diedCountry'</span> <span class="p">:</span> <span class="s">'France'</span><span class="p">,</span>
+             <span class="s">'bornCity'</span> <span class="p">:</span> <span class="s">'Warsaw'</span><span class="p">}</span>
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">filter_doc</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Output 값이 1일경우, 하나의 필터를 가지는데, 이는 <strong>find_one</strong> 을통해 정보를 가져옵니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">filter_doc</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="query-operators">Query operators</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span>
+  <span class="s">'diedCountry'</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s">'$in'</span> <span class="p">:</span> <span class="p">[</span><span class="s">'France'</span><span class="p">,</span> <span class="s">'USA'</span><span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span>
+  <span class="s">'diedCountry'</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s">'$ne'</span> <span class="p">:</span><span class="s">'France'</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>위와같이, 필드가 ‘France’ 이거나 ‘USA’ 인 문서를 찾을 수 있습니다.</p>
+
+<p>MongoDB 연산자에는 달러기호 접두사가 존재합니다.</p>
+
+<p>또한, 특정 문자열과 같지 않은 문서를 찾으려면, <strong>‘$ne’</strong> 를 이용합니다.</p>
+
+<p><br /></p>
+
+<ul>
+  <li><strong>$gt</strong>  : &gt;</li>
+  <li><strong>$gte</strong>  : &gt;=</li>
+  <li><strong>$lt</strong>  : &lt;</li>
+  <li><strong>$lte</strong>  : &lt;=</li>
+</ul>
+
+<p>이외에도 위와 같은 연산자를 사용할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span>
+  <span class="s">'diedCountry'</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">'$gt'</span> <span class="p">:</span> <span class="s">'Belgium'</span><span class="p">,</span>
+    <span class="s">'$lte'</span> <span class="p">:</span> <span class="s">'USA'</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>위와 같이, 문자열을 입력했을 경우, 숫자가 아닌 알파벳 순서를 의미합니다.</p>
+
+<p><br /></p>
+
+<h4 id="a-functional-density">A functional density</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find_one</span><span class="p">({</span>
+  <span class="s">"firstname"</span><span class="p">:</span> <span class="s">"Walter"</span><span class="p">,</span>
+  <span class="s">'surname'</span><span class="p">:</span> <span class="s">"Kohn"</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>위는 <strong>find_one</strong> 를 이용해서 검색하는 방법입니다.</p>
+
+<p align="center"><img src="/images/post_img/mongodb2.png" /></p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span>
+	<span class="s">"prizes.affiliations.name"</span> <span class="p">:</span> <span class="p">(</span>
+	<span class="s">"University of California"</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>위의 아웃풋에서, affiliations.name 에 해당하는 결과값을 가진 문서의 갯수를 찾는 방법입니다.</p>
+
+<p>점표기법을 통해서, 문서전체에서 이에 해당하는 문서가 몇개인지 쉽게 찾을 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="no-country-for-naipaul">No Country for Naipaul</h4>
+
+<p>MongoDB를 사용하면, 컬렉션에 대한 스키마를 지정하고 적용할 수 있지만, 필수는 아닙니다.</p>
+
+<p>예를들어, 필드는, 컬렉션의 문서에서 동일한 유형의 값을 가질 필요가 없습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">'surname'</span><span class="p">:</span> <span class="s">'Naipaul'</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p align="center"><img src="/images/post_img/mongodb3.png" /></p>
+
+<p>위와 같이, pirzes 부분이 비어있을 수 있습니다.</p>
+
+<p>루트 수준 필드라도 모든 문서에 있을 필요는 없습니다. 위의 출력의 예시에서는 bornCountry가 존재하지 않습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$exists"</span><span class="p">:</span> <span class="o">~~~</span><span class="p">}})</span>
+</code></pre></div></div>
+
+<p><strong>“$exists”</strong> 연산자를 사용하면, 필드의 존재 여부를 쿼리할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">922</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s">'prizes'</span><span class="p">:</span> <span class="p">{</span><span class="s">"$exists"</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">922</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s">'prizes.0'</span><span class="p">:</span> <span class="p">{</span><span class="s">"$exists"</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">922</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s">'prizes.1'</span><span class="p">:</span> <span class="p">{</span><span class="s">"$exists"</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">6</span>
+</code></pre></div></div>
+
+<p>위와같이, .0 .1 등으로, 해당하는 숫자를 알 수 있습니다.</p>
+
+<p><br /></p>
+
+<h2 id="2-working-with-distinct-values-and-sets">2. Working with Distinct Values and Sets</h2>
+
+<p><br /></p>
+
+<h4 id="using-distinct">Using <strong>.distinct()</strong></h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"gender"</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'male'</span><span class="p">,</span> <span class="s">'female'</span><span class="p">,</span> <span class="s">'org'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>distinct를 이용해서, 유니크한 값을 찾을 수 있습니다.</p>
+
+<p>집계는 컬렉션 전체에서 데이터를 처리하고, 계산된 결과를 생성합니다.</p>
+
+<p>MongoDB가 유지관리할 필드에 Index를 등록할 수 있는데, 이를 이용해서, 효율적인 쿼리 및 집계를 보장합니다.</p>
+
+<p>하지만, 많은 데이터로 작업하지 않는 경우, 일반적으로 Index가 필요하지 않습니다. ( 사용하는 컬렉션이 메모리에 남기때문에 - 메가바이트 미만, 천개이하의 문서 )</p>
+
+<p><br /></p>
+
+<h4 id="distinct-with-dot-notation">.distinct() with dot notation</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">"prizes.2"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$exists"</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+</code></pre></div></div>
+
+<p>점표기법을 사용하면, 문서의 루트 수준보다 깊이 포함된 필드를 지정할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">"prizes.share"</span><span class="p">:</span> <span class="s">"4"</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>위와 같이, 점 표기법으로, 찾는 방법을 사용합니다.</p>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"prizes.category"</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'physics'</span><span class="p">,</span> <span class="s">'chemistry'</span><span class="p">,</span> <span class="s">'peace'</span><span class="p">,</span>
+<span class="s">'medicine'</span><span class="p">,</span><span class="s">'literature'</span><span class="p">,</span> <span class="s">'econmics'</span><span class="p">]</span>
+
+<span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"prizes.share"</span><span class="p">:</span> <span class="s">"4"</span><span class="p">}))</span>
+</code></pre></div></div>
+
+<p>위와같이 두개의 함수를 이용해서 사용해서 합치는 방법도 있지만, 이를 하나의 함수로 사용하면 더 깔금하게 사용가능합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"prizes.category"</span><span class="p">,</span> <span class="p">{</span><span class="s">"prizes.share"</span><span class="p">:</span> <span class="s">"4"</span><span class="p">})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'physics'</span><span class="p">,</span> <span class="s">'chemistry'</span><span class="p">,</span> <span class="s">'medicine'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>위와 같이, distinct함수에 인자를 넣어주면, 해당하는 카테고리만 출력할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="example-prize-categories-with-multi-winners">Example) prize categories with multi-winners</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span><span class="s">"prizes.1"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$exists"</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+</code></pre></div></div>
+
+<p>두 개 이상의 prizes를 수상한 수상자가 있는 상의 카테고리 수를 찾는 코드입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span>
+	<span class="s">"prizes.category"</span><span class="p">,</span> <span class="p">{</span><span class="s">"prizes.1"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$exists"</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'chemistry'</span><span class="p">,</span> <span class="s">'physics'</span><span class="p">,</span> <span class="s">'peace'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>distinct를 이용해서, 상을 2번이상 받은 카테고리를 출력하는 코드입니다.</p>
+
+<p><br /></p>
+
+<h4 id="array-fields-and-equality-simplified">Array fields and equality, simplified</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="s">"nicknames"</span> <span class="p">:</span> <span class="p">[</span><span class="s">"Johnny"</span><span class="p">,</span> <span class="s">"JSwitch"</span><span class="p">,</span> <span class="s">"JB"</span><span class="p">,</span> <span class="s">"Tc Johnny"</span><span class="p">,</span> <span class="s">"Bardy"</span><span class="p">]}</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"nicknames"</span><span class="p">:</span> <span class="s">"JB"</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>JB라는 별명을 가진 모든 수상자를 찾는다고 가정할 때,  위와 같이, 필터 문서를 사용할 수 있습니다.</p>
+
+<p>필터는 “nicknames” 배열 필드에 “JB” 와 동일한 값이 하나 이상 있는 모든 문서와 일치시킵니다.</p>
+
+<p><br /></p>
+
+<h4 id="array-fields-and-operators">Array fields and operators</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">(</span>
+	<span class="p">{</span><span class="s">"prizes.category"</span><span class="p">:</span> <span class="s">"physics"</span><span class="p">})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">206</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">(</span>
+	<span class="p">{</span><span class="s">"prizes.category"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$ne"</span><span class="p">:</span> <span class="s">"physics"</span><span class="p">}})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">716</span>
+</code></pre></div></div>
+
+<p>동일하게, “$ne”를 통해서, physics를 수상하지 않은 문서를 찾을 수도 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span>
+  <span class="s">"prizes.category"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">"$in"</span> <span class="p">:</span> <span class="p">[</span><span class="s">"physics"</span><span class="p">,</span> <span class="s">"chemistry"</span><span class="p">,</span> <span class="s">"medicine"</span><span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">596</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span>
+  <span class="s">"prizes.category"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">"$nin"</span> <span class="p">:</span> <span class="p">[</span><span class="s">"physics"</span><span class="p">,</span> <span class="s">"chemistry"</span><span class="p">,</span> <span class="s">"medicine"</span><span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">326</span>
+</code></pre></div></div>
+
+<p>또한, not-in 연산자를 사용하여, 해당 범주에 속하지 않는 적어도 하나의 상을 가진 수상자를 찾습니다.</p>
+
+<p><br /></p>
+
+<h4 id="enter-elemmatch">Enter $elemMatch</h4>
+
+<p>상품 하위 문서 내에서, 둘 이상의 필드를 필터링 하기 위해서는, $elemMatch를 사용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">count_documents</span><span class="p">({</span>
+  <span class="s">"prizes"</span><span class="p">:</span> <span class="p">{</span><span class="s">"elemMatch"</span><span class="p">:</span>
+             <span class="p">{</span><span class="s">"category"</span><span class="p">:</span> <span class="s">"physics"</span><span class="p">,</span> <span class="s">"share"</span><span class="p">:</span><span class="s">"1"</span><span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>elemMatch 연산자를 사용하면, 해당 조건 모두 해당하는 문서를 찾습니다.</p>
+
+<p><br /></p>
+
+<h4 id="finding-a-substring-with-regex">Finding a substring with $regex</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">"firstname"</span><span class="p">:</span> <span class="s">"Marie"</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p align="center"><img src="/images/post_img/mongodb4.png" /></p>
+
+<p>위와 같은 출력에서, bornCountry 속 Poland 를 가지는 문서를 출력하고 싶을때, regex를 사용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"bornCountry"</span><span class="p">,</span>
+                     <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$regex"</span><span class="p">:</span> <span class="s">"Poland"</span><span class="p">}})</span>
+</code></pre></div></div>
+
+<p>위와 같이, 폴란드 문자열에 정규식 연산자를 사용합니다.</p>
+
+<p align="center"><img src="/images/post_img/mongodb5.png" /></p>
+
+<p>위와 같이, 폴란드를 포함한 문서를 출력할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="flag-options-for-regular-expressions">Flag options for regular expressions</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span>
+	<span class="s">"bornCountry"</span><span class="p">,</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$regex"</span><span class="p">:</span> <span class="s">"poland"</span><span class="p">,</span> <span class="s">"$options"</span><span class="p">:</span><span class="s">"i"</span><span class="p">}})</span>
+</code></pre></div></div>
+
+<p>다음과 같이 option을 추가하는 방법도 있습니다. ( 옵션 i는 대소문자를 구분하지 않는 방법입니다. )</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">bson.regex</span> <span class="kn">import</span> <span class="n">Regex</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span>
+	<span class="s">"bornCountry"</span><span class="p">,</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="n">Regex</span><span class="p">(</span><span class="s">"poland"</span><span class="p">,</span> <span class="n">i</span><span class="p">)})</span>
+</code></pre></div></div>
+
+<p>MongoDB는 또한 컴파일된 정규식 개체를 지원합니다.</p>
+
+<p>Pymongo 드라이버에는 bson Regex 클래스가 있는 패키지가 포함되어 있으며, 이 패키지는 표시된 대로 가져와서 사용할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"bornCountry"</span><span class="p">,</span>
+                     <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="n">re</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span><span class="s">"poland"</span><span class="p">)})</span>
+</code></pre></div></div>
+
+<p>Python 정규식을 사용할 수도 있습니다. 하지만, bson Regex 클래스를 사용하는 것이 MongoDB에 더 적합합니다.</p>
+
+<p><br /></p>
+
+<h4 id="begining-and-ending--and-escaping-">Begining and ending ( and escaping )</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">bson.regex</span> <span class="kn">import</span> <span class="n">Regex</span>
+
+<span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"bornCountry"</span><span class="p">,</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="n">Regex</span><span class="p">(</span><span class="s">"^Poland"</span><span class="p">)})</span>
+
+<span class="p">[</span><span class="s">'output'</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'Poland'</span><span class="p">,</span>
+<span class="s">'Poland (now Ukraine)'</span><span class="p">,</span>
+<span class="p">...</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>필드 값의 시작 부분과 일치시키려면, 캐럿 문자(^)를 사용합니다. - regex에 전달하는 문자열의 시작 부분에 고정키십니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"bornCountry"</span><span class="p">,</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="n">Regex</span><span class="p">(</span><span class="s">"^Poland \(now"</span><span class="p">)})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'Poland (now Ukraine)'</span><span class="p">,</span>
+<span class="s">'Poland (now Lithuania)'</span><span class="p">,</span>
+<span class="p">...</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>문자를 이스케이프 하려면, 백슬래시를 이용합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"bornCountry"</span><span class="p">,</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="n">Regex</span><span class="p">(</span><span class="s">"now Poland\)$"</span><span class="p">)})</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[</span><span class="s">'Russian Empire (now Poland)'</span><span class="p">,</span>
+<span class="s">'Prussia (now Poland)'</span><span class="p">,</span>
+<span class="p">...</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>필드 값의 끝을 일치 시키려면 달러 기호를 사용합니다.</p>
+
+<p><br /></p>
+
+<h2 id="3-get-only-what-you-need-and-fast">3. Get Only What You Need, and Fast</h2>
+
+<p><br /></p>
+
+<h4 id="projection-이란">Projection 이란?</h4>
+
+<p>Projection이라는 용어는 다차원 데이터를 줄이는 방법에 관한 것입니다.</p>
+
+<p>데이터 테이블 열을 선택하는 것인데, MongoDB에서는 하위 구조를 선택하는 것입니다.</p>
+
+<p><br /></p>
+
+<h4 id="projection-in-mongodb">Projection in MongoDB</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">docs</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find</span><span class="p">(</span>
+			<span class="nb">filter</span><span class="o">=</span><span class="p">{},</span>
+			<span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s">"prizes.affilations"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="s">"_id"</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+<span class="nb">type</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">pymongo</span><span class="p">.</span><span class="n">cursor</span><span class="p">,</span><span class="n">Cursor</span> <span class="k">as</span> <span class="mh">0x10d6e69e8</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>MongoDB에서는 문서 필드를 지정하여 예측 값들을 가져옵니다.</p>
+
+<p>컬렉션의 find 메서드에 대한 두번째 인수로 사전을 전달하여, 이를 수행할 수 있습니다.</p>
+
+<p>투영에 포함하려는 각 필드에 대해 값 1을 지정합니다. 포함하지 않은 필드는 투영에 포함되지 않습니다.</p>
+
+<p>단 “_id” 필드는 예외사항으로, 기본적으로 항상 투영에 포함됩니다. 이를 생략하려면 0을 할당해야 합니다.</p>
+
+<p>해당 리턴값은, 데이터 자체가아니라 커서로, 한번에 하나씩 문자를 가져올 수 있는 이터러블 형태입니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>우리는 이렇게 얻은 이터러블에 List를 취함으로써, 데이터를 관리할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="missing-fields">Missing fields</h4>
+
+<p>만약 find한 내용이 존재하지 않는 데이터일 경우, MongoDB는 오류를 발생시키는 대신, 해당 필드가 없는 문서를 반환합니다.</p>
+
+<p><br /></p>
+
+<h4 id="simple-aggregation">Simple aggregation</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">docs</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find</span><span class="p">({},</span> <span class="p">[</span><span class="s">"prizes"</span><span class="p">])</span>
+
+<span class="n">n_prizes</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+  <span class="n">n_prizes</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">"prizes"</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">n_prizes</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="mi">942</span>
+</code></pre></div></div>
+
+<p>예를 들어, 수여된 총 상금 메달 수를 계산한다고 할 때, 모든 수상자에 대한 상품 배열의 총 요소 수를 얻습니다.</p>
+
+<p>위와 같이, prizes만 투영해, 매우 큰 컬렉션의 성능에 확실히 영향을 줄 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="sorting-post-query-with-python">Sorting post-query with Python</h4>
+
+<p>Python만으로 검색된 문서 목록을 정렬하는 방법은 유용합니다.</p>
+
+<p>이 방법은, 특히 작은 데이터 세트의 경우 성능이 뛰어날 수 있습니다.</p>
+
+<p>이는 데이터를 로컬 캐시에 저장하고, 다양한 작업을 시도할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"category"</span><span class="p">:</span> <span class="s">"physics"</span><span class="p">},</span> <span class="p">[</span><span class="s">"year"</span><span class="p">]))</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="s">"year"</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="s">"year"</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>파이썬 sorted함수에 key로 itemgetter(“year”) 를 통해, 정렬하면, year순으로 정렬된 값을 얻을 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="sorting-in-query-with-mongodb">Sorting in-query with MongoDB</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"category"</span><span class="p">:</span> <span class="s">"physics"</span><span class="p">},</span> <span class="p">[</span><span class="s">"year"</span><span class="p">],</span>
+                       <span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s">"year"</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+<span class="k">print</span><span class="p">([</span><span class="n">doc</span><span class="p">[</span><span class="s">"year"</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
+
+<span class="s">'''
+역순의 값을 얻고 싶으면, sort에 -1를 사용합니다..
+cursor = db.prizes.find({"category": "physics"}, ["year"],
+                       sort=[("year",-1)])
+'''</span>
+</code></pre></div></div>
+
+<p>Mongo에 서버의 필드 값으로 간단한 정렬을 수행하고, 결과를 정렬된 순서로 요청할 수도 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="primary-and-secondary-sorting">Primary and secondary sorting</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span>
+  			<span class="p">{</span><span class="s">"year"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$gt"</span><span class="p">:</span> <span class="s">"1966"</span><span class="p">,</span> <span class="s">"$lt"</span> <span class="p">:</span> <span class="s">"1970"</span><span class="p">}},</span>
+  			<span class="p">[</span><span class="s">"category"</span><span class="p">,</span> <span class="s">"year"</span><span class="p">],</span>
+  			<span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s">"year"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">"category"</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+				<span class="p">)</span>
+	<span class="k">print</span><span class="p">(</span><span class="s">"{year} {category}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="o">**</span><span class="n">doc</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>정렬을 위해, 두개의 키를 이용하는 방법은, sort에 2개의 카테고리를 입력하면 됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="sorting-with-pymongo-versus-mongodb-shell">Sorting with pymongo versus MongoDB shell</h4>
+
+<p>MongoDB용 CLI shell은 JavaScript를 이용합니다.</p>
+
+<ul>
+  <li>MongoDB shell
+    <ul>
+      <li>{“year”: 1, “category”:-1}</li>
+      <li>javascript 개체는 입력된 키 순서로 유지됩니다.</li>
+    </ul>
+  </li>
+  <li>Python
+    <ul>
+      <li>Python 3.6 이하의 버전에서는, 개체 순서를 유지한다는 보장이 없습니다.</li>
+      <li>이것이 pymongo에 튜플 목록이 필요한 이유입니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="index">Index</h4>
+
+<p>MongoDB의 인덱스는 책의 인덱스와 같습니다.</p>
+
+<p>MongoDB를 사용하면 각 컬렉션을 책으로, 각 문서를 페이지로, 각 필드를 콘텐츠 유형으로 생각하면 됩니다.</p>
+
+<p>인덱스를 통해, 해당 필드의 값을 사용하여 필드를 인덱싱 할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="when-to-use-indexes">When to use indexes?</h4>
+
+<ul>
+  <li>하나 또는 몇 개의 무서만 돌려받을 것으로 예상되는 경우</li>
+  <li>문서가 매우 크거나 컬렉션이 매우 큰 경우</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="특정-쿼리를-사용하여-상품-문서를-수집하는데-걸리는-시간">특정 쿼리를 사용하여 상품 문서를 수집하는데 걸리는 시간</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%%</span><span class="n">timeit</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"year"</span><span class="p">:</span><span class="s">"1901"</span><span class="p">}))</span>
+
+<span class="mf">0.5</span> <span class="n">밀리초</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%%</span><span class="n">timeit</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({},</span> <span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s">"year"</span><span class="p">,</span><span class="mi">1</span><span class="p">)]))</span>
+<span class="mi">5</span> <span class="n">밀리초</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="adding-a-single-field-index">Adding a single-field index</h4>
+
+<p><strong>create_index</strong> 메소드를 사용하여 수상 연도에 대한 오름차순 인덱스를 생성하는 방법</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s">"year"</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+</code></pre></div></div>
+
+<p>이를 생성하고, 위에서 했던 시간 측정을 할경우, 쿼리 성능이 향상됨을 알 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%%</span><span class="n">timeit</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"year"</span><span class="p">:</span><span class="s">"1901"</span><span class="p">}))</span>
+
+<span class="mf">0.38</span> <span class="n">밀리초</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%%</span><span class="n">timeit</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({},</span> <span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s">"year"</span><span class="p">,</span><span class="mi">1</span><span class="p">)]))</span>
+<span class="mi">4</span> <span class="n">밀리초</span>
+</code></pre></div></div>
+
+<p>단일쿼리에서 30% 복수쿼리에서 20%의 성능향상을 가져옵니다.</p>
+
+<p><br /></p>
+
+<h4 id="adding-a-compoundmultiple-field-index">Adding a compound(multiple-field) index</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s">"category"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">"year"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+</code></pre></div></div>
+
+<p>오름차순 범주에 대한 복합 인덱스를 만든 다음 오름차순 연도를 만듭니다.</p>
+
+<p>따라서, Mongo는 각 범주에 대해 연도를 오름차순으로 인덱스를 유지합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"category"</span><span class="p">:</span> <span class="s">"economics"</span><span class="p">},</span> <span class="p">{</span><span class="s">"year"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">"_id"</span><span class="p">:</span><span class="mi">0</span><span class="p">}))</span>
+</code></pre></div></div>
+
+<p>Mongo는 쿼리를 실행하기 위해 컬렉션 자체를 검사할 필요없이, 인덱스에 의해 커버됩니다.</p>
+
+<p>속도향상 측면에서는 약간의 향상을 얻지만, 컬렉션보다 훨씬 적은 공간을 차지합니다.</p>
+
+<p>일반적으로 쿼리를 포함하는 인덱스를 정희하면 성능이 크게 향상될 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="쿼리-성능-문제를-해결하는-몇가지-방법">쿼리 성능 문제를 해결하는 몇가지 방법</h4>
+
+<ul>
+  <li>Index_information()
+    <ul>
+      <li>컬렉션에 어떤 인텍스가 있는지 확인하는데 도움이 됩니다.</li>
+    </ul>
+  </li>
+  <li>explain()
+    <ul>
+      <li>MongoDB는 주어진 쿼리가 실행되는 방법을 자세히 설명하는 쿼리 계획의 출력을 제공합니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="example-limiting-our-exploration">Example) Limiting our exploration</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({},</span> <span class="p">[</span><span class="s">"laureates.share"</span><span class="p">]):</span>
+  <span class="n">share_is_three</span> <span class="o">=</span> <span class="p">[</span><span class="n">laureate</span><span class="p">[</span><span class="s">'share'</span><span class="p">]</span><span class="o">==</span><span class="mi">3</span> <span class="k">for</span> <span class="n">laureate</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">"laureates"</span><span class="p">]]</span>
+</code></pre></div></div>
+
+<p>첫번째, 모든 수상에 대해 share가 3인 경우를 확인</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span> <span class="s">"3"</span><span class="p">}):</span>
+  <span class="k">print</span><span class="p">(</span><span class="s">"{year} {category}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="o">**</span><span class="n">doc</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>이를 통해 세가지 방식으로 분할된 수상 정보를 인쇄할 수 있습니다. 이렇게 출력할 경우, 수많은 출력을 가지게됩니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span> <span class="s">"3"</span><span class="p">},</span> <span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+  <span class="k">print</span><span class="p">(</span><span class="s">"{year} {category}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="o">**</span><span class="n">doc</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>위처럼, 수많은 출력을 원치 않을 경우, limit 옵션을 통해, 출력하고 싶은 양을 조절할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span> <span class="s">"3"</span><span class="p">},</span> <span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+  <span class="k">print</span><span class="p">(</span><span class="s">"{year} {category}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="o">**</span><span class="n">doc</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>또한, skip을 통해, 처음부터 skip으로 설정한 숫자만큼 건너뛰고 데이터를 가져올 수 있습니다.</p>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span> <span class="s">"3"</span><span class="p">}).</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+  <span class="k">print</span><span class="p">(</span><span class="s">"{year} {category}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="o">**</span><span class="n">doc</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>위처럼, find에 인자로 limit를 주지않고, 커서에 연결해서 제한을 줄 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span> <span class="s">"3"</span><span class="p">}).</span><span class="n">sort</span><span class="p">([(</span><span class="s">"year"</span><span class="p">,</span><span class="mi">1</span><span class="p">)]).</span><span class="n">skip</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+  <span class="k">print</span><span class="p">(</span><span class="s">"{year} {category}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="o">**</span><span class="n">doc</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>위와 같이, sort, skip, limit 모두 커서에 연결할 수 있습니다.</p>
+
+<p>단, <strong>find_one</strong>에 경우 커서에 연결할 수 없습니다.</p>
+
+<p><br /></p>
+
+<h4 id="simple-sorts-of-sort">Simple sorts of sort</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cursor1</span> <span class="o">=</span> <span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span><span class="s">"3"</span><span class="p">}).</span><span class="n">skip</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">sort</span><span class="p">([(</span><span class="s">"year"</span><span class="p">,</span><span class="mi">1</span><span class="p">)]))</span>
+
+<span class="n">cursor2</span> <span class="o">=</span> <span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span><span class="s">"3"</span><span class="p">}).</span><span class="n">skip</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">sort</span><span class="p">(</span><span class="s">"year"</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">cursor3</span> <span class="o">=</span> <span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">find</span><span class="p">({</span><span class="s">"laureates.share"</span><span class="p">:</span><span class="s">"3"</span><span class="p">}).</span><span class="n">skip</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="n">sort</span><span class="p">(</span><span class="s">"year"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>위의 3줄 모두 동일하게 작동하는 코드입니다.</p>
+
+<p><br /></p>
+
+<h2 id="4-aggregation-pipelines-let-the-server-do-it-for-you">4. Aggregation Pipelines: Let the Server Do It For You</h2>
+
+<p><br /></p>
+
+<h4 id="queries-have-implicit-stages">Queries have implicit stages</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">find</span><span class="p">(</span>
+				<span class="nb">filter</span><span class="o">=</span><span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span> <span class="s">"USA"</span><span class="p">},</span>
+				<span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s">"prizes.year"</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
+				<span class="n">limit</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>위의 코드는 단계별로 진행됩니다.</p>
+
+<ol>
+  <li>필터</li>
+  <li>출력을 위해 다운스트림에 필요한 필드를 투영</li>
+  <li>검색되는 문서의 수를 제한</li>
+</ol>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$match"</span><span class="p">:</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span><span class="s">"USA"</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"prizes,year"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$limit"</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="p">])</span>
+</code></pre></div></div>
+
+<p>위의 코드와 동일한 방식으로 작동하는 코드입니다.</p>
+
+<p><br /></p>
+
+<h4 id="adding-sort-and-skip-stages">Adding sort and skip stages</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$match"</span><span class="p">:</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span><span class="s">"USA"</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"prizes.year"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">"_id"</span><span class="p">:</span><span class="mi">0</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$sort"</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s">"prizes.year"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])},</span>
+  <span class="p">{</span><span class="s">"$skip"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">"$limit"</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+<span class="p">]))</span>
+</code></pre></div></div>
+
+<p>정렬 및 스킵또한, 파이프라인 단계로 사용할 수 있습니다.</p>
+
+<p>단 정렬 단계에서, pymongo는 OrderDict클래스를 이용해야 합니다.</p>
+
+<p>OrderDict 클래스는 입력된 순서대로 필드 방향 쌍을 생성합니다.</p>
+
+<p><br /></p>
+
+<h4 id="but-can-i-count">But can I count?</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$match"</span><span class="p">:</span> <span class="p">{</span><span class="s">"bornCountry"</span><span class="p">:</span><span class="s">"USA"</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$count"</span><span class="p">:</span> <span class="s">"n_USA-born-laureates"</span><span class="p">}</span>
+<span class="p">]))</span>
+</code></pre></div></div>
+
+<p>count 단계를 사용하여 이전 단계에서 전달된 문서의 수를 계산할 수 있습니다.</p>
+
+<p>해당 집계 컬렉션은, <strong>count_documents</strong> 메서드와 동일합니다.</p>
+
+<p><br /></p>
+
+<h4 id="field-paths">Field paths</h4>
+
+<p>집계 단계는 필드 경로가 표함된 표현식을 사용할 수 있습니다.</p>
+
+<ul>
+  <li>표현 방식
+    <ul>
+      <li>{field1: <expression1>, ...}</expression1></li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"prizes.share"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}</span>
+<span class="p">]).</span><span class="nb">next</span><span class="p">()</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s">'5bd3a610053b1704219e19d4'</span><span class="p">),</span>
+	<span class="s">'prizes'</span><span class="p">:</span> <span class="p">[{</span><span class="s">'share'</span><span class="p">:</span> <span class="s">'1'</span><span class="p">}]}</span>
+</code></pre></div></div>
+
+<p>여기에서 표현 개체를 프로젝트 단계에 전달합니다.</p>
+
+<p>개체에 ‘prizes.share’라는 하나의 키가 있으면 표현식 값은 1 입니다.</p>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_prizes"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$size"</span><span class="p">:</span> <span class="s">"$prizes"</span><span class="p">}}}</span>
+<span class="p">]).</span><span class="nb">next</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>대조적으로, 위의 코드는 “n_prizes”라고 하는 필드에 투영합니다.</p>
+
+<ul>
+  <li>{“$size”: “$prizes”} 이라는 표현식의 값을 사용</li>
+  <li>field path : $prizes</li>
+</ul>
+
+<p>파이프라인에 의해 해당 단계에서 처리된 각 문서에 대한 prizes 필드의 값을 취합니다.</p>
+
+<p>이를 이용해서, 집계 중 새 필드를 만들거나, 이전 필드를 덮어 쓸 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="operator-expression">Operator expression</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_prizes"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$size"</span><span class="p">:</span><span class="s">"$prizes"</span><span class="p">}}}</span>
+<span class="p">]).</span><span class="nb">next</span><span class="p">()</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s">'5bd3a610053b1704219e19d4'</span><span class="p">),</span>
+<span class="s">'n_prizes'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>여기서 또 다른 새로운 개념은 연산자를 함수로 취급하는 연산자 표현식입니다.</p>
+
+<p>표현식은 하나 이상의 인수에 연산자를 적용하고, 값을 반환합니다.</p>
+
+<ul>
+  <li>표현식 : {“$size”: “$prizes”}</li>
+  <li>filed path : $prizes</li>
+</ul>
+
+<p>따라서 표현식 개체는 n-prizes 필드를 상품 배열의 크기에 할당합니다. (편의상 하나의 매개변수만 있어서 대괄호 생략)</p>
+
+<p><br /></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"solo_winner"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$in"</span><span class="p">:[</span><span class="s">"1"</span><span class="p">,</span> <span class="s">"$prizes.share"</span><span class="p">]}}}</span>
+<span class="p">]).</span><span class="nb">next</span><span class="p">()</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s">'5bd3a610053b1704219e19d4'</span><span class="p">),</span>
+<span class="s">'solo_winner'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>쿼리 필터에서 사용할 수 있는 많은 연산자에는 집계에 해당하는 연산자가 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="implementing-distinct">Implementing .distinct()</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">list_1</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">"bornCountry"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">list_2</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s">"_id"</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span> <span class="s">"$bornCountry"</span><span class="p">}}</span>
+<span class="p">])]</span>
+<span class="nb">set</span><span class="p">(</span><span class="n">list_2</span><span class="p">)</span> <span class="o">-</span> <span class="p">{</span><span class="bp">None</span><span class="p">}</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">list_1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>여기서는 $group를 사용합니다. group은 _id 필드를 매핑해야 하는 표현식 개체를 사용합니다.</p>
+
+<p>모든 MongoDB 문서의 경우 _id 필드는 고유 해야합니다.</p>
+
+<p>그룹 단계에 선행하는 매치 단계가 없기 때문에 모든 BornCountry 값이 캡쳐됩니다.</p>
+
+<p>여기에는 필드가 문서에 없을 때 발생하는 값인 None 이 포함됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="how-many-prizes-have-been-awarded-in-total">How many prizes have been awarded in total?</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_prizes"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$size"</span><span class="p">:</span> <span class="s">"$prizes"</span><span class="p">}}},</span>
+  <span class="p">{</span><span class="s">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">"n_prizes_total"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$sum"</span><span class="p">:</span> <span class="s">"$n_prizes"</span><span class="p">}}}</span>
+<span class="p">]))</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[{</span><span class="s">'_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span><span class="s">'n_prizes_total'</span><span class="p">:</span> <span class="mi">941</span><span class="p">}]</span>
+</code></pre></div></div>
+
+<p>project 단계와 group 단계의 결합입니다.</p>
+
+<p>underscore-id는 모든 문서에 대해 None으로 매핑됩니다.</p>
+
+<p>즉, 그룹 단계에서 하나의 문서만 나타납니다.</p>
+
+<p>이 문서 하나는 새 필드인 n_prizes_total을 연산자 표현식에 매핑합니다.</p>
+
+<p>여기서 $sum 은, 그룹 단계에서 누산기 역할을 합니다.</p>
+
+<p><br /></p>
+
+<h4 id="sizing-and-summing">Sizing and summing</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_laureates"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$size"</span><span class="p">:</span> <span class="s">"$laureates"</span><span class="p">},</span> <span class="s">"category"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span><span class="s">"$category"</span><span class="p">,</span> <span class="s">"n_laureates"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$sum"</span> <span class="p">:</span> <span class="s">"$n_laureates"</span><span class="p">}}},</span>
+  <span class="p">{</span><span class="s">"$sort"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_laureates"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}},</span>
+<span class="p">]))</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'medicine'</span><span class="p">,</span><span class="s">'n_laureates'</span><span class="p">:</span> <span class="mi">216</span><span class="p">},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'physics'</span><span class="p">,</span><span class="s">'n_laureates'</span><span class="p">:</span> <span class="mi">210</span><span class="p">},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'chemistry'</span><span class="p">,</span><span class="s">'n_laureates'</span><span class="p">:</span> <span class="mi">181</span><span class="p">},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'peace'</span><span class="p">,</span><span class="s">'n_laureates'</span><span class="p">:</span> <span class="mi">133</span><span class="p">},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'literature'</span><span class="p">,</span><span class="s">'n_laureates'</span><span class="p">:</span> <span class="mi">114</span><span class="p">},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'economics'</span><span class="p">,</span><span class="s">'n_laureates'</span><span class="p">:</span> <span class="mi">81</span><span class="p">}]</span>
+</code></pre></div></div>
+
+<p>각 상별 수상자 수를 원한다고 가정하면 이를 수행하는 한 가지 방법은 $size 연산자를 사용하여, 필드를 투영하는 것입니다.</p>
+
+<p>이후, 상 범주별로, 그룹화 하는 단계를 추가하여 범주당 수상자 수를 생성할 수 있습니다.</p>
+
+<p>이후, n_laureates 필드를 각 범주에 대한 n_laureates 값의 합으로 재설정합니다.</p>
+
+<p>이후 내림차순으로 정리합니다.</p>
+
+<p><br /></p>
+
+<h4 id="how-to-unwind">How to $unwind</h4>
+
+<p>수상자 배열의 개별 요소를 어떻게 사용할까요?</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">aggreagte</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$unwind"</span><span class="p">:</span> <span class="s">"$laureates"</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s">"year"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">"category"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">"laureates.surname"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">"laureates.share"</span><span class="p">:</span><span class="mi">1</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$limit"</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+<span class="p">]))</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[{</span><span class="s">'year'</span><span class="p">:</span> <span class="s">'2018'</span><span class="p">,</span>
+<span class="s">'category'</span><span class="p">:</span> <span class="s">'physics'</span><span class="p">,</span><span class="s">'laureates'</span><span class="p">:</span> <span class="p">{</span><span class="s">'surname'</span><span class="p">:</span> <span class="s">'Ashkin'</span><span class="p">,</span><span class="s">'share'</span><span class="p">:</span> <span class="s">'2'</span><span class="p">}},</span>
+<span class="p">{</span><span class="s">'year'</span><span class="p">:</span> <span class="s">'2018'</span><span class="p">,</span>
+<span class="s">'category'</span><span class="p">:</span> <span class="s">'physics'</span><span class="p">,</span><span class="s">'laureates'</span><span class="p">:</span> <span class="p">{</span><span class="s">'surname'</span><span class="p">:</span> <span class="s">'Mourou'</span><span class="p">,</span><span class="s">'share'</span><span class="p">:</span> <span class="s">'4'</span><span class="p">}},</span>
+<span class="p">{</span><span class="s">'year'</span><span class="p">:</span> <span class="s">'2018'</span><span class="p">,</span>
+<span class="s">'category'</span><span class="p">:</span> <span class="s">'physics'</span><span class="p">,</span><span class="s">'laureates'</span><span class="p">:</span> <span class="p">{</span><span class="s">'surname'</span><span class="p">:</span> <span class="s">'Strickland'</span><span class="p">,</span><span class="s">'share'</span><span class="p">:</span> <span class="s">'4'</span><span class="p">}}]</span>
+</code></pre></div></div>
+
+<p>이를 수행하기 위해서는 $unwind를 사용합니다.</p>
+
+<p>이는 배열 요소당 하나의 파이프라인 문서를 출력합니다.</p>
+
+<p>여기에서 우리는 세 개의 문서에 걸쳐 수상자 필드를 풀었습니다.</p>
+
+<p><br /></p>
+
+<h4 id="renormalization-anyone">Renormalization, anyone?</h4>
+
+<p>unwind 이후 다음 단계를 사용하여, 데이터를 재압축합니다.</p>
+
+<p>데이터를 정규화하고 각 상품의 수상자 ID만 추적하려면?</p>
+
+<p>결국 우리는 수상자 컬렉션에서 더많은 정보를 가져올 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">'$unwind'</span><span class="p">:</span> <span class="s">"$laureates"</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"year"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">"country"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">"laureates.id"</span><span class="p">:</span><span class="mi">1</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$concat"</span><span class="p">:</span> <span class="p">[</span><span class="s">"$cateogry"</span><span class="p">,</span> <span class="s">":"</span><span class="p">,</span> <span class="s">"$year"</span><span class="p">]},</span> <span class="s">"laureate_ids"</span><span class="p">:{</span><span class="s">"$addToSet"</span><span class="p">:</span> <span class="s">"$laureates.id"</span><span class="p">}}}</span>
+  <span class="p">{</span><span class="s">"$limit"</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+<span class="p">]))</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'medicine:1901'</span><span class="p">,</span><span class="s">'laureate_ids'</span><span class="p">:</span> <span class="p">[</span><span class="s">'293'</span><span class="p">]},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'peace:1902'</span><span class="p">,</span><span class="s">'laureate_ids'</span><span class="p">:</span> <span class="p">[</span><span class="s">'465'</span><span class="p">,</span><span class="s">'464'</span><span class="p">]},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'physics:1902'</span><span class="p">,</span><span class="s">'laureate_ids'</span><span class="p">:</span> <span class="p">[</span><span class="s">'3'</span><span class="p">,</span><span class="s">'2'</span><span class="p">]},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'peace:1903'</span><span class="p">,</span><span class="s">'laureate_ids'</span><span class="p">:</span> <span class="p">[</span><span class="s">'466'</span><span class="p">]},</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="s">'medicine:1903'</span><span class="p">,</span><span class="s">'laureate_ids'</span><span class="p">:</span> <span class="p">[</span><span class="s">'295'</span><span class="p">]}]</span>
+</code></pre></div></div>
+
+<p>여기에서 각 수상별 수상자의 ID목록을 얻습니다.</p>
+
+<p>수상자 배열을 해체한 후 연도, 범주 및 수상자 ID를 예측합니다.</p>
+
+<p>연도와 카테고리는 함께 상을 식별합니다.</p>
+
+<p>따라서, 이러한 값을 연결하여 그룹화 할 수 있습니다.</p>
+
+<p>그룹 단계에서 addToSet 연산자를 사용하여 각 상품에 대한 수상자 ID를 수집합니다.</p>
+
+<p><br /></p>
+
+<h4 id="unwind-and-count-em-one-by-one">$unwind and count ‘em, one by one</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_laureates"</span> <span class="p">:</span> <span class="p">{</span><span class="s">"$size"</span><span class="p">:</span> <span class="s">"$laureates"</span><span class="p">},</span> <span class="s">"category"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span><span class="s">"$category"</span><span class="p">,</span> <span class="s">"n_laureates"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$sum"</span><span class="p">:</span> <span class="s">"$n_laureates"</span><span class="p">}}},</span>
+  <span class="p">{</span><span class="s">"$sort"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_laureates"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}},</span>
+<span class="p">]))</span>
+</code></pre></div></div>
+
+<p>unwind 연산자를 이해하는 방법은 다음과 같습니다.</p>
+
+<p>이전에는 크기 연산자를 사용하여 상별 수상자 수를 예측했습니다.</p>
+
+<p>이 프로젝션은 그룹 단계에 입력되어 카테고리별 카운트를 출력합니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$unwind"</span><span class="p">:</span> <span class="s">"$laureates"</span><span class="p">}</span>
+  <span class="p">{</span><span class="s">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span><span class="s">"$category"</span><span class="p">,</span> <span class="s">"n_laureates"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$sum"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}},</span>
+  <span class="p">{</span><span class="s">"$sort"</span><span class="p">:</span> <span class="p">{</span><span class="s">"n_laureates"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}},</span>
+<span class="p">]))</span>
+</code></pre></div></div>
+
+<p>크기를 예측하고, 합산하는 대신 문서를 풀고 계산할 수 있습니다.</p>
+
+<p>여기에서 그룹 단계는 해제 단계에서 제공한 범주당 문서를 계산합니다.</p>
+
+<p><br /></p>
+
+<h4 id="lookup">$lookup</h4>
+
+<p>이 단계에서는 왼쪽 외부 조인이라고 하는 것을 통해 다른 컬렉션에서 문서를 가져옵니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">prizes</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$match"</span><span class="p">:{</span><span class="s">"category"</span><span class="p">:</span> <span class="s">"economics"</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$unwind"</span><span class="p">:</span> <span class="s">"$laureates"</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">"$lookup"</span><span class="p">:</span> <span class="p">{</span><span class="s">"from"</span><span class="p">:</span> <span class="s">"laureates"</span><span class="p">,</span> <span class="s">"foreignField"</span><span class="p">:</span><span class="s">"id"</span><span class="p">,</span>
+              <span class="s">"localField"</span><span class="p">:</span><span class="s">"laureates.id"</span><span class="p">,</span> <span class="s">"as"</span><span class="p">:</span><span class="s">"laureate_bios"</span><span class="p">}},</span>
+  <span class="p">{</span><span class="s">"$unwind"</span><span class="p">:</span> <span class="s">"$laureate_bios"</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s">"_id"</span><span class="p">:</span><span class="bp">None</span><span class="p">,</span> <span class="s">"bornCountries"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$addToSet"</span><span class="p">:</span> <span class="s">"$laureate_bios.bornCountry"</span><span class="p">}}}</span>
+<span class="p">]))</span>
+
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">[{</span><span class="s">'_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s">'bornCountries'</span><span class="p">:</span> <span class="p">[</span>
+<span class="s">'the Netherlands'</span><span class="p">,</span><span class="s">'British West Indies (now Saint Lucia)'</span><span class="p">,</span><span class="s">'Italy'</span><span class="p">,</span>
+<span class="s">'Germany (now Poland)'</span><span class="p">,</span><span class="s">'Hungary'</span><span class="p">,</span><span class="s">'Austria'</span><span class="p">,</span><span class="s">'India'</span><span class="p">,</span><span class="s">'USA'</span><span class="p">,</span>
+<span class="s">'Canada'</span><span class="p">,</span><span class="s">'British Mandate of Palestine (now Israel)'</span><span class="p">,</span>
+<span class="s">'Norway'</span><span class="p">,</span><span class="s">'Russian Empire (now Russia)'</span><span class="p">,</span><span class="s">'Russia'</span><span class="p">,</span><span class="s">'Finland'</span><span class="p">,</span>
+<span class="s">'Scotland'</span><span class="p">,</span><span class="s">'France'</span><span class="p">,</span><span class="s">'Sweden'</span><span class="p">,</span><span class="s">'Germany'</span><span class="p">,</span><span class="s">'Russian Empire (now Belarus)'</span><span class="p">,</span>
+<span class="s">'United Kingdom'</span><span class="p">,</span><span class="s">'Cyprus'</span>
+<span class="p">]}]</span>
+</code></pre></div></div>
+
+<p>경제 분야 수상자의 출생 국가를 수집합니다.</p>
+
+<p>상품 컬렉션에서 먼저 수상자 배열을 해제합니다.</p>
+
+<p>이제 각 파이프라인 문서에는 단일 수상자 _ID가 있습니다.</p>
+
+<p>그런 다음 id 에 대해 동일한 값을 가진 문서에 대해 수상자 컬렉션을 쿼리합니다.</p>
+
+<p>우리가 찾은 각각에 대해 laureate_bios라는 배열에 푸쉬합니다.</p>
+
+<p>다음으로, 고유한 수상자 bornCountry 값을 수집합니다.</p>
+
+<p>$addToSet 연산자에 배열이 아닌 단일 BornCountry 값을 제공하려고 합니다.</p>
+
+<p><br /></p>
+
+<p>위의 과정을 쉽게하는 방법이 있습니다.</p>
+
+<p>MongoDB는 정규화 된 스키마를 적용하지 않습니다. 따라서, 쿼리 단순성과 효율성을 지원하도록 컬렉션의 스키마를 조정할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bornCountries</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">distinct</span><span class="p">(</span>
+				<span class="s">"bornCountry"</span><span class="p">,</span> <span class="p">{</span><span class="s">"prizes.category"</span><span class="p">:</span> <span class="s">"economist"</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>수상자 컬렉션이 상품 카테고리에 대한 정보도 저장하므로, 위의 코드를 이용하면 간단합니다.</p>
+
+<p><br /></p>
+
+<h4 id="a-somber-project">A somber $project</h4>
+
+<p>돌아가신 노벨상 수상자들의 생존 연수를 알고싶다고 가정하면,</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$match"</span><span class="p">:</span> <span class="p">{</span><span class="s">"died"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$gt"</span><span class="p">:</span> <span class="s">"1700"</span><span class="p">},</span> <span class="s">"born"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$gt"</span><span class="p">:</span> <span class="s">"1700"</span><span class="p">}}}</span>
+  <span class="p">{</span><span class="s">"project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"died"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$dateFromString"</span><span class="p">:</span> <span class="p">{</span><span class="s">"dateString"</span><span class="p">:</span> <span class="s">"$died"</span><span class="p">}},</span>
+              <span class="s">"born"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$dateFromString"</span><span class="p">:</span> <span class="p">{</span><span class="s">"dateString"</span><span class="p">:</span><span class="s">"$born"</span><span class="p">}}}}</span>
+<span class="p">]))</span>
+</code></pre></div></div>
+
+<p>born 및 died 필드를 투영하여 이를 계산하는 파이프라인을 만들 수 있습니다.</p>
+
+<p>MongoDB에는 dateFromString이라는 연산자를 사용하면, 계산할 수 있습니다.</p>
+
+<p>$match를 통해, 비정상적인 날짜를 제거하고, 1700년 이상의 데이터만 쿼리합니다.</p>
+
+<p>하지만 이렇게 할 경우, 에러가 발생하는데, 일부 수상자는 출생년도만 기록되어 있기 때문입니다.</p>
+
+<p><br /></p>
+
+<h4 id="split-and-cond-itionally-correct">split and cond itionally correct</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">docs</span> <span class="o">=</span> <span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">{</span><span class="s">"$match"</span><span class="p">:</span> <span class="p">{</span><span class="s">"died"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$gt"</span><span class="p">:</span> <span class="s">"1700"</span><span class="p">},</span> <span class="s">"born"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$gt"</span><span class="p">:</span> <span class="s">"1700"</span><span class="p">}}},</span>
+  <span class="p">{</span><span class="s">"$addFields"</span><span class="p">:</span> <span class="p">{</span><span class="s">"bornArray"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$split"</span><span class="p">:</span> <span class="p">[</span><span class="s">"$born"</span><span class="p">,</span> <span class="s">"-"</span><span class="p">]},</span>
+                <span class="s">"diedArray"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$split"</span><span class="p">:</span> <span class="p">[</span><span class="s">"$died"</span><span class="p">,</span> <span class="s">"-"</span><span class="p">]}}},</span>
+
+<span class="p">{</span><span class="s">"$addFields"</span><span class="p">:</span> <span class="p">{</span><span class="s">"born"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$cond"</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span><span class="s">"$in"</span><span class="p">:</span> <span class="p">[</span><span class="s">"00"</span><span class="p">,</span> <span class="s">"$bornArray"</span><span class="p">]},</span>
+  <span class="p">{</span><span class="s">"$concat"</span><span class="p">:</span> <span class="p">[{</span><span class="s">"$arrayElemAt"</span><span class="p">:</span> <span class="p">[</span><span class="s">"$bornArray"</span><span class="p">,</span> <span class="mi">0</span><span class="p">]},</span> <span class="s">"-01-01"</span><span class="p">]}</span>
+<span class="p">]}}},</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"died"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$dateFromString"</span><span class="p">:</span> <span class="p">{</span><span class="s">"dateString"</span><span class="p">:</span> <span class="s">"$died"</span><span class="p">}},</span>
+<span class="s">"born"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$dateFromString"</span><span class="p">:</span> <span class="p">{</span><span class="s">"dateString"</span><span class="p">:</span> <span class="s">"$born"</span><span class="p">}},</span>
+<span class="s">"_id"</span><span class="p">:</span> <span class="mi">0</span><span class="p">}}</span>
+  <span class="p">])</span>
+</code></pre></div></div>
+
+<p>addFields 단계를 통해, 날짜 문자열의 하이폰으로 분할된 새 배열 필드를 제공합니다. 이것을 통해, 년,월,일을 요소로 갖는 배열을 가지게됩니다.</p>
+
+<p>여기서 addFields를 쓰는이유는, 파이프라인에 전달하려는 다른 모든 필드를 지정할 필요가 없어서 입니다.</p>
+
+<p>이후, born 필드를 다시 작성합니다.  여기서 $cond는 삼항 연산자입니다.</p>
+
+<p>만약 출생 월일이 기록되어있지 않아서, 00으로 처리되어 있다면, 이를 -01-01로 변경합니다.</p>
+
+<p>이를 통해 생존연수를 계산할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="a-bucket-list">A $bucket list</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="p">.</span><span class="n">laureates</span><span class="p">.</span><span class="n">aggregate</span><span class="p">([</span>
+  <span class="p">...,{</span>
+  <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"died"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$dateFromString"</span><span class="p">:</span> <span class="p">{</span><span class="s">"dateString"</span><span class="p">:</span><span class="s">"$died"</span><span class="p">}},</span>
+               <span class="s">"born"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$dateFromString"</span><span class="p">:</span> <span class="p">{</span><span class="s">"dateString"</span><span class="p">:</span> <span class="s">"$born"</span><span class="p">}}}},</span>
+    <span class="p">{</span><span class="s">"$project"</span><span class="p">:</span> <span class="p">{</span><span class="s">"years"</span><span class="p">:{</span><span class="s">"$floor"</span><span class="p">:</span> <span class="p">{</span><span class="s">"$divide"</span><span class="p">:[</span>
+      <span class="p">{</span><span class="s">"$subtract"</span><span class="p">:</span> <span class="p">[</span><span class="s">"$died"</span><span class="p">,</span><span class="s">"$born"</span><span class="p">]},</span>
+      <span class="mi">31557600000</span> <span class="c1"># 1000 * 60 * 60 * 24 * 365.25
+</span>    <span class="p">]}}}},</span>
+    <span class="p">{</span><span class="s">"$bucket"</span><span class="p">:</span> <span class="p">{</span><span class="s">"groupBy"</span><span class="p">:</span> <span class="s">"$years"</span><span class="p">,</span>
+								<span class="s">"boundaries"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">10</span><span class="p">))}}}</span>
+<span class="p">]))</span>
+
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="p">[</span><span class="n">output</span><span class="p">]</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span><span class="s">'count'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span><span class="s">'count'</span><span class="p">:</span> <span class="mi">6</span><span class="p">}</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span><span class="s">'count'</span><span class="p">:</span> <span class="mi">21</span><span class="p">}</span>
+<span class="p">{</span><span class="s">'_id'</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span><span class="s">'count'</span><span class="p">:</span> <span class="mi">87</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>이후 died 와 born에 대해 $dateFromString을 적용하고, 연산을진행 후, 투영합니다.</p>
+
+<p>마지막으로 $bucket 연산자를 이용하는데, 이는 값을 일련의 경계로 나눠주는 역할을 합니다.</p>
+:ET

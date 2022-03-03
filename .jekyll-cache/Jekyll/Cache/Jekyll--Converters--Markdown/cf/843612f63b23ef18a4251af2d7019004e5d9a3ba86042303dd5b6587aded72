@@ -1,0 +1,202 @@
+I"�1<p align="center"><img src="/images/post_img/boto3_1.png" /></p>
+
+<h2 id="boto3">Boto3</h2>
+
+<p>boto3는 AWS를 코드로 제어할 수 있는, Python SDK 입니다.</p>
+
+<p>Boto3를 이용해서 AWS를 자동 제어하는 파이프라인을 구축할 예정입니다.</p>
+
+<p>본 페이지는, Boto3 Docs에 있는 내용을 천천히 정리한 내용입니다. ( 작성 기준 : 1.21.7 버전 )</p>
+
+<p><br /></p>
+
+<h4 id="quickstart">QuickStart</h4>
+
+<p>SDK는 두 가지 주요 Python패키지로 구성됩니다.</p>
+
+<ul>
+  <li>Botocore - Python SDK와 AWS CLI간에 공유되는 기능 제공</li>
+  <li>Boto3 - Python SDK 자체를 구현하는 패키지</li>
+</ul>
+
+<p>대부분의 문서 및 개발자들은 이를 크게 Boto3라고 지징합니다.</p>
+
+<p><br /></p>
+
+<h4 id="installation">Installation</h4>
+
+<p>Boto3를 사용하기 위해서, Boto3와, 이의 dependencies를 설치해야합니다.</p>
+
+<p>Boto3를 사용하기 위해, 3.6 버전 이상의 파이썬을 사용하세요.</p>
+
+<p><br /></p>
+
+<h4 id="install-boto3">Install Boto3</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pip</span> <span class="n">install</span> <span class="n">boto3</span>
+
+<span class="c1"># pip install boto3==1.0.0
+# pip install boto3&gt;=1.15.0
+# pip install boto3&lt;=1.15.3
+</span></code></pre></div></div>
+
+<p>가장 최신의 boto3를 설치하려면 위의 명령어를 통해 설치하세요.</p>
+
+<p>프로젝트를 진행하기 위해 특정 버전이 필요하면 버전을 지정할 수 있습니다.</p>
+
+<p><br /></p>
+
+<p>AWS의 Common Runtime (CRT) 를 포함하기 위해선 옵션을 추가해줍니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pip</span> <span class="n">install</span> <span class="n">boto3</span><span class="p">[</span><span class="n">crt</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="configuration">Configuration</h4>
+
+<p>Boto3를 사용하기 위해서는, 권한 자격 세팅이 필요합니다.</p>
+
+<p>AWS IAM Console를 통해서 계정을 생성하세요.</p>
+
+<ul>
+  <li>Was_access_key_id 및 aws_secret_access_key가 필요합니다.</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="s3-제어하기---클라이언트-준비">S3 제어하기 - 클라이언트 준비</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="n">AWS_KEY_ID</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"AWS_KEY_ID"</span><span class="p">)</span>
+<span class="n">AWS_SECRET_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"AWS_SECRET_KEY"</span><span class="p">)</span>
+
+
+<span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="n">client</span><span class="p">(</span><span class="s">'s3'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s">'ap-northeast-2'</span><span class="p">,</span>
+                        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">AWS_KEY_ID</span><span class="p">,</span>
+                        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">AWS_SECRET_KEY</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h4 id="s3-버킷-만들기">S3 버킷 만들기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s3</span><span class="p">.</span><span class="n">create_bucket</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="s">'jb-boto3-test12'</span><span class="p">,</span> <span class="n">CreateBucketConfiguration</span><span class="o">=</span><span class="p">{</span><span class="s">'LocationConstraint'</span><span class="p">:</span><span class="s">"ap-northeast-2"</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>위에서 클라이언트를 생성했으면, create_bucket을 이용해서 버킷을 생성합니다.</p>
+
+<h4 id="버킷-생성시-주의사항">버킷 생성시 주의사항</h4>
+
+<ul>
+  <li>CreateBucketConfiguration을 통해 지역을 지정해줘야 오류가 발생하지 않습니다.</li>
+  <li>버킷 이름은 전세계 리전에서 유니크한 값을 가져야 합니다. ( 다른 버킷 이름과 같으면 안됨 )</li>
+  <li>버킷이름에 언더바( _ ) 를 사용하지 마세요. ( 제가 이것때매 왜 안되는지 삽질하다가, 언더바 안쓰니가 잘 생성되네요 )</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="버킷-나열하기--조회하기-">버킷 나열하기 ( 조회하기 )</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bucket_response</span> <span class="o">=</span> <span class="n">s3</span><span class="p">.</span><span class="n">list_buckets</span><span class="p">()</span>
+<span class="n">buckets</span> <span class="o">=</span> <span class="n">bucket_response</span><span class="p">[</span><span class="s">'Buckets'</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="n">buckets</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">list_bucket()</code> 을 통해 버킷을 조회 할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="버킷-삭제하기">버킷 삭제하기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s3</span><span class="p">.</span><span class="n">delete_bucket</span><span class="p">(</span><span class="n">Bucket</span> <span class="o">=</span> <span class="s">'jb-boto3-test12'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">delete_bucket()</code> 을 통해 버킷을 삭제 할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="object-추가하기">Object 추가하기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s3</span><span class="p">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">Bucket</span> <span class="o">=</span> <span class="s">'semogong'</span><span class="p">,</span>
+                        <span class="n">Filename</span> <span class="o">=</span> <span class="s">"test_boto3.csv"</span><span class="p">,</span>
+                        <span class="n">Key</span><span class="o">=</span><span class="s">'test_boto3.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">upload_file()</code> 을 통해 설정한 버킷안으로, 오브젝트를 추가하빈다. Filename은 내 로컬환경에서 버킷으로 보낼 파일이며, Key는 S3에서의 이름입니다.</p>
+
+<p><br /></p>
+
+<h4 id="object-조회하기">Object 조회하기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">response</span> <span class="o">=</span> <span class="n">s3</span><span class="p">.</span><span class="n">list_objects</span><span class="p">(</span><span class="n">Bucket</span> <span class="o">=</span> <span class="s">'semogong'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+<span class="c1"># s3.list_objects(Bucket = 'semogong', MaxKeys=2, Prefix='test_')
+</span></code></pre></div></div>
+
+<p>버킷안에 어떤 오브젝트들이 있는지 조회하는 방법입니다.</p>
+
+<p>옵션으로, 최대로 조회하는 오브젝트 수, 접두어 등을 설정해서 원하는 설정으로 조회할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="단일-오브젝트-조회">단일 오브젝트 조회</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">response</span> <span class="o">=</span> <span class="n">s3</span><span class="p">.</span><span class="n">head_object</span><span class="p">(</span><span class="n">Bucket</span> <span class="o">=</span> <span class="s">'semogong'</span><span class="p">,</span>
+                            <span class="n">Key</span> <span class="o">=</span> <span class="s">'test_boto3.csv'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>단일 오브젝트를 조회하고 싶다면, <code class="language-plaintext highlighter-rouge">head_object()</code> 를 통해서 조회할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="파일-다운로드">파일 다운로드</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s3</span><span class="p">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">Bucket</span> <span class="o">=</span> <span class="s">'semogong'</span><span class="p">,</span>
+                <span class="n">Key</span> <span class="o">=</span> <span class="s">'test_boto3.csv'</span><span class="p">,</span>
+                <span class="n">Filename</span><span class="o">=</span><span class="s">'download.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>S3로 부터 파일을 다운받고 싶으면, <code class="language-plaintext highlighter-rouge">download_file()</code> 을 통해서 다운받을 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="오브젝트-삭제">오브젝트 삭제</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s3</span><span class="p">.</span><span class="n">delete_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="s">'semogong'</span><span class="p">,</span>
+                <span class="n">Key</span><span class="o">=</span><span class="s">'test_boto3.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>오브젝트 삭제를 하기 위해서는 <code class="language-plaintext highlighter-rouge">delete_object()</code> 를 사용합니다.</p>
+
+<p><br /></p>
+
+<p>#### 오브젝트 ACL 변경</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s3</span><span class="p">.</span><span class="n">put_object_acl</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="s">'semogong'</span><span class="p">,</span>
+                  <span class="n">Key</span><span class="o">=</span><span class="s">'test_boto3.csv'</span><span class="p">,</span>
+                  <span class="n">ACL</span><span class="o">=</span><span class="s">'public-read'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">put_object_acl()</code> 를 통해 오브젝트의 ACL를 편집할 수 있습니다.</p>
+
+<p>단) 이를 사용하기 위해서는, 버킷 권한에서 ACL권한을 변경해야 합니다.</p>
+
+<p><br /></p>
+
+<h4 id="오브젝트-acl-변경2">오브젝트 ACL 변경2</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">s3</span><span class="p">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="s">'semogong'</span><span class="p">,</span>
+              <span class="n">Filename</span><span class="o">=</span><span class="s">'test_boto3.csv'</span><span class="p">,</span>
+              <span class="n">Key</span><span class="o">=</span><span class="s">'test_boto3.csv'</span><span class="p">,</span>
+              <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span><span class="s">'ACL'</span><span class="p">:</span><span class="s">'public-read'</span><span class="p">})</span>
+</code></pre></div></div>
+
+<p>처음부터, 파일을 추가할 때, ExtraArgs 파라미터를 이용해서, ACL을 변경할 수 있습니다.</p>
+
+<p><br /></p>
+
+:ET
