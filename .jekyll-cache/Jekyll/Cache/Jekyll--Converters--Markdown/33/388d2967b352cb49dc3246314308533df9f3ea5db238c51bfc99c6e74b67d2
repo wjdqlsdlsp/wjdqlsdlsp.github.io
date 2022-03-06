@@ -1,0 +1,132 @@
+I"|c<p>저는 같이 공부하는 팀원들과, 노션을 이용해서 공부한 내용을 공유하고 있습니다.</p>
+
+<p>그러던 중, 팀원들의 공부 시간을 비교해서 누군가는 뿌듯함을 누군가는 분발할 수 있게 대쉬보드를 구축하고 싶었습니다.</p>
+
+<p align="center"><img src="/images/post_img/대쉬보드1.png" /></p>
+
+<blockquote>
+  <p>위와 같은 모습으로, 제목, 학습시간 등을 공유하고 있습니다.</p>
+</blockquote>
+
+<p><br /></p>
+
+<h4 id="서비스-구성도">서비스 구성도</h4>
+
+<p align="center"><img src="/images/post_img/대쉬보드2.png" /></p>
+
+<p>간단한 구성도는 위와 같이 구성됩니다.</p>
+
+<ol>
+  <li>사용자들이 노션을 이용해서, 노션에 글을 공유합니다.</li>
+  <li>노션으로 부터, CSV를 추출해서 다운받습니다.</li>
+  <li>Python matplolib를 이용해서 원하는 형태의 데이터 시각화를 진행합니다.</li>
+  <li>Python boto3를 이용해서 AWS S3로 전송합니다.</li>
+  <li>S3를 통해서 이를 공유합니다.</li>
+</ol>
+
+<p><br /></p>
+
+<h4 id="노션-csv-추출하기">노션 csv 추출하기</h4>
+
+<p align="center"><img src="/images/post_img/대쉬보드3.png" /></p>
+
+<p>노션의 경우 우측 상단을 클릭하면 다음과 같이 내보내기 기능이있습니다.</p>
+
+<p>이후 Notion API 및 Airflow를 이용해서 자동화 구축을 할 예정에 있습니다. ( Notion API를 통해서 CSV 추출이 가능해 질 때. )</p>
+
+<p><br /></p>
+
+<h4 id="python-matplotlib를-통한-데이터-시각화">Python matplotlib를 통한 데이터 시각화</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.font_manager</span> <span class="k">as</span> <span class="n">fm</span>
+<span class="n">AWS_KEY_ID</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"AWS_KEY_ID"</span><span class="p">)</span>
+<span class="n">AWS_SECRET_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"AWS_SECRET_KEY"</span><span class="p">)</span>
+<span class="n">font</span> <span class="o">=</span> <span class="n">fm</span><span class="p">.</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s">'DoHyeon-Regular.ttf'</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"세상의 모 776cc.csv"</span><span class="p">)</span>
+<span class="n">can_handle</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">'Name'</span><span class="p">].</span><span class="n">dropna</span><span class="p">().</span><span class="n">index</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">can_handle</span><span class="p">].</span><span class="n">reset_index</span><span class="p">()</span>
+
+<span class="c1"># 날자 처리
+</span><span class="n">data</span><span class="p">[</span><span class="s">'date'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">'Name'</span><span class="p">].</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="s">'20'</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">).</span><span class="n">split</span><span class="p">(</span><span class="s">']'</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
+<span class="n">data</span><span class="p">[</span><span class="s">'date'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">'date'</span><span class="p">],</span><span class="nb">format</span><span class="o">=</span><span class="s">'%Y%m%d'</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">data</span><span class="p">[</span><span class="s">'학습시간'</span><span class="p">].</span><span class="n">isna</span><span class="p">()]</span>
+<span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">date</span><span class="p">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="p">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">datetime</span><span class="p">.</span><span class="n">date</span><span class="p">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="p">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[(</span><span class="n">data</span><span class="p">[</span><span class="s">'date'</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="p">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_date</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">'date'</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">pd</span><span class="p">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_date</span><span class="p">))]</span>
+
+<span class="c1"># # 이름 매핑
+</span><span class="n">name_map</span> <span class="o">=</span> <span class="p">{</span><span class="s">'Chaewon Lee'</span> <span class="p">:</span> <span class="s">'이채원'</span><span class="p">,</span> <span class="s">'박정빈'</span> <span class="p">:</span> <span class="s">'박정빈'</span><span class="p">,</span> <span class="s">'박승일'</span> <span class="p">:</span> <span class="s">'박승일'</span><span class="p">,</span> <span class="s">'Captain mycaptain'</span> <span class="p">:</span> <span class="s">'이재훈'</span> <span class="p">}</span>
+<span class="n">data</span><span class="p">[</span><span class="s">'작성자'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">'작성자'</span><span class="p">].</span><span class="nb">map</span><span class="p">(</span><span class="n">name_map</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[(</span><span class="n">data</span><span class="p">[</span><span class="s">'작성자'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'박정빈'</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">'작성자'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'이재훈'</span><span class="p">)</span><span class="o">|</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">'작성자'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'박승일'</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">make_study_time</span><span class="p">(</span><span class="n">study_time</span><span class="p">):</span>
+    <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">study_time</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">','</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">'~'</span><span class="p">)</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">strip</span><span class="p">(),</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">":"</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">":"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span><span class="s">''</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="n">start</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">+=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span>
+        <span class="n">total_time</span> <span class="o">+=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">total_time</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s">'학습시간'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">'학습시간'</span><span class="p">].</span><span class="nb">apply</span><span class="p">(</span><span class="n">make_study_time</span><span class="p">)</span>
+
+<span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="s">'박정빈'</span><span class="p">,</span> <span class="s">'이재훈'</span><span class="p">,</span> <span class="s">'박승일'</span><span class="p">]</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s">'#79C1E6'</span><span class="p">,</span><span class="s">'#429981'</span><span class="p">,</span><span class="s">'#DD9CE6'</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">15</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">user</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">users</span><span class="p">,</span><span class="n">colors</span><span class="p">):</span>
+    <span class="n">data_user</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s">'작성자'</span><span class="p">]</span> <span class="o">==</span> <span class="n">user</span><span class="p">].</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s">'date'</span><span class="p">)</span>
+    <span class="n">data_user</span><span class="p">[</span><span class="s">'학습시간'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_user</span><span class="p">[</span><span class="s">'학습시간'</span><span class="p">].</span><span class="n">cumsum</span><span class="p">()</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_user</span><span class="p">[</span><span class="s">'date'</span><span class="p">].</span><span class="n">values</span> <span class="p">,</span> <span class="n">data_user</span><span class="p">[</span><span class="s">'학습시간'</span><span class="p">].</span><span class="n">values</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data_user</span><span class="p">[</span><span class="s">'date'</span><span class="p">].</span><span class="n">values</span> <span class="p">,</span> <span class="n">data_user</span><span class="p">[</span><span class="s">'학습시간'</span><span class="p">].</span><span class="n">values</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+
+    <span class="n">tmp_last_loc</span> <span class="o">=</span> <span class="n">data_user</span><span class="p">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">data_user</span><span class="p">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="s">'학습시간'</span><span class="p">].</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">data_user</span><span class="p">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="s">'date'</span><span class="p">].</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">pd</span><span class="p">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="s">'6 hours'</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">text</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s">'</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">time</span><span class="p">,</span><span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">text</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s">시간'</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">time</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span><span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="p">.</span><span class="n">gca</span><span class="p">().</span><span class="n">spines</span><span class="p">[</span><span class="s">'left'</span><span class="p">].</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">gca</span><span class="p">().</span><span class="n">spines</span><span class="p">[</span><span class="s">'right'</span><span class="p">].</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">gca</span><span class="p">().</span><span class="n">spines</span><span class="p">[</span><span class="s">'top'</span><span class="p">].</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">grid</span><span class="p">()</span>
+
+<span class="n">first</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="s">'date'</span><span class="p">].</span><span class="n">values</span><span class="p">)[</span><span class="mi">7</span><span class="p">:</span><span class="mi">12</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="s">'date'</span><span class="p">].</span><span class="n">values</span><span class="p">)[</span><span class="mi">7</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span>
+<span class="n">first</span> <span class="o">=</span> <span class="n">first</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'-'</span><span class="p">,</span> <span class="s">'/'</span><span class="p">)</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">end</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'-'</span><span class="p">,</span> <span class="s">'/'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s">'일주일간 공부시간 (</span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s"> ~ </span><span class="si">{</span><span class="n">first</span><span class="si">}</span><span class="s">)'</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span> <span class="mi">40</span><span class="p">,</span><span class="n">pad</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'공부시간 (누적)'</span><span class="p">,</span><span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'날짜'</span><span class="p">,</span><span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">'my_plot.png'</span><span class="p">)</span>
+
+
+<span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="n">client</span><span class="p">(</span><span class="s">'s3'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s">'ap-northeast-2'</span><span class="p">,</span>
+                        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">AWS_KEY_ID</span><span class="p">,</span>
+                        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">AWS_SECRET_KEY</span><span class="p">)</span>
+
+<span class="n">s3</span><span class="p">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="s">'semogong'</span><span class="p">,</span>
+              <span class="n">Filename</span><span class="o">=</span><span class="s">'my_plot.png'</span><span class="p">,</span>
+              <span class="n">Key</span><span class="o">=</span><span class="s">'my_plot.png'</span><span class="p">,</span>
+              <span class="n">ExtraArgs</span><span class="o">=</span><span class="p">{</span><span class="s">'ACL'</span><span class="p">:</span><span class="s">'public-read'</span><span class="p">})</span>
+</code></pre></div></div>
+
+:ET
