@@ -10,6 +10,14 @@ image:
 아래는 제가 작업한 시각화 일부를 정리하였습니다. 모든 작업은 파이썬 Matplotlib를 이용해서 제작하였습니다.
 
 ***
+![]({{site.baseurl}}/images/visualization_all/company_1.png)
+*방위산업 기업 시장 점유율 - 트리맵*
+
+***
+![]({{site.baseurl}}/images/visualization_all/company_2.png)
+*방위산업 기업 시장 점유율 - USA*
+
+***
 ![]({{site.baseurl}}/images/visualization_all/sp500.png)
 *S&P500 10년 상승률*
 
