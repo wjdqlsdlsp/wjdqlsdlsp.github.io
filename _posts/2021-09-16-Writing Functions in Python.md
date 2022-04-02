@@ -287,7 +287,6 @@ finally:
 -------------------------------------
 def get_printer(ip):
     p = connect_to_printer(ip)
-    
     try:
         yield
     finally:
@@ -473,8 +472,8 @@ print(x)
 -------------------
 def foo():
   x = 10
-	def bar():
-    nonlocal x
+  def bar():
+  	nonlocal x
     x = 200
     print(x)
   bar()
