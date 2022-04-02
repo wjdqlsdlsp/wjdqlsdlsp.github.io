@@ -287,6 +287,7 @@ finally:
 -------------------------------------
 def get_printer(ip):
     p = connect_to_printer(ip)
+    
     try:
         yield
     finally:
@@ -472,8 +473,8 @@ print(x)
 -------------------
 def foo():
   x = 10
-  def bar():
-  	nonlocal x
+	def bar():
+    nonlocal x
     x = 200
     print(x)
   bar()
@@ -640,7 +641,6 @@ sleep_n_seconds took 5.005098819732666s
 @timer
 def sleep_n_seconds(n=10):
     """Pause processing for n seconds.
-
     Args"
         n (int): The number of seconds to pause for.
     """
@@ -660,15 +660,11 @@ def timer(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         t_start = time.time()
-
         result = func(*args, **kwargs)
-        
         t_total = time.time() - t_start
-        
         print('{} took {}s'.format(func.__name__, t_total))
-        
         return result
-    return wrapper
+     return wrapper
 
 @timer
 def sleep_n_seconds(n=10):
