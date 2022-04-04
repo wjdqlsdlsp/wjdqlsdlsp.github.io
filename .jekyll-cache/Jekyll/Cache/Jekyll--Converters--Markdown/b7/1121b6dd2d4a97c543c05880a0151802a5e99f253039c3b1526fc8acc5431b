@@ -1,4 +1,4 @@
-I"|�<h1 id="파이썬-함수-만들기">파이썬 함수 만들기</h1>
+I"`�<h1 id="파이썬-함수-만들기">파이썬 함수 만들기</h1>
 
 <h2 id="1-best-practices">1. Best Practices</h2>
 <p><br /></p>
@@ -560,7 +560,6 @@
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">timer</span>
 <span class="k">def</span> <span class="nf">sleep_n_seconds</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="s">"""Pause processing for n seconds.
-
     Args"
         n (int): The number of seconds to pause for.
     """</span>
@@ -579,15 +578,11 @@
     <span class="o">@</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">t_start</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
-
         <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        
         <span class="n">t_total</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span>
-        
         <span class="k">print</span><span class="p">(</span><span class="s">'{} took {}s'</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">t_total</span><span class="p">))</span>
-        
         <span class="k">return</span> <span class="n">result</span>
-    <span class="k">return</span> <span class="n">wrapper</span>
+     <span class="k">return</span> <span class="n">wrapper</span>
 
 <span class="o">@</span><span class="n">timer</span>
 <span class="k">def</span> <span class="nf">sleep_n_seconds</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
