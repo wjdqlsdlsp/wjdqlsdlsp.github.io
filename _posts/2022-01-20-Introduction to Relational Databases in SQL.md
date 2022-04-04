@@ -77,7 +77,7 @@ LIMIT 3;
 위와 같이 이용하면, 중복성이 줄어들게 됩니다. 하지만, 원래 속성 중 하나인 기능이 여전히 누락되어 있습니다. 이를 위해서 제휴 테이블을 따로 생성하는 것이 올바른 방법입니다.
 
 ```sql
-ADD university_shortname text;CREATE TABLE table_name(
+CREATE TABLE table_name(
 	column_a data_type,
 	column_b data_type,
 	column_c data_type
@@ -217,7 +217,8 @@ university_shortname이 필요없기에, 이를 DROP 하기 위해서는 위와 
 ```sql
 CREATE TABLE weather (
 	temperature integer,
-	wind_speed text);
+	wind_speed text
+);
 SELECT temperature * wind_speed AS wind_chill
 FROM weather;
 ```
@@ -462,8 +463,6 @@ ADD COLUMN id serial PRIMARY KEY;
 이를 다루는 특별한 유형이 있습니다.(serial)
 
 Serial 타입은, 열을 추가하면 테이블의 모든 레코드에 번호가 매겨집니다.
-
-<br>
 
 ```sql
 INSERT INTO cars
