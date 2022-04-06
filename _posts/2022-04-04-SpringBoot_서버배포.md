@@ -2,7 +2,7 @@
 
 layout: post
 
-title:  "AWS - Spring Boot k8s 배포"
+title:  "Spring Boot k8s 배포"
 
 date:   2022-04-06
 
