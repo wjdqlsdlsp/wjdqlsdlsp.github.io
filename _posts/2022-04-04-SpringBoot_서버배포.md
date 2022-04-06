@@ -2,15 +2,15 @@
 
 layout: post
 
-title:  "AWS - Spring Boot 서버 배포하기"
+title:  "AWS - Spring Boot k8s 배포"
 
-date:   2022-04-04
+date:   2022-04-06
 
 categories: 데이터엔지니어
 
 tags: 데이터엔지니어
 
-image: /post_img/aws.jpg
+image: /post_img/k8s.png
 
 ---
 
@@ -65,6 +65,8 @@ sudo vi ~/.bashrc
 ```shell
 export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 export PATH=$PATH:$JAVA_HOME/bin
+
+# 환경변수 세팅
 export DB_URL=DB엔드포인트
 export DB_NAME=DB_USER
 export DB_PASSWORD=DB_PASSWORD
@@ -146,7 +148,9 @@ gradle build
 ( 당연히 각자 본인의 설정에 따라 파일이름이 다릅니다. )
 
 ```shell
-java -jar build/libs/semogong-0.0.1-SNAPSHOT.jar
+java -jar build/libs/[jar파일]
+
+# java -jar build/libs/semogong-0.0.1-SNAPSHOT.jar
 ```
 
 위의 코드를 통해서 실행하면 서버가 실행되는 것을 알 수 있습니다. 
@@ -157,4 +161,187 @@ java -jar build/libs/semogong-0.0.1-SNAPSHOT.jar
 
 저 같은 경우, 팀원들과 현재 진행중인 프로젝트 메인사이트가 잘 출력되네요.
 
-이후 저는 이를 이미지화 시키고, docker hub에 저장한 다음, 쿠버네티스로 배포하는 것에 도전할 예정입니다. !
+<br>
+
+#### Docker install
+
+https://myjamong.tistory.com/299 블로그 글을 참고했습니다.
+
+```shell
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+```
+
+apt가 HTTPS 프로토콜을 통해서 repository를 사용할 수 있도록 패키지를 설치
+
+```shell
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+```
+
+Docker의 공식 GPG key를 추가
+
+```shell
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+apt source list에 repository를 추가
+
+```shell
+sudo apt-get install docker-ce
+sudo apt install docker.io
+
+#check
+sudo docker ps
+```
+
+docker 설치
+
+<br>
+
+#### Dockerfile 생성
+
+```shell
+touch Dockerfile
+```
+
+저는 touch 명령어를 통해 Dockerfile을 생성하였습니다.
+
+```dockerfile
+#Dockerfile
+FROM openjdk:11-jre-slim
+ADD target/semogong-0.0.1-SNAPSHOT.jar app.jar
+ENV JAVA_OPTS=""
+ENTRYPOINT ["java","-jar","/app.jar"]
+```
+
+이후 Dockerfile ADD에 추가한 것처럼, target폴더에 jar 파일을 copy했습니다.
+
+```shell
+mkdir
+cp build/libs/semogong-0.0.1-SNAPSHOT.jar target/
+```
+
+<br>
+
+#### Docker build
+
+```shell
+sudo docker build --tag semogong-demo:0.1 .
+```
+
+이제 위에서 생성한 Dockerfile을 빌드합니다. 맨 뒤에 . 을 꼭 입력해주세요.
+
+```shell
+sudo docker run -p 8080:8080 -e DB_URL=$DB_URL -e DB_NAME=$DB_NAME -e DB_PASSWORD=$DB_PASSWORD semogong-demo:0.1
+```
+
+위와 같이, 이미지를 통해 실행하면 위에서 실행했던 서버와 동일하게 실행됩니다.
+
+<br>
+
+#### Docker hub로 이미지 올리기
+
+<p align="center"><img src="/images/post_img/spring5.png"></p>
+
+저는 Docker hub에 레파지토리를 생성해놨습니다. 각자 원하는 이름으로 생성하면 됩니다.
+
+<p align="center"><img src="/images/post_img/spring6.png"></p>
+
+```shell
+sudo docker tag 9f5351093984 wjdqlsdlsp/semogong
+```
+
+위의 코드를 통해서 이미지 태그를 설정합니다.
+
+```shell
+sudo docker login
+```
+
+이후 로그인을 합니다.
+
+```shell
+sudo docker push wjdqlsdlsp/semogong
+```
+
+이제 docker hub로 push 하면 완료됩니다.
+
+<br>
+
+#### Kubernetes 배포하기
+
+저는 gcp kubernetes engine 환경에서 진행합니다.
+
+```shell
+kubectl run semogong --image=wjdqlsdlsp/semogong --port 8080 --dry-run -o yaml > semogong.yaml
+```
+
+먼저 docker hub로 push 한 이미지를 이용해서 pods를 운영할 예정인데, 이전에 환경변수등을 변경하기 위해 yaml 파일채로 다운로드합니다.
+
+이후 vi를 통한 yaml에 환경변수값을 추가합니다.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: semogong
+  name: semogong
+spec:
+  containers:
+  - image: wjdqlsdlsp/semogong
+    name: semogong
+    env:
+    - name: 환경변수_name
+      value: 환경변수_value
+    ports:
+    - containerPort: 8080
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+```
+
+저는 위와같이 구성했습니다. spec - containers - env에 원하는 환경변수를 추가하면됩니다. 
+
+( yaml에서 $환경변수이름 으로 환경변수 넘겨주려고했는데, 노드가 달라서 그런지 안넘어가고 오류가 나더라구요. )
+
+```shell
+kubectl create -f semogong.yaml
+```
+
+이제 수정한 yaml파일을 실행하면됩니다.
+
+```shell
+kubectl get pods
+NAME       READY   STATUS    RESTARTS   AGE
+semogong   1/1     Running   1          27s
+```
+
+kubectl get pods를 통해 실행한 pods가 정상적으로 작동하는지 체크해주세요 ( STATUS 확인 )
+
+```shell
+kubectl expose pod semogong --name=semogong --type=LoadBalancer --port 80 --target-port 8080
+```
+
+이제 해당 pod를 서비스화 시키기위해 expose명령어로 노출시켜줍니다.
+
+```shell
+kubectl get service
+NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.120.0.1     <none>        443/TCP        13m
+semogong     LoadBalancer   10.120.7.169   34.64.193.53   80:31347/TCP   93s
+```
+
+kubectl get service 명령어로 EXTERNAL-IP를 접속하고 해당 주소로 접속하면 됩니다.
+
+저의 경우 34.64.193.53:80 주소로 접속하면 접속이 되겠네요. ( 80번포트는 생략가능 )
+
+<br>
+
