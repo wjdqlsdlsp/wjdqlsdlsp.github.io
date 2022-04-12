@@ -1,0 +1,51 @@
+I"<h4 id="aws---sqsboto3-send-message">AWS - SQS(boto3) Send Message</h4>
+
+<p>현재 진행 중인 팀프로젝트로 SQS를 사용하는데, 이를 구현하면서 만난 문제를 소개합니다.</p>
+
+<p align="center"><img src="/images/post_img/capstone.png" /></p>
+
+<p>현재 구현하고자 하는 클라우드 환경은 위의 그림과 같습니다.</p>
+
+<p>드론에서 데이터를 수집하고 이 데이터를 클라우드로 전송하는 과정을 구현하는데 실시간 데이터 처리를 위해 SQS를 사용하고 있습니다.</p>
+
+<p>전체적인 과정은 프로젝트가 완료되고 정리하도록 하겠습니다.</p>
+
+<p><br /></p>
+
+<h4 id="sqs-docs-sample-code">SQS Docs Sample code</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">boto3</span>
+
+<span class="c1"># Create SQS client
+</span><span class="n">sqs</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="n">client</span><span class="p">(</span><span class="s">'sqs'</span><span class="p">)</span>
+
+<span class="n">queue_url</span> <span class="o">=</span> <span class="s">'SQS_QUEUE_URL'</span>
+
+<span class="c1"># Send message to SQS queue
+</span><span class="n">response</span> <span class="o">=</span> <span class="n">sqs</span><span class="p">.</span><span class="n">send_message</span><span class="p">(</span>
+    <span class="n">QueueUrl</span><span class="o">=</span><span class="n">queue_url</span><span class="p">,</span>
+    <span class="n">DelaySeconds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">MessageAttributes</span><span class="o">=</span><span class="p">{</span>
+        <span class="s">'Title'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'DataType'</span><span class="p">:</span> <span class="s">'String'</span><span class="p">,</span>
+            <span class="s">'StringValue'</span><span class="p">:</span> <span class="s">'The Whistler'</span>
+        <span class="p">},</span>
+        <span class="s">'Author'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'DataType'</span><span class="p">:</span> <span class="s">'String'</span><span class="p">,</span>
+            <span class="s">'StringValue'</span><span class="p">:</span> <span class="s">'John Grisham'</span>
+        <span class="p">},</span>
+        <span class="s">'WeeksOn'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'DataType'</span><span class="p">:</span> <span class="s">'Number'</span><span class="p">,</span>
+            <span class="s">'StringValue'</span><span class="p">:</span> <span class="s">'6'</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="n">MessageBody</span><span class="o">=</span><span class="p">(</span>
+        <span class="s">'Information about current NY Times fiction bestseller for '</span>
+        <span class="s">'week of 12/11/2016.'</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s">'MessageId'</span><span class="p">])</span>
+</code></pre></div></div>
+
+:ET
