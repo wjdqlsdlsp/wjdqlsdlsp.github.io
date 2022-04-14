@@ -1,0 +1,230 @@
+I"�W<h4 id="aws---sqsboto3-send-message">AWS - SQS(boto3) Send Message</h4>
+
+<p><a href="https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2022/04/12/AWS-SQS/">이전 포스팅</a>을 통해 Jetson Nano 환경 ( Ubuntu ) 에서 AWS SQS에 데이터를 보내는 것을 구현했습니다.</p>
+
+<p>지금부터 할 내용은 SQS로 부터 데이터를 받고, 이를 전처리하여 데이터베이스에 로드하는 과정입니다.</p>
+
+<p align="center"><img src="/images/post_img/jetson.png" /></p>
+
+<p>간단하게만 어떤 데이터를 수집하나 소개해드리면, 위의 사진처럼 객체 탐지를하고, 해당 객체의 위치(탐지 시간, 객체 left, top, width, height) 데이터를 수집합니다.</p>
+
+<p align="center"><img src="/images/post_img/sqs_queue.png" /></p>
+
+<p>젯슨나노 환경으로부터, SQS로 데이터가 잘 전달됨을 확인 했습니다.</p>
+
+<p>( 테스트를 위해 최대 100번만 데이터를 전송하도록 셋팅했습니다. )</p>
+
+<p><br /></p>
+
+<h4 id="aws---sqsboto3-receive-message">AWS - SQS(boto3) Receive Message</h4>
+
+<p>먼저 데이터를 전달 받기 위한 AWS Instance를 셋팅했습니다. ( 프리티어에서 작동하도록 설계 )</p>
+
+<ul>
+  <li>t2.micro ubuntu 20.04 LTS</li>
+</ul>
+
+<p><br /></p>
+
+<h4 id="update--download">Update &amp; Download</h4>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get upgrade
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>python3-pip
+
+<span class="c">#install boto3</span>
+pip3 <span class="nb">install </span>boto3
+
+<span class="c">#install sqlalchemy</span>
+pip3 <span class="nb">install </span>sqlalchemy
+
+<span class="c">#install pymysql</span>
+pip3 <span class="nb">install </span>pymysql
+</code></pre></div></div>
+
+<p>sqs로 부터 데이터를 받아오기위한 boto3 및 데이터베이스에 로드하기 위한 sql 관련 라이브러리를 설치해줍니다.</p>
+
+<p><br /></p>
+
+<h4 id="credentials-정의">credentials 정의</h4>
+
+<p>AWS boto3 를 사용하기 위해서는, credentials 를 정의해야합니다. 아마 저와 같은 환경을 구축하셨으면 .aws 폴더 및 credentials 파일이 없을 겁니다. 이를 생성해주면 됩니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> .aws
+<span class="nb">touch </span>credentials
+vi credentials
+
+<span class="c"># insert IAM</span>
+<span class="o">[</span>Profile1]
+<span class="nv">aws_access_key_id</span><span class="o">=</span>AWS_IAM_KEY
+<span class="nv">aws_secret_access_key</span><span class="o">=</span>AWS_IAM_SECRET_KEY
+
+<span class="nb">cd</span> ~
+</code></pre></div></div>
+
+<p>사용할 IAM 관련 내용을 정의해주면 됩니다. AWS에서 인스턴스 자체에 IAM를 부여했다면, 이과정은 생략해도 됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="rds-구축">RDS 구축</h4>
+
+<p>이제 데이터를 적재할 RDS를 생성할 예정입니다. 저는 AWS RDS ( MySQL )를 구축했습니다.</p>
+
+<p>RDS 구축 관련은 저의 이전 <a href="https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2022/03/25/AWS-RDS%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0_new/">포스팅 글</a>을 참고해주세요!</p>
+
+<p>RDS 구축이 완료되었다면, 사용해야 할 테이블 스키마를 정의해 줍니다.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">create</span> <span class="k">table</span> <span class="n">TEST</span><span class="p">(</span>
+	<span class="nb">date</span> <span class="nb">datetime</span><span class="p">,</span>
+	<span class="n">left_value</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="n">top_value</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="n">width_value</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="n">height_value</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="n">lon</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="n">lat</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="n">drone_height</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+	<span class="n">azimuth</span> <span class="nb">float</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>저는 위와같이 테이블을 정의했습니다.</p>
+
+<p><br /></p>
+
+<h4 id="ec2-환경변수-셋팅">EC2 환경변수 셋팅</h4>
+
+<p>이번엔 환경변수 셋팅 단계입니다. 제가 사용하는 환경변수는 총 5개로 이후 boto3에서 필요로하는 정보들입니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">queue_url</span><span class="o">=</span>sqs_url
+<span class="nb">export </span><span class="nv">name</span><span class="o">=</span>db_user_name
+<span class="nb">export </span><span class="nv">password</span><span class="o">=</span>db_password
+<span class="nb">export </span><span class="nv">end_point</span><span class="o">=</span>db_endpoint
+<span class="nb">export </span><span class="nv">database_name</span><span class="o">=</span>db_name
+</code></pre></div></div>
+
+<p>자신이 사용할 환경변수로 셋팅해주시면 됩니다. ( 이후 코드 공유를 위해서 보안상으로 사용한 단계입니다. )</p>
+
+<p><br /></p>
+
+<h4 id="python-코드-작성">Python 코드 작성</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">strptime</span>
+<span class="kn">import</span> <span class="nn">pymysql</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">DateTime</span><span class="p">,</span> <span class="n">Integer</span>
+
+<span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="s">'AWS_PROFILE'</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Profile1"</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">sqs</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="n">client</span><span class="p">(</span><span class="s">'sqs'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="s">'ap-northeast-2'</span><span class="p">)</span>
+<span class="n">queue_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"queue_url"</span><span class="p">)</span>
+<span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"name"</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"password"</span><span class="p">)</span>
+<span class="n">end_point</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"end_point"</span><span class="p">)</span>
+<span class="n">database_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"database_name"</span><span class="p">)</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="sa">f</span><span class="s">'mysql+pymysql://</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s">@</span><span class="si">{</span><span class="n">end_point</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="n">database_name</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+
+<span class="n">Session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">()</span>
+<span class="n">Session</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">TEST</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">"TEST"</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">)</span>
+    <span class="n">left_value</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+    <span class="n">top_value</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+    <span class="n">width_value</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+    <span class="n">height_value</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+    <span class="n">lon</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+    <span class="n">drone_height</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+    <span class="n">azimuth</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">receive_message</span><span class="p">():</span>
+    <span class="c1"># receive message
+</span>    <span class="n">response</span> <span class="o">=</span> <span class="n">sqs</span><span class="p">.</span><span class="n">receive_message</span><span class="p">(</span>
+            <span class="n">QueueUrl</span><span class="o">=</span><span class="n">queue_url</span><span class="p">,</span>
+            <span class="n">AttributeNames</span><span class="o">=</span><span class="p">[</span><span class="s">'All'</span><span class="p">]</span>
+        <span class="p">)[</span><span class="s">'Messages'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">receiptHandle</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'ReceiptHandle'</span><span class="p">]</span>
+
+    <span class="n">body</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'Body'</span><span class="p">]</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">time_changer</span><span class="p">(</span><span class="n">body</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">" left"</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">value_data</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">left_value</span> <span class="o">=</span> <span class="n">value_data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+    <span class="n">top_value</span> <span class="o">=</span> <span class="n">value_data</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+    <span class="n">width_value</span> <span class="o">=</span> <span class="n">value_data</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+    <span class="n">height_value</span> <span class="o">=</span> <span class="n">value_data</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span>
+    <span class="n">insert_data</span><span class="p">(</span><span class="n">date</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">left_value</span><span class="o">=</span><span class="n">left_value</span><span class="p">,</span> <span class="n">top_value</span><span class="o">=</span><span class="n">top_value</span><span class="p">,</span> <span class="n">width_value</span><span class="o">=</span><span class="n">width_value</span><span class="p">,</span> <span class="n">height_value</span><span class="o">=</span><span class="n">height_value</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"insert ok"</span><span class="p">)</span>
+    <span class="c1"># delete message
+</span>    <span class="n">response</span> <span class="o">=</span> <span class="n">sqs</span><span class="p">.</span><span class="n">delete_message</span><span class="p">(</span>
+                <span class="n">QueueUrl</span><span class="o">=</span><span class="n">queue_url</span><span class="p">,</span>
+                <span class="n">ReceiptHandle</span><span class="o">=</span><span class="n">receiptHandle</span>
+                <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">insert_data</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">left_value</span><span class="p">,</span> <span class="n">top_value</span><span class="p">,</span> <span class="n">width_value</span><span class="p">,</span> <span class="n">height_value</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">drone_height</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">azimute</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">TEST</span><span class="p">(</span>
+        <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span>
+        <span class="n">left_value</span><span class="o">=</span><span class="n">left_value</span><span class="p">,</span>
+        <span class="n">top_value</span><span class="o">=</span><span class="n">top_value</span><span class="p">,</span>
+        <span class="n">width_value</span><span class="o">=</span><span class="n">width_value</span><span class="p">,</span>
+        <span class="n">height_value</span><span class="o">=</span><span class="n">height_value</span><span class="p">,</span>
+        <span class="n">lon</span><span class="o">=</span><span class="n">lon</span><span class="p">,</span>
+        <span class="n">lat</span><span class="o">=</span><span class="n">lat</span><span class="p">,</span>
+        <span class="n">drone_height</span><span class="o">=</span><span class="n">drone_height</span><span class="p">,</span>
+        <span class="n">azimuth</span><span class="o">=</span><span class="n">azimute</span>
+    <span class="p">)</span>
+    <span class="n">session</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">session</span><span class="p">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">time_changer</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="n">split</span><span class="p">(</span><span class="s">":"</span><span class="p">)</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="n">datetime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span> <span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s">'%b'</span><span class="p">).</span><span class="n">tm_mon</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">date</span>
+
+<span class="c1"># 1분이상 메세지가 없으면 종료
+</span><span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">receive_message</span><span class="p">()</span>
+        <span class="n">count</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">time</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">count</span><span class="o">+=</span><span class="mi">1</span>
+
+<span class="n">session</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>위의 코드는 제가 사용하는 함수입니다. 필요에 맞춰 수정해서 사용하면 될 듯합니다.</p>
+
+<p><br /></p>
+
+<h4 id="실행">실행</h4>
+
+<p>마지막으로 정의한 python 함수를 ec2 인스턴스에 실행합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 <span class="o">[</span>python파일].py
+</code></pre></div></div>
+
+<p>이를 실행하고 정상적으로 데이터 베이스에 적재됬는지 확인합니다.</p>
+
+<p align="center"><img src="/images/post_img/db_view.png" /></p>
+
+<p>확인결과 위와같이 잘 적재됨을 알 수 있네요.</p>
+
+<p>현재 테스트로는 양호하게 작동되지만, 만약 처리해야하는 데이터가 많아지거나 하면 Load balacer를 활성화 하든, kafka를 이용해서 데이터를 처리하든 방법을 생각해야할 것 같습니다.</p>
+
+<p>마지막으로 더이상 AWS를 사용하지 않는다면 지금까지 사용한 인스턴스들을 삭제해줍니다.</p>
+
+<p><br /></p>
+:ET
