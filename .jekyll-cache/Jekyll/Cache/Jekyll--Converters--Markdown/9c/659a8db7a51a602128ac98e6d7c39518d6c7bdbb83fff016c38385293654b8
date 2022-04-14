@@ -1,0 +1,10 @@
+I"b<h4 id="aws---sqsboto3-send-message">AWS - SQS(boto3) Send Message</h4>
+
+<p><a href="https://wjdqlsdlsp.github.io/%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4/2022/04/12/AWS-SQS/">이전 포스팅</a>을 통해 Jetson Nano 환경 ( Ubuntu ) 에서 AWS SQS에 데이터를 보내는 것을 구현했습니다.</p>
+
+<p>지금부터 할 내용은 SQS로 부터 데이터를 받고, 이를 전처리하여 데이터베이스에 로드하는 과정입니다.</p>
+
+<p align="center"><img src="/images/post_img/jetson.png" /></p>
+
+<p align="center"><img src="/images/post_img/sqs_queue.png" /></p>
+:ET
