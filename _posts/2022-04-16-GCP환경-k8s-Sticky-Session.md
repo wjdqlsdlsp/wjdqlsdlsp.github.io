@@ -48,11 +48,13 @@ Cloud에서 Kubernetes 환경을 구축하는 방법은 간단합니다. GCP 홈
 
 #### GCP CLI 접속하기
 
-CLI를 접속하는 방법 또한 간단합니다. 접속하고자하는 쿠버네티스 클러스터에 오른쪽 점세개 있는것을 클릭하고 연결을 클릭합니다.
-
 <p align="center"><img src="/images/post_img/gcp3.png"></p>
 
+CLI를 접속하는 방법 또한 간단합니다. 접속하고자하는 쿠버네티스 클러스터에 오른쪽 점세개 있는것을 클릭하고 연결을 클릭합니다.
+
 연결을 클릭하면 위와같이 모달이 뜰텐데, CLOUD SHELL에서 실행을 누르면 GCP 하단에 터미널 창이 나오고,
+
+<p align="center"><img src="/images/post_img/gcp4.png"></p>
 
 ```shell
 gcloud container clusters get-credentials ....
