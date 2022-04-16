@@ -219,3 +219,41 @@ kubectl set image deployment.v1.apps/[디플로이먼트이름] [container이름
 방법은 위의 코드를 이용해서 업그레이드합니다. 제가 사용한 코드를 첨부해드립니다. 위의 yaml파일과 비교해보세요. 
 
 도커 허브에 이미지를 업데이트 한 상황에서 위와 같이 입력하면 새로 올라온 이미지로 Rolling update가 진행됩니다.
+
+<br>
+
+#### Pod 한국 시간대로 변경하기
+
+아무 설정도 하지않았을 경우, Pod (Container)의 시간대는 UTC를 사용합니다.
+
+이를 한국 시간대로 바꾸는 방법이 여러 방법이 있는데, 저는 환경변수로 시간대를 입력해주는 방법을 사용합니다.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: semogong
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web 
+  template:
+    metadata:
+      name: semogong-pod
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: semogong-container
+        image: wjdqlsdlsp/semogong
+        env:
+        - name: TZ
+          value: Asia/Seoul
+        ports:
+        - containerPort: 8080
+```
+
+이전에 Deployment를 정의하기 위한 yaml 파일입니다. 여기서 환경변수로 값을 넘겨주면 한국 시간대로 설정이됩니다.
+
+spec -> template -> containers -> env 부분을 참고해주세요 !
