@@ -1,0 +1,273 @@
+I"O<h4 id="설치">설치</h4>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>fastapi
+</code></pre></div></div>
+
+<p>fastapi의 설치는 간단합니다. 위와 같이, pip를 통해 간단하게 설치합니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>uvicorn
+</code></pre></div></div>
+
+<p>fastapi를 사용하기 위해서는 추가로, 서버역할을 하는 uvicorn을 설치해야합니다.</p>
+
+<p><br /></p>
+
+<h4 id="기본예제">기본예제</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">root</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"message"</span><span class="p">:</span> <span class="s">"Hello World"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>docs를 보면 나오는 가장 간단한 FastAPI코드입니다. 해당 코드를 <code class="language-plaintext highlighter-rouge">main.py</code>에 작성하고, 서버를 실행해봅시다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uvicorn main:app <span class="nt">--reload</span>
+</code></pre></div></div>
+
+<p>위의 코드로 서버를 실행할 수 있습니다.</p>
+
+<p>이전에 설치한 uvicorn을 이용해서 서버를 실행합니다. main:app의 의미는 main이라는 파이썬 파일에서 app = FastAPI()줄에서 생ㅅ어한 오브젝트를 실행한다는 뜻입니다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">--reload</code>는 변경사항이 있을 때, 재로드 한다는 뜻입니다. 개발할 때 참 편리한 기능입니다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://127.0.0.1:8000
+http://127.0.0.1:8000/docs
+http://127.0.0.1:8000/redoc
+http://127.0.0.1:8000/openapi.json
+</code></pre></div></div>
+
+<p>FastAPI는 상당히 많은 도구를 지원해 줍니다. 하나씩 확인해보세요.</p>
+
+<p><br /></p>
+
+<h4 id="경로-동작-데코레이터-정의">경로 동작 데코레이터 정의</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">root</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"message"</span><span class="p">:</span> <span class="s">"Hello World"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>위의 코드의 데코레이터를 보면, 경로가 ‘/’ 로 되어 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/hello"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">root</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"message"</span><span class="p">:</span> <span class="s">"Hello World- this is hello"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>만약 위와 같이 경로가 ‘/hello’로 설정되어 있다면, <a href="http://127.0.0.1:8000/hello">http://127.0.0.1:8000/hello</a> 경로는 hello가 됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="동작">동작</h4>
+
+<p>여기서 “동작(Operation)”은 HTTP “메소드” 중 하나를 나타냅니다.</p>
+
+<p>다음 중 하나이며:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">POST</code></li>
+  <li><code class="language-plaintext highlighter-rouge">GET</code></li>
+  <li><code class="language-plaintext highlighter-rouge">PUT</code></li>
+  <li><code class="language-plaintext highlighter-rouge">DELETE</code></li>
+</ul>
+
+<p>…이국적인 것들도 있습니다:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">OPTIONS</code></li>
+  <li><code class="language-plaintext highlighter-rouge">HEAD</code></li>
+  <li><code class="language-plaintext highlighter-rouge">PATCH</code></li>
+  <li><code class="language-plaintext highlighter-rouge">TRACE</code></li>
+</ul>
+
+<p>HTTP 프로토콜에서는 이러한 “메소드”를 하나(또는 이상) 사용하여 각 경로와 통신할 수 있습니다.</p>
+
+<p>FastAPI Docs를 보면 위와같이, 기본적인 동작 이외 이국적인 것 까지 할 수 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="async-def-vs-def">async def vs def</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">root</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"message"</span><span class="p">:</span> <span class="s">"Hello World"</span><span class="p">}</span>
+  
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">root</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"message"</span><span class="p">:</span> <span class="s">"Hello World"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>async def와 def가 있는데, async의 경우 응답을 대기하지 않을 때 사용합니다.</p>
+
+<p>async를 사용하면 기본 def보다 좋은 성능을 보여줍니다. 이것이 FastAPI의 장점입니다.</p>
+
+<p><br /></p>
+
+<h4 id="return">return</h4>
+
+<p>Return의 경우, 파이썬답게 딕셔너리를 사용해서 반환합니다.</p>
+
+<p><br /></p>
+
+<h4 id="매개변수-사용하기">매개변수 사용하기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/items/{item_id}"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"item_id"</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>위와 같이. {item_id} 처럼 매개변수를 인자로 받고 사용할 수 있습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/items/{item_id}"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"item_id"</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>위와같이, int 등의 자료형을 설정하여 사용할 수 있습니다.</p>
+
+<p>저는 플라스크랑 장고를 해본적 있어서 위와같이 사용하는 것이 익숙하네요.</p>
+
+<p><br /></p>
+
+<h4 id="순서문제">순서문제</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/users/me"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_user_me</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"user_id"</span><span class="p">:</span> <span class="s">"the current user"</span><span class="p">}</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/users/{user_id}"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">"user_id"</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>FastAPI는 순서의 문제가 있는데, 위에있는 코드가 우선권을 가지게 됩니다.</p>
+
+<p>즉, http://127.0.0.1:8000/users/me 로 접속할 경우, return 값은, {‘user_id’: “the current user”} 이 됩니다.</p>
+
+<p><br /></p>
+
+<h4 id="enum-사용하기">Enum 사용하기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+
+<span class="k">class</span> <span class="nc">ModelName</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">alexnet</span> <span class="o">=</span> <span class="s">"alexnet"</span>
+    <span class="n">resnet</span> <span class="o">=</span> <span class="s">"resnet"</span>
+    <span class="n">lenet</span> <span class="o">=</span> <span class="s">"lenet"</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/models/{model_name}"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="n">ModelName</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="n">ModelName</span><span class="p">.</span><span class="n">alexnet</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">"model_name"</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span> <span class="s">"message"</span><span class="p">:</span> <span class="s">"Deep Learning FTW!"</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">model_name</span><span class="p">.</span><span class="n">value</span> <span class="o">==</span> <span class="s">"lenet"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">"model_name"</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span> <span class="s">"message"</span><span class="p">:</span> <span class="s">"LeCNN all the images"</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s">"model_name"</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span> <span class="s">"message"</span><span class="p">:</span> <span class="s">"Have some residuals"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>위와 같이, Enum을 정의하고 클래스를 통해 고정형 값을 사용할 수 있습니다.</p>
+
+<p>이때 http://localhost:8000/docs 로 접속했을 때, FastAPI의 강점을 알겠더라구요. Available values 를 표기해줘서 테스트하기 좋게 구성되어 있습니다.</p>
+
+<p><br /></p>
+
+<h4 id="디폴트값-주기">디폴트값 주기</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="n">fake_items_db</span> <span class="o">=</span> <span class="p">[{</span><span class="s">"item_name"</span><span class="p">:</span> <span class="s">"Foo"</span><span class="p">},</span> <span class="p">{</span><span class="s">"item_name"</span><span class="p">:</span> <span class="s">"Bar"</span><span class="p">},</span> <span class="p">{</span><span class="s">"item_name"</span><span class="p">:</span> <span class="s">"Baz"</span><span class="p">}]</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/items/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_item</span><span class="p">(</span><span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">fake_items_db</span><span class="p">[</span><span class="n">skip</span> <span class="p">:</span> <span class="n">skip</span> <span class="o">+</span> <span class="n">limit</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>위의 코드와 같이, 디폴트 값을 줄 수 있습니다. 위의 경우 skip이라는 변수에 int=0, limit라는 변수에 int=10이 들어갑니다.</p>
+
+<p><br /></p>
+
+<h4 id="post">Post</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">price</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">tax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s">"/items/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_item</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">item</span>
+</code></pre></div></div>
+
+<p>이전까지 get 요청을 사용했다면, 이번에는 post 요청입니다. Post요청은 위와 같이, 클래스를 선언해서 사용합니다.</p>
+
+<p><br /></p>
+
+<h4 id="query">Query</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Query</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/items/"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">read_items</span><span class="p">(</span><span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Query</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)):</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s">"items"</span><span class="p">:</span> <span class="p">[{</span><span class="s">"item_id"</span><span class="p">:</span> <span class="s">"Foo"</span><span class="p">},</span> <span class="p">{</span><span class="s">"item_id"</span><span class="p">:</span> <span class="s">"Bar"</span><span class="p">}]}</span>
+    <span class="k">if</span> <span class="n">q</span><span class="p">:</span>
+        <span class="n">results</span><span class="p">.</span><span class="n">update</span><span class="p">({</span><span class="s">"q"</span><span class="p">:</span> <span class="n">q</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">results</span>
+</code></pre></div></div>
+
+<p>쿼리할 때, 조건을 추가할 수 있는데, 위와같이, Query함수를 사용해서 max_length=50 으로 설정할 수 있습니다.</p>
+
+<p>이외에도, min, 정규표현식, 또는 기본값 설정 등 다양한 조건을 추가할 수 있습니다.</p>
+:ET
