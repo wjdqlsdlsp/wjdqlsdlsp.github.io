@@ -1,0 +1,42 @@
+#### Github Actions
+
+```yaml
+name: gradle and docker
+
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+        
+      - uses: actions/checkout@v1
+      - name: Login to DockerHub Registry
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        
+      - name: Build docker image and push to hub
+        run: |
+            VERSIONALL=$(cat argo/deployment.yaml | grep image)
+            VERSION_SPLIT=($(echo $VERSIONALL | tr ":" "\n")) 
+            VERSION=${VERSION_SPLIT[2]}
+            rm -rf src/test
+            gradle build
+            cp build/libs/semogong-0.0.1-SNAPSHOT.jar target/
+            docker build -t semogong-demo:0.1 .
+            images_id=$(docker images -qa semogong-demo:0.1)
+            docker tag $images_id wjdqlsdlsp/semogong:$VERSION
+            docker push wjdqlsdlsp/semogong:$VERSION
+```
+
+
+
