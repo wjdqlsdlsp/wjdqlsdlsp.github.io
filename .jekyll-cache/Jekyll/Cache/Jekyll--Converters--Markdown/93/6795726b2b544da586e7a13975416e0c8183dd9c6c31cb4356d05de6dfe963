@@ -1,0 +1,45 @@
+I"t<p>아마 batch작업하면, Linux의 Crontab 혹은, Airflow를 생각하실 겁니다.</p>
+
+<p>Crontab의 경우, Linux환경이라면 간단하게 shell 명령어로 실행할 수 있어서 매우 구현이 간단합니다.</p>
+
+<p>하지만, 이는 모니터링에 단점이 있습니다.</p>
+
+<p>Airflow의 경우 지정한 스케쥴에 따라서, 지정한 작업이 실행되고 매우 유용하여 많은 사람들이 즐겨 사용합니다.</p>
+
+<p>특히 Airflow를 사용하면, 작업을 모니터링 할 수 있다는 장점이 있습니다.</p>
+
+<p>하지만 구현하는 과정이 Crontab보다 복잡합니다.</p>
+
+<p>현재 많은</p>
+
+<h4 id="cronjob이란">Cronjob이란?</h4>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker build <span class="nt">--platform</span> amd64 <span class="nt">--build-arg</span> <span class="nv">DEPENDENCY</span><span class="o">=</span>build/dependency <span class="nt">--tag</span> make_plot:latest <span class="nb">.</span>
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker tag d5dfee69af44 wjdqlsdlsp/make_plot
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker push wjdqlsdlsp/make_plot
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: semogong-dash
+spec:
+  schedule: <span class="s2">"* 4 * * *"</span>
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: semogong-dash
+            image: wjdqlsdlsp/make_plot:latest
+            envFrom:
+            - configMapRef:
+                name: config-dev
+          restartPolicy: OnFailure
+</code></pre></div></div>
+
+:ET
