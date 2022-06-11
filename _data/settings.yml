@@ -1,15 +1,15 @@
 #-------------------------------
 # General Site Settings
-title: 박정빈의 데이터세상
+title: Memory Note
 logo: try_log.PNG # You can add own logo.
-description: 티끌모아, 빅데이터를 꿈꾸는 공간
+description: 필요한 정보를 기록하는 공간
 
 
 #-------------------------------
 # Author Settings
 author:
   name: ParkJeongBin
-  image: home_img.jpg
+  # image: blanck.jpg
   say-hello: <strong>박정빈</strong>
   bio: 데이터를 좋아하는 Data enthusiast.
 
