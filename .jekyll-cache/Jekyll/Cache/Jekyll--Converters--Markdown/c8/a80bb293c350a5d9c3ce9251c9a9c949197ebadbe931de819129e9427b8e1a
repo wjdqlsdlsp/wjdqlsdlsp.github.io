@@ -1,4 +1,4 @@
-I"FC<p>쿠버네티스를 사용하다보면, Web을 운영하는 파드와 DB를 운영하는 파드가 연결되어야 하는 상황이 생깁니다.</p>
+I"�C<p>쿠버네티스를 사용하다보면, Web을 운영하는 파드와 DB를 운영하는 파드가 연결되어야 하는 상황이 생깁니다.</p>
 
 <p>보통 DB의 경우 관리형 AWS RDS같은 관리형 데이터베이스를 사용하지만, 직접 파드를 운영하여 연결하는 방법을 정리하고자 합니다.</p>
 
@@ -8,6 +8,8 @@
   <li>Sidecar 패턴</li>
   <li>2개의 Service</li>
 </ul>
+
+<p><br /></p>
 
 <h3 id="sidecar-패턴">Sidecar 패턴</h3>
 
@@ -23,7 +25,8 @@
 
 <p>fastapi-container의 env 를 보면, DB_HOST가 localhost로 되어 있습니다.</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
 <span class="na">metadata</span><span class="pi">:</span>
   <span class="na">name</span><span class="pi">:</span> <span class="s">sidecar-svc</span>
@@ -34,7 +37,10 @@
   <span class="na">selector</span><span class="pi">:</span>
     <span class="na">app</span><span class="pi">:</span> <span class="s">sidecar</span>
   <span class="na">type</span><span class="pi">:</span> <span class="s">LoadBalancer</span>
-<span class="nn">---</span>
+</code></pre></div></div>
+<p><br /></p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># deployment</span>
 <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
 <span class="na">metadata</span><span class="pi">:</span>
@@ -102,7 +108,8 @@
 
 <p>mysql service의 metadata.name 이 같음을 주목하세요.</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
 <span class="na">metadata</span><span class="pi">:</span>
   <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi-svc</span>
@@ -114,7 +121,22 @@
     <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
   <span class="na">type</span><span class="pi">:</span> <span class="s">LoadBalancer</span>
 <span class="nn">---</span>
-<span class="c1"># fastapi deployment</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-svc</span> <span class="c1"># Mysql service name</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">3306</span>
+</code></pre></div></div>
+<p><br /></p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># fastapi deployment</span>
 <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
 <span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
 <span class="na">metadata</span><span class="pi">:</span>
@@ -146,19 +168,6 @@
             <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-svc'</span> <span class="c1"># Mysql service name</span>
           <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
             <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
-<span class="nn">---</span>
-<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
-<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
-<span class="na">metadata</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-svc</span> <span class="c1"># Mysql service name</span>
-  <span class="na">labels</span><span class="pi">:</span>
-    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
-<span class="na">spec</span><span class="pi">:</span>
-  <span class="na">selector</span><span class="pi">:</span>
-    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
-  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
-  <span class="na">ports</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">3306</span>
 <span class="nn">---</span>
 <span class="c1"># DB deployment</span>
 <span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
@@ -197,17 +206,17 @@
 
 <p>그렇다면 k8s에서 ports name을 설정하고 이를 통해 연결 할 수 는 없을 까요…?</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">			</span><span class="c1"># db container</span>
-      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">mysql:8.0.28</span>
-        <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-container</span>
-        <span class="na">env</span><span class="pi">:</span>
-          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
-            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
-          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
-            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
-        <span class="na">ports</span><span class="pi">:</span>
-          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">db-port</span> <span class="c1"># port name 설정</span>
-            <span class="na">containerPort</span><span class="pi">:</span> <span class="m">3306</span>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># db container</span>
+  <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">mysql:8.0.28</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-container</span>
+    <span class="na">env</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
+        <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">db-port</span> <span class="c1"># port name 설정</span>
+        <span class="na">containerPort</span><span class="pi">:</span> <span class="m">3306</span>
 </code></pre></div></div>
 
 <p><br /></p>
@@ -224,7 +233,7 @@
   <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
   <span class="na">ports</span><span class="pi">:</span>
     <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">8000</span>
-<span class="err">    	</span><span class="na">targetPort</span><span class="pi">:</span> <span class="s">db-port</span> <span class="c1"># port name으로 설정</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="s">db-port</span> <span class="c1"># port name으로 설정</span>
 </code></pre></div></div>
 
 <p>제가 얻어낸 결과는 다음과 같습니다.</p>
@@ -233,5 +242,6 @@
 
 <p>위와 같이, 설정한 name을 퉁해서 port를 설정할 수 있었습니다.</p>
 
-<p>port 번호가 바뀐다면 다음 mapping을 통해서 간단하게 변화시킬 수 있습니다.</p>
+<p><br /></p>
+
 :ET
