@@ -1,0 +1,101 @@
+I"<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">docker</span> <span class="n">pull</span> <span class="o">--</span><span class="n">platform</span> <span class="n">linux</span><span class="o">/</span><span class="n">amd64</span> <span class="n">mysql</span>
+</code></pre></div></div>
+
+<p>쿠버네티스를 사용하다보면, Web을 운영하는 파드와 DB를 운영하는 파드가 연결되어야 하는 상황이 생깁니다.</p>
+
+<p>보통 DB의 경우 관리형 AWS RDS같은 관리형 데이터베이스를 사용하지만, 직접 파드를 운영하여 연결하는 방법을 정리하고자 합니다.</p>
+
+<h3 id="각각-다른-pod를-이용한-연결">각각 다른 Pod를 이용한 연결</h3>
+
+<p align="center"><img src="/images/post_img/k8s-svc-svc.png" width="400px" /></p>
+
+<p>먼저 생각해볼 수 있는 구조는 서로 다른 서비스끼리의 연결입니다.</p>
+
+<p>위와 같은 경우는 설정한 service name을 통해서 연결이 가능한 구조입니다.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi-svc</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="m">8000</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">LoadBalancer</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">type</span><span class="pi">:</span> <span class="s">Recreate</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">fast:0.1</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">8000</span>
+        <span class="na">env</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_HOST</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-svc'</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-svc</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">3306</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-deployment</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">mysql:8.0.28</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-pod</span>
+        <span class="na">env</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">3306</span>
+</code></pre></div></div>
+
+:ET

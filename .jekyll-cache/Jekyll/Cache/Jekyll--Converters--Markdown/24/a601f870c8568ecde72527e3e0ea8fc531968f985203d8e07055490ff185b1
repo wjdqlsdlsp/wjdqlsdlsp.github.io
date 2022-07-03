@@ -1,0 +1,193 @@
+I"*6<p>쿠버네티스를 사용하다보면, Web을 운영하는 파드와 DB를 운영하는 파드가 연결되어야 하는 상황이 생깁니다.</p>
+
+<p>보통 DB의 경우 관리형 AWS RDS같은 관리형 데이터베이스를 사용하지만, 직접 파드를 운영하여 연결하는 방법을 정리하고자 합니다.</p>
+
+<p>크게 2가지 방법으로 연결을 시도해 봤습니다.</p>
+
+<ul>
+  <li>Sidecar 패턴</li>
+  <li>2개의 Service</li>
+</ul>
+
+<h3 id="sidecar-패턴">Sidecar 패턴</h3>
+
+<p>가장 먼저 Sidecar패턴입니다.</p>
+
+<p>하나의 파드 안에 2개의 컨테이너, 즉 DB와 Web server 컨테이너가 같이 존재하는 구조입니다.</p>
+
+<p align="center"><img src="/images/post_img/k8s-sidecar.png" width="400px" /></p>
+
+<p>이를 통해서 구현하면 같은 노드에 할당되어 같은 ip주소를 갖게 되어 localhost를 이용해서 연결이 가능합니다.</p>
+
+<p>아래는 Sidecar 패턴의 연결 방법입니다.</p>
+
+<p>fastapi-container의 env 를 보면, DB_HOST가 localhost로 되어 있습니다.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">sidecar-svc</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="m">8000</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">sidecar</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">LoadBalancer</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">sidecar-deployment</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">sidecar</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">sidecar</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">type</span><span class="pi">:</span> <span class="s">Recreate</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">sidecar-pod</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">sidecar</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">fast:0.1</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi-container</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">8000</span>
+        <span class="na">env</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_HOST</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">localhost'</span> <span class="c1"># localhost사용</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
+
+      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">mysql:8.0.28</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-container</span>
+        <span class="na">env</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
+        <span class="na">ports</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">3306</span>
+</code></pre></div></div>
+
+<p>이렇게 설정하는 것은 구현은 가능하지만, MSA구조에서 scale up 할 때 불편함을 느끼게 됩니다.</p>
+
+<p>하지만 간단한 웹구조에서 유용하게 사용될 듯 합니다.</p>
+
+<p><br /></p>
+
+<h3 id="각각-다른-service를-이용한-연결">각각 다른 Service를 이용한 연결</h3>
+
+<p align="center"><img src="/images/post_img/k8s-svc-svc.png" width="400px" /></p>
+
+<p>다음 구조는 서로 다른 서비스끼리의 연결입니다.</p>
+
+<p>위와 같은 경우는 설정한 DB service name을 통해서 연결이 가능한 구조입니다.</p>
+
+<p>각각 하나의 Pod 안에 각각의 container를 설정하고, 이를 deployment 와 service로 묶습니다.</p>
+
+<p>이후 DB service 와 Web service가 연결되도록 설정합니다.</p>
+
+<p>아래는 사용한 예시 코드입니다.</p>
+
+<p>fastapi deployment의 spec.template.spec.env 의 MYSQL_HOST와</p>
+
+<p>mysql service의 metadata.name 이 같음을 주목하세요.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi-svc</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">80</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="m">8000</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">LoadBalancer</span>
+<span class="nn">---</span>
+<span class="c1"># fastapi deployment</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+  <span class="na">strategy</span><span class="pi">:</span>
+    <span class="na">type</span><span class="pi">:</span> <span class="s">Recreate</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">fastapi</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">fast:0.1</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">fastapi</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">8000</span>
+        <span class="na">env</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_HOST</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-svc'</span> <span class="c1"># Mysql service name</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
+            <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-svc</span> <span class="c1"># Mysql service name</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">3306</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-deployment</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">mysql</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">mysql:8.0.28</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">mysql-pod</span>
+        <span class="na">env</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">password'</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_DATABASE</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s1">'</span><span class="s">mysql-db'</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">3306</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+:ET

@@ -2,7 +2,7 @@
 
 layout: post
 
-title:  AI as a Service 쉽게 배우는 AWS AI 서비스"
+title:  "AI as a Service 쉽게 배우는 AWS AI 서비스"
 
 date:   2022-05-20
 
