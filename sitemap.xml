@@ -1,0 +1,30 @@
+---
+layout: null
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!-- www.check-domains.com sitemap generator -->
+  {% for post in site.posts %}
+    <url>
+      <loc>https://wjdqlsdlsp.github.io{{ post.url }}</loc>
+      {% if post.lastmod == null %}
+        <lastmod>2023-02-10T00:00:00+09:00</lastmod>
+      {% else %}
+        <lastmod>{{ post.lastmod | date_to_xmlschema }}</lastmod>
+      {% endif %}
+
+      {% if post.sitemap.changefreq == null %}
+        <changefreq>hourly</changefreq>
+      {% else %}
+        <changefreq>{{ post.sitemap.changefreq }}</changefreq>
+      {% endif %}
+
+      {% if post.sitemap.priority == null %}
+          <priority>0.8000</priority>
+      {% else %}
+        <priority>{{ post.sitemap.priority }}</priority>
+      {% endif %}
+
+    </url>
+  {% endfor %}
+</urlset>
