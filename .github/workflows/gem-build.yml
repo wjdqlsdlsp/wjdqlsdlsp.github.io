@@ -2,9 +2,9 @@ name: Build Ruby Gem
 
 on:
   push:
-    branches: [ main ]
+    branches: [ a ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   test:
