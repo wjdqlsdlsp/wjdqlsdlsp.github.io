@@ -2,7 +2,6 @@
 layout: post
 title:  "lambda container 배포하기"
 tags: [AWS]
-tags: [Highlight, Markdown]
 categories: Syntax
 ---
 
