@@ -4,16 +4,16 @@ url: "https://wjdqlsdlsp.github.io"
 
 # THEME-SPECIFIC CONFIGURATION
 title: 박정빈                                 # site's title
-description: "이것저것 기록하는 공간"      # used by search engines
+description: "기록하는 공간"      # used by search engines
 avatar: assets/img/home_img.png                         # Empty for no avatar in navbar
 favicon: assets/favicon.ico                             # Icon displayed in the tab
 
 # Header and footer text
-header_text: 이것저것 기록하는 공간  # Change Blog header text
+header_text: 기록하는 공간  # Change Blog header text
 header_feature_image: assets/img/header/triangular.jpeg
-header_feature_image_responsive: true
+header_feature_image_responsive: false
 footer_text: >
-  하루에 3시간을 걸으면 7년 후에 지구를 한바퀴 돌 수 있다.
+  나태해지지 않고 끊임없이 배우려고 노력합니다.
 
 # Blog
 excerpt: true                                           # Or "truncate" (first 250 characters), "false" to disable
@@ -33,12 +33,12 @@ color_theme: auto                                       # auto, dark or light
 comments:
   disqus_shortname:                                     # Your discus shortname for comments
   cusdis_app_id:                                        # Your cusdis data-app-id
-  utterances:                                           # Enable by filling below information. For more info, go to https://utteranc.es
-    repo:                                               # your public comments repository (e.g. owner/repo)
-    issue-term:                                         # Issue term (e.g. "comment" consider issues with this word in the title as comments)
+  utterances:                                          # Enable by filling below information. For more info, go to https://utteranc.es
+    repo: wjdqlsdlsp/wjdqlsdlsp.github.io                                             # your public comments repository (e.g. owner/repo)
+    issue-term: comment                                      # Issue term (e.g. "comment" consider issues with this word in the title as comments)
 
 # PAGINATION
-paginate: 10
+paginate: 7
 paginate_path: "/blog/page:num"
 
 # PORTFOLIO
