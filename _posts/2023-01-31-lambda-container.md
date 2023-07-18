@@ -2,7 +2,7 @@
 layout: post
 title:  "lambda container 배포하기"
 tags: [AWS]
-categories: Syntax
+categories: [AWS]
 ---
 
 AWS의 대표적인 serverless 서비스인 lambda에는 흔히 우리가 아는 코드로 배포하는 방식과 컨테이너로 배포하는 방식이 있다.
